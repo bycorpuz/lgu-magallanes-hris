@@ -65,12 +65,15 @@ class Logs extends Component
         ->select(
             'ul.*',
             DB::raw("DATE_FORMAT(ul.created_at, '%Y-%m-%d %h:%i %p') as formatted_created_at"),
-            'u.name as u_name',
             'u.username as u_username',
-            'u.email as u_email'
+            'u.email as u_email',
+            'upi.firstname as upi_firstname',
+            'upi.lastname as upi_lastname'
         )
         ->leftJoin('users as u', 'ul.user_id', '=', 'u.id')
-        ->where('u.name', 'like', '%'.trim($this->search).'%')
+        ->leftJoin('user_personal_informations as upi', 'ul.user_id', '=', 'upi.user_id')
+        ->where('upi.firstname', 'like', '%'.trim($this->search).'%')
+        ->orWhere('upi.lastname', 'like', '%'.trim($this->search).'%')
         ->orWhere('u.username', 'like', '%'.trim($this->search).'%')
         ->orWhere('u.email', 'like', '%'.trim($this->search).'%')
         ->orWhere('ul.user_id', 'like', '%'.trim($this->search).'%')
@@ -89,11 +92,13 @@ class Logs extends Component
         ->select(
             'ul.*',
             DB::raw("DATE_FORMAT(ul.created_at, '%Y-%m-%d %h:%i %p') as formatted_created_at"),
-            'u.name as u_name',
             'u.username as u_username',
-            'u.email as u_email'
+            'u.email as u_email',
+            'upi.firstname as upi_firstname',
+            'upi.lastname as upi_lastname'
         )
         ->leftJoin('users as u', 'ul.user_id', '=', 'u.id')
+        ->leftJoin('user_personal_informations as upi', 'ul.user_id', '=', 'upi.user_id')
         ->where('ul.user_id', 'like', '%'.trim($this->userIdAdvancedSearchField).'%')
         ->where('ul.module', 'like', '%'.trim($this->moduleAdvancedSearchField).'%')
         ->where('ul.action', 'like', '%'.trim($this->actionAdvancedSearchField).'%')

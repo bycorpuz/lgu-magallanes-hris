@@ -24,7 +24,6 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
         'username',
         'email',
         'password',
@@ -60,5 +59,9 @@ class User extends Authenticatable
 
     public function userThemeSettings(){
         return $this->hasOne(UserThemeSettings::class, 'user_id');
+    }
+
+    public function userPersonalInformations(){
+        return $this->hasOne(UserPersonalInformation::class, 'user_id');
     }
 }

@@ -18,7 +18,6 @@ class UsersTableSeeder extends Seeder
 
         // Create a new user
         $user = User::create([
-            'name' => 'Bobby Corpuz',
             'username' => 'bycorpuz',
             'email' => 'bycorpuz@example.com',
             'password' => $commonPassword
@@ -29,6 +28,12 @@ class UsersTableSeeder extends Seeder
             'theme_style' => 'light-theme',
             'header_color' => null,
             'sidebar_color' => null,
+        ]);
+        
+        // You can associate this user with user_personal_informations here
+        $user->userPersonalInformations()->create([
+            'firstname' => 'Bobby',
+            'lastname' => 'Corpuz'
         ]);
     }
 }

@@ -18,9 +18,13 @@ return new class extends Migration
             $table->string('header_color')->nullable();
             $table->string('sidebar_color')->nullable();
             $table->timestamps();
-
+            
             // Define 'user_id' as a foreign key referencing the 'id' column of the 'users' table
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
     }
 

@@ -111,7 +111,7 @@
                             @foreach ($tableList as $row)
                                 <tr>
                                     <td>{{ ++ $counter }}</td>
-                                    <td>{{ $row->u_name }}<br>{{ $row->u_email }}</td>
+                                    <td>{{ $row->upi_firstname }} {{ $row->upi_lastname }}<br>{{ $row->u_email }}</td>
                                     <td>{{ $row->action }}</td>
                                     <td>{{ $row->module }}</td>
                                     <td>
