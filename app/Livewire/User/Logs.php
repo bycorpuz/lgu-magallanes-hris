@@ -30,6 +30,7 @@ class Logs extends Component
            $dateCreatedAdvancedSearchField = '';
 
     public $counter = 0;
+    public $totalTableDataCount = 0;
     public $id, $user_id, $module, $action, $data;
 
     private function resetAdvancedSearchFields(){
@@ -110,12 +111,18 @@ class Logs extends Component
         $this->resetPage();
     }
 
+    public function totalTableDataCount(){
+        $this->totalTableDataCount = UserLog::get()->count();
+    }
+
     public function render(){
         if ($this->search){
             $this->performGlobalSearch();
         } else {
             $this->performAdvancedSearch();
         }
+        
+        $this->totalTableDataCount();
 
         return view('livewire.user.logs', [
             'tableList' => $this->tableList,

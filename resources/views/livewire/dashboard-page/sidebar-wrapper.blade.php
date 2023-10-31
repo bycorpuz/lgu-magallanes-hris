@@ -22,14 +22,40 @@
                     <div class="menu-title">Dashboard</div>
                 </a>
             </li>
-            <li class="menu-label">User Management</li>
-            <li class="{{ Route::is('user-logs') ? 'mm-active' : '' }}">
-                <a href="{{ route('user-logs') }}">
-                    <div class="parent-icon"><i class="bx bx-history"></i>
-                    </div>
-                    <div class="menu-title">User Logs</div>
-                </a>
-            </li>
+
+            @if(Gate::check('view-user-logs'))
+                <li class="menu-label">User Management</li>
+            @endif
+            @can('view-user-logs')
+                <li class="{{ Route::is('user-logs') ? 'mm-active' : '' }}">
+                    <a href="{{ route('user-logs') }}">
+                        <div class="parent-icon"><i class="bx bx-history"></i>
+                        </div>
+                        <div class="menu-title">User Logs</div>
+                    </a>
+                </li>
+            @endcan
+
+            @if(
+                // for developer and administrator
+                Gate::check('rbac-model-has-permissions') ||
+                Gate::check('rbac-model-has-roles') ||
+                // for developer
+                Gate::check('rbac-permissions') ||
+                Gate::check('rbac-roles') ||
+                Gate::check('rbac-role-has-permissions')
+            )
+                <li class="menu-label">Role-Based Access Control</li>
+            @endif
+            @can('rbac-roles')
+                <li class="{{ Route::is('rbac-roles') ? 'mm-active' : '' }}">
+                    <a href="{{ route('rbac-roles') }}">
+                        <div class="parent-icon"><i class="bx bx-cog"></i>
+                        </div>
+                        <div class="menu-title">Roles</div>
+                    </a>
+                </li>
+            @endcan
 
         </ul>
         <!--end navigation-->
