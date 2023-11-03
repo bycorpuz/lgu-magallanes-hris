@@ -56,6 +56,15 @@
                     </a>
                 </li>
             @endcan
+            @can('rbac-permissions')
+                <li class="{{ Route::is('rbac-permissions') ? 'mm-active' : '' }}">
+                    <a href="{{ route('rbac-permissions') }}">
+                        <div class="parent-icon"><i class="bx bx-cog"></i>
+                        </div>
+                        <div class="menu-title">Permissions</div>
+                    </a>
+                </li>
+            @endcan
 
         </ul>
         <!--end navigation-->

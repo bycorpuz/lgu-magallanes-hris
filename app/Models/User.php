@@ -50,19 +50,19 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    protected static function boot(){
-        parent::boot();
-
-        static::creating(function ($model) {
-            $model->{$model->getKeyName()} = Str::uuid()->toString();
-        });
-    }
-
     public function userThemeSettings(){
         return $this->hasOne(UserThemeSettings::class, 'user_id');
     }
 
     public function userPersonalInformations(){
         return $this->hasOne(UserPersonalInformation::class, 'user_id');
+    }
+
+    protected static function boot(){
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->{$model->getKeyName()} = Str::uuid()->toString();
+        });
     }
 }

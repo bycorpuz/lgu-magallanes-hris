@@ -4,6 +4,7 @@ use App\Livewire\AuthenticationPage\Login;
 use App\Livewire\AuthenticationPage\Register;
 use App\Livewire\DashboardPage\Dashboard;
 use App\Livewire\LandingPage\Welcome;
+use App\Livewire\RoleBasedAccessControl\Permissions;
 use App\Livewire\RoleBasedAccessControl\Roles;
 use App\Livewire\User\Logs;
 use Illuminate\Support\Facades\Route;
@@ -28,11 +29,10 @@ Route::group(['middleware' => ['guest','preventBackHistory']], function(){
     Route::post('/login-handler',[Login::class,'loginHandler'])->name('login-handler');
 });
 
-Route::group(['middleware' => ['preventBackHistory', 'auth']], function(){
+Route::group(['middleware' => ['auth', 'preventBackHistory']], function(){
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
-});
 
-Route::group(['middleware' => ['preventBackHistory', 'auth', 'permission:view-user-logs']], function(){
-    Route::get('/user-logs', Logs::class)->name('user-logs');
-    Route::get('/rbac-roles', Roles::class)->name('rbac-roles');
+    Route::get('/user-logs', Logs::class)->middleware('permission:view-user-logs')->name('user-logs');
+    Route::get('/rbac-roles', Roles::class)->middleware('permission:rbac-roles')->name('rbac-roles');
+    Route::get('/rbac-permissions', Permissions::class)->middleware('permission:rbac-permissions')->name('rbac-permissions');
 });

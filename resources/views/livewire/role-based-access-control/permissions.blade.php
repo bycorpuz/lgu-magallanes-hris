@@ -7,7 +7,7 @@
                 <ol class="breadcrumb mb-0 p-0">
                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">Roles</li>
+                    <li class="breadcrumb-item active" aria-current="page">Permissions</li>
                 </ol>
             </nav>
         </div>
@@ -52,7 +52,7 @@
         <div class="card-body"> 
             <div class="row pb-3">
                 <div class="col-sm-2 text-center">
-                    <button type="button" class="btn btn-primary" @click="$dispatch('showModalListener', ['Add New Role', 'modal-sm', 'Create'])"><i class="bx bx-plus-circle me-0"></i> Add New</button>
+                    <button type="button" class="btn btn-primary" @click="$dispatch('showModalListener', ['Add New Permission', 'modal-sm', 'Create'])"><i class="bx bx-plus-circle me-0"></i> Add New</button>
                 </div>
                 <div class="col-sm-7">
                     <div class="position-relative search-bar d-lg-block d-none">
@@ -120,10 +120,10 @@
                                     <td>{{ $row->formatted_created_at }}</td>
                                     <td>
                                         <div class="btn-group" role="group" aria-label="Action Buttons">
-                                            <button type="button" class="btn btn-primary btn-sm" @click="$dispatch('showModalListener', ['Edit Role', 'modal-sm', 'Update'])" wire:click="edit('{{ $row->id }}')">
+                                            <button type="button" class="btn btn-primary btn-sm" @click="$dispatch('showModalListener', ['Edit Permission', 'modal-sm', 'Update'])" wire:click="edit('{{ $row->id }}')">
                                                 <i class="bx bx-edit me-0"></i>
                                             </button>
-                                            <button type="button" class="btn btn-danger btn-sm" @click="$dispatch('showModalListener', ['Delete Role', 'modal-sm', 'Delete'])" wire:click="toBeDeleted('{{ $row->id }}')">
+                                            <button type="button" class="btn btn-danger btn-sm" @click="$dispatch('showModalListener', ['Delete Permission', 'modal-sm', 'Delete'])" wire:click="toBeDeleted('{{ $row->id }}')">
                                                 <i class="bx bx-trash me-0"></i>
                                             </button>
                                         </div>
