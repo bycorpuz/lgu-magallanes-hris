@@ -2,17 +2,17 @@
 
 namespace App\Livewire\RoleBasedAccessControl;
 
-use App\Livewire\Components\Modal;
 use App\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 #[Title('RBAC - Roles')]
 #[Layout('layouts.dashboard-app')] 
-class Roles extends Modal
+class Roles extends Component
 {
     use WithPagination;
 
@@ -30,10 +30,16 @@ class Roles extends Modal
     public $id, $name;
     public $guard_name = 'web';
 
+    public $isUpdateMode = false;
     public $deleteId = '';
+
+    public function openCreateUpdateModal(){
+        $this->dispatch('openCreateUpdateModal');
+    }
 
     private function resetInputFields(){
         $this->name = '';
+        artisanClear();
     }
 
     private function resetAdvancedSearchFields(){
@@ -42,8 +48,10 @@ class Roles extends Modal
         $this->dateCreatedAdvancedSearchField = '';
     }
 
-    public function closeCreateUpdateModal(){
+    public function closeModal(){
+        $this->isUpdateMode = false;
         $this->resetInputFields();
+        $this->dispatch('closeModal');
     }
 
     public function store(){
@@ -56,7 +64,7 @@ class Roles extends Modal
         $table->guard_name = $this->guard_name;
         if ($table->save()){
             $this->resetInputFields();
-            $this->dispatch('closeModalListener');
+            $this->dispatch('closeModal');
             
             doLog($table, request()->ip(), 'Roles', 'Created');
             $this->js("showNotification('success', 'Role data has been saved successfully.')");
@@ -66,7 +74,9 @@ class Roles extends Modal
     }
 
     public function edit($id){
+        $this->isUpdateMode = true;
         $this->resetInputFields();
+        $this->dispatch('openCreateUpdateModal');
 
         $table = Role::find($id);
         $this->id = $id;
@@ -75,19 +85,20 @@ class Roles extends Modal
 
     public function update(){
         $this->validate([
-            'name' => [
+            'name' =>  [
                 'required',
-                Rule::unique('roles')->where(function ($query) {
-                    return $query->where('name', $this->name);
-                })->ignore($this->id),
+                Rule::unique('roles')
+                    ->where('name', $this->name)
+                    ->ignore($this->id)
             ],
         ]);
 
         $table = Role::find($this->id);
         $table->name = $this->name;
         if ($table->update()){
+            $this->isUpdateMode = false;
             $this->resetInputFields();
-            $this->dispatch('closeModalListener');
+            $this->dispatch('closeModal');
 
             doLog($table, request()->ip(), 'Roles', 'Updated');
             $this->js("showNotification('success', 'Your changes to the Role have been successfully updated.')");
@@ -98,6 +109,7 @@ class Roles extends Modal
 
     public function toBeDeleted($id){
         $this->deleteId = $id;
+        $this->dispatch('openDeletionModal');
 
         $table = Role::find($this->deleteId);
         $this->name = $table->name;
@@ -106,8 +118,9 @@ class Roles extends Modal
     public function delete(){
         $table = Role::find($this->deleteId);
         if ($table->delete()){
+            $this->isUpdateMode = false;
             $this->resetInputFields();
-            $this->dispatch('closeModalListener');
+            $this->dispatch('closeModal');
             
             doLog($table, request()->ip(), 'Roles', 'Deleted');
             $this->js("showNotification('success', 'The selected Role has been deleted successfully.')");

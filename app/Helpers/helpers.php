@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\GeneralSettings;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\UserThemeSettings;
 use App\Models\UserLog;
@@ -66,6 +68,30 @@ if ( !function_exists('getUserThemeSettingsTrimmed') ){
 if ( !function_exists('getUsers') ){
     function getUsers(){
         $table = User::orderBy('created_at', 'desc')->get();
+        return $table;
+    }
+}
+
+if ( !function_exists('getRoles') ){
+    function getRoles($param1){
+        if ($param1){
+            $table = Role::find($param1);
+        } else {
+            $table = Role::orderBy('created_at', 'desc')->get();
+        }
+
+        return $table;
+    }
+}
+
+if ( !function_exists('getPermissions') ){
+    function getPermissions($param1){
+        if ($param1){
+            $table = Permission::find($param1);
+        } else {
+            $table = Permission::orderBy('created_at', 'desc')->get();
+        }
+
         return $table;
     }
 }

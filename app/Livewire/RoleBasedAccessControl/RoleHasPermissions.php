@@ -2,7 +2,7 @@
 
 namespace App\Livewire\RoleBasedAccessControl;
 
-use App\Models\Permission;
+use App\Models\RoleHasPermission;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Title;
@@ -10,9 +10,9 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Title('RBAC - Permissions')]
+#[Title('RBAC - Role Has Permissions')]
 #[Layout('layouts.dashboard-app')] 
-class Permissions extends Component
+class RoleHasPermissions extends Component
 {
     use WithPagination;
 
@@ -22,13 +22,14 @@ class Permissions extends Component
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
     public $showAdvancedSearch = false;
-    public $nameAdvancedSearchField, $guardNameAdvancedSearchField,
+    public $roleIdAdvancedSearchField, $permissionIdAdvancedSearchField,
            $dateCreatedAdvancedSearchField = '';
 
     public $counter = 0;
+    public $successCounter = 0;
     public $totalTableDataCount = 0;
-    public $id, $name;
-    public $guard_name = 'web';
+    public $role_id;
+    public $permission_id = [];
 
     public $isUpdateMode = false;
     public $deleteId = '';
@@ -38,13 +39,15 @@ class Permissions extends Component
     }
 
     private function resetInputFields(){
-        $this->name = '';
+        $this->role_id = '';
+        $this->permission_id = [];
+        $this->successCounter = 0;
         artisanClear();
     }
 
     private function resetAdvancedSearchFields(){
-        $this->nameAdvancedSearchField = '';
-        $this->guardNameAdvancedSearchField = '';
+        $this->roleIdAdvancedSearchField = '';
+        $this->permissionIdAdvancedSearchField = '';
         $this->dateCreatedAdvancedSearchField = '';
     }
 
@@ -55,14 +58,23 @@ class Permissions extends Component
     }
 
     public function store(){
-        $this->validate([
-            'name' => 'required|unique:permissions,name'
-        ]);
+        foreach($this->permission_id as $permissionId){
+            $table = new RoleHasPermission();
+            $table->role_id = $this->role_id;
+            $table->permission_id = $permissionId;
 
-        $table = new Permission();
-        $table->name = $this->name;
-        $table->guard_name = $this->guard_name;
-        if ($table->save()){
+            $query = RoleHasPermission::where([
+                ['role_id', $this->role_id],
+                ['permission_id', $permissionId],
+            ])->first();
+            if (!$query) {
+                if ($table->save()){
+                    $this->successCounter ++;
+                }
+            }
+        }
+
+        if ($this->successCounter > 0){
             $this->resetInputFields();
             $this->dispatch('closeModal');
             
@@ -73,50 +85,40 @@ class Permissions extends Component
         }
     }
 
-    public function edit($id){
+    public function edit($role_id, $permission_id){
         $this->isUpdateMode = true;
         $this->resetInputFields();
         $this->dispatch('openCreateUpdateModal');
 
-        $table = Permission::find($id);
-        $this->id = $id;
-        $this->name = $table->name;
+        $table = RoleHasPermission::where([
+            ['role_id', $role_id],
+            ['permission_id', $permission_id],
+        ])->first();
+        $this->permission_id = $table->permission_id;
+        $this->role_id = $table->role_id;
     }
 
     public function update(){
-        $this->validate([
-            'name' =>  [
-                'required',
-                Rule::unique('permissions')
-                    ->where('name', $this->name)
-                    ->ignore($this->id)
-            ],
-        ]);
-
-        $table = Permission::find($this->id);
-        $table->name = $this->name;
-        if ($table->update()){
-            $this->isUpdateMode = false;
-            $this->resetInputFields();
-            $this->dispatch('closeModal');
-
-            doLog($table, request()->ip(), 'Permissions', 'Updated');
-            $this->js("showNotification('success', 'Your changes to the Permission have been successfully updated.')");
-        } else {
-            $this->js("showNotification('error', 'Something went wrong.')");
-        }
+        // no action
     }
 
-    public function toBeDeleted($id){
-        $this->deleteId = $id;
+    public function toBeDeleted($role_id, $permission_id){
         $this->dispatch('openDeletionModal');
 
-        $table = Permission::find($this->deleteId);
-        $this->name = $table->name;
+        $table = RoleHasPermission::where([
+            ['role_id', $role_id],
+            ['permission_id', $permission_id],
+        ])->first();
+        $this->role_id = $table->role_id;
+        $this->permission_id = $table->permission_id;
     }
 
     public function delete(){
-        $table = Permission::find($this->deleteId);
+        $table = RoleHasPermission::where([
+            ['role_id', $this->role_id],
+            ['permission_id', $this->permission_id],
+        ]);
+        
         if ($table->delete()){
             $this->isUpdateMode = false;
             $this->resetInputFields();
@@ -150,13 +152,18 @@ class Permissions extends Component
     }
 
     public function performGlobalSearch(){
-        $this->tableList = Permission::select(
-            '*',
-            DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %h:%i %p') as formatted_created_at")
+        $this->tableList = RoleHasPermission::from('role_has_permissions as rhp')
+        ->select(
+            'rhp.*',
+            DB::raw("DATE_FORMAT(rhp.created_at, '%Y-%m-%d %h:%i %p') as formatted_created_at"),
+            'r.name as r_name',
+            'p.name as p_name'
         )
-        ->where('name', 'like', '%'.trim($this->search).'%')
-        ->orWhere('guard_name', 'like', '%'.trim($this->search).'%')
-        ->orWhere('created_at', 'like', '%'.trim($this->search).'%')
+        ->leftJoin('permissions as p', 'rhp.permission_id', '=', 'p.id')
+        ->leftJoin('roles as r', 'rhp.role_id', '=', 'r.id')
+        ->where('r.name', 'like', '%'.trim($this->search).'%')
+        ->orWhere('p.name', 'like', '%'.trim($this->search).'%')
+        ->orWhere('rhp.created_at', 'like', '%'.trim($this->search).'%')
         ->orderBy($this->sortField, $this->sortDirection)
         ->paginate($this->perPage);
 
@@ -164,13 +171,18 @@ class Permissions extends Component
     }
 
     public function performAdvancedSearch(){
-        $this->tableList = Permission::select(
-            '*',
-            DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %h:%i %p') as formatted_created_at")
+        $this->tableList = RoleHasPermission::from('role_has_permissions as rhp')
+        ->select(
+            'rhp.*',
+            DB::raw("DATE_FORMAT(rhp.created_at, '%Y-%m-%d %h:%i %p') as formatted_created_at"),
+            'r.name as r_name',
+            'p.name as p_name'
         )
-        ->where('name', 'like', '%'.trim($this->nameAdvancedSearchField).'%')
-        ->where('guard_name', 'like', '%'.trim($this->guardNameAdvancedSearchField).'%')
-        ->where('created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField).'%')
+        ->leftJoin('roles as r', 'rhp.role_id', '=', 'r.id')
+        ->leftJoin('permissions as p', 'rhp.permission_id', '=', 'p.id')
+        ->where('r.id', 'like', '%'.trim($this->roleIdAdvancedSearchField).'%')
+        ->where('p.id', 'like', '%'.trim($this->permissionIdAdvancedSearchField).'%')
+        ->where('rhp.created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField).'%')
         ->orderBy($this->sortField, $this->sortDirection)
         ->paginate($this->perPage);
 
@@ -178,7 +190,7 @@ class Permissions extends Component
     }
 
     public function totalTableDataCount(){
-        $this->totalTableDataCount = Permission::get()->count();
+        $this->totalTableDataCount = RoleHasPermission::get()->count();
     }
 
     public function render(){
@@ -190,7 +202,7 @@ class Permissions extends Component
         
         $this->totalTableDataCount();
 
-        return view('livewire.role-based-access-control.permissions', [
+        return view('livewire.role-based-access-control.role-has-permissions', [
             'tableList' => $this->tableList,
         ]);
     }

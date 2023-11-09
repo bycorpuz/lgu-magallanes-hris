@@ -18,6 +18,10 @@
 		<!-- Bootstrap CSS -->
 		<link href="{{ asset('/backend-template/assets/css/bootstrap.min.css') }}" rel="stylesheet">
 		<link href="{{ asset('/backend-template/assets/css/bootstrap-extended.css') }}" rel="stylesheet"> 
+		{{-- Select2 CSS --}}
+		<link href="{{ asset('/backend-template/assets/css/select2.min.css') }}" rel="stylesheet">
+		<link href="{{ asset('/backend-template/assets/css/select2-bootstrap-5-theme.min.css') }}" rel="stylesheet">
+		{{-- fonts and app CSS --}}
 		<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet">
 		<link href="{{ asset('/backend-template/assets/css/app.css') }}" rel="stylesheet">
 		<link href="{{ asset('/backend-template/assets/css/icons.css') }}" rel="stylesheet">
@@ -68,15 +72,18 @@
 		<script src="{{ asset('/backend-template/assets/plugins/notifications/js/lobibox.min.js') }}"></script>
 		<script src="{{ asset('/backend-template/assets/plugins/notifications/js/notifications.min.js') }}"></script>
 		<script src="{{ asset('/backend-template/assets/plugins/notifications/js/notification-custom-script.js') }}"></script>
-		
 		<!--Chart-->
 		{{-- <script src="{{ asset('/backend-template/assets/plugins/apexcharts-bundle/js/apexcharts.min.js') }}"></script> --}}
         <!--index JS-->
 		{{-- <script src="{{ asset('/backend-template/assets/js/index.js?v='.filemtime('backend-template/assets/js/index.js')) }}"></script> --}}
 
+		{{-- Select2 js --}}
+		<script src="{{ asset('/backend-template/assets/js/select2.min.js') }}"></script>
+
 		<!--app JS-->
 		<script src="{{ asset('/backend-template/assets/js/app.js?v='.filemtime('backend-template/assets/js/app.js')) }}"></script>
-
+		
+		{{-- global js --}}
 		<script src="{{ asset('/system-scripts/global/dashboard.js?v='.filemtime('system-scripts/global/dashboard.js')) }}"></script>
 		<script src="{{ asset('/system-scripts/global/global.js?v='.filemtime('system-scripts/global/global.js')) }}"></script>
 		{{-- <script src="{{ asset('/system-scripts/global/alpine-init.js?v='.filemtime('system-scripts/global/alpine-init.js')) }}"></script> --}}

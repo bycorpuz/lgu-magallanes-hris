@@ -5,6 +5,7 @@ use App\Livewire\AuthenticationPage\Register;
 use App\Livewire\DashboardPage\Dashboard;
 use App\Livewire\LandingPage\Welcome;
 use App\Livewire\RoleBasedAccessControl\Permissions;
+use App\Livewire\RoleBasedAccessControl\RoleHasPermissions;
 use App\Livewire\RoleBasedAccessControl\Roles;
 use App\Livewire\User\Logs;
 use Illuminate\Support\Facades\Route;
@@ -35,4 +36,5 @@ Route::group(['middleware' => ['auth', 'preventBackHistory']], function(){
     Route::get('/user-logs', Logs::class)->middleware('permission:view-user-logs')->name('user-logs');
     Route::get('/rbac-roles', Roles::class)->middleware('permission:rbac-roles')->name('rbac-roles');
     Route::get('/rbac-permissions', Permissions::class)->middleware('permission:rbac-permissions')->name('rbac-permissions');
+    Route::get('/rbac-role-has-permissions', RoleHasPermissions::class)->middleware('permission:rbac-role-has-permissions')->name('rbac-role-has-permissions');
 });

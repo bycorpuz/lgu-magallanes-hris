@@ -10,7 +10,7 @@
     x-on:keydown.escape.window="showModal = false"
 >
     <div class="modal-backdrop fade show"></div>
-    <div class="modal fade show" tabindex="-1" style="display: block;" aria-modal="true" role="dialog">
+    <div class="modal fade show" tabindex="-1" style="display: block;" aria-modal="true" role="dialog" id="globalModal">
         <div class="modal-dialog" :class="modalSize">
             <div class="modal-content">
                 <form wire:submit.prevent="{{ $modalAction == 'Create' ? 'store' : ($modalAction == 'Update' ? 'update' : 'delete') }}">

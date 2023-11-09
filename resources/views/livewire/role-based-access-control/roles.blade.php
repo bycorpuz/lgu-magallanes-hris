@@ -1,7 +1,7 @@
-<div>
+<div> 
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">Role-Based Access Control</div>
+        <div class="breadcrumb-title pe-3">Roles</div>
         <div class="ps-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
@@ -13,46 +13,15 @@
         </div>
     </div>
     <!--end breadcrumb-->
-
-    {{-- component modal --}}
-    @if ($showModal)
-        <x-modal wire:model='showModal' :modalTitle="$modalTitle" :modalSize="$modalSize" :modalAction="$modalAction">
-            @if ($modalAction === 'Create')
-                <div>
-                    <label class="form-label">Name</label>
-                    <input type="text" class="form-control" placeholder="Name" required wire:model="name" x-ref="focusMe" x-init="$nextTick(() => { $refs.focusMe.focus() })">
-                    @error('name')
-                        <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
-                    @enderror
-                </div>
-            @endif
-
-            @if ($modalAction === 'Update')
-                <div>
-                    <label class="form-label">Name</label>
-                    <input type="text" class="form-control" placeholder="Name" required wire:model="name" x-ref="focusMe" x-init="$nextTick(() => { $refs.focusMe.focus() })">
-                    @error('name')
-                        <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
-                    @enderror
-                </div>
-            @endif
-
-            @if ($modalAction === 'Delete')
-                <div>
-                    <p>Are you sure you want to delete this record?</p>
-                    <p>Name: <b>{{ $name }}</b> </p>
-                </div>
-            @endif
-        </x-modal>
-    @endif
-    {{-- end component modal --}}
-
+       
     <!--table-->
     <div class="card">
         <div class="card-body"> 
             <div class="row pb-3">
                 <div class="col-sm-2 text-center">
-                    <button type="button" class="btn btn-primary" @click="$dispatch('showModalListener', ['Add New Role', 'modal-sm', 'Create'])"><i class="bx bx-plus-circle me-0"></i> Add New</button>
+                    <button type="button" class="btn btn-primary" wire:click="openCreateUpdateModal">
+                        <i class="bx bx-plus-circle me-0"></i> Add New
+                    </button>
                 </div>
                 <div class="col-sm-7">
                     <div class="position-relative search-bar d-lg-block d-none">
@@ -65,26 +34,24 @@
                 </div>
             </div>
 
-            @if ($showAdvancedSearch)
-                <div class="pt-2">
-                    <div class="card">
-                        <div class="card-body"> 
-                            <form class="row" wire:submit.prevent="performAdvancedSearch">
-                                @csrf
-                                <div class="col-md-3 mb-3">
-                                    <input type="search" class="form-control" wire:model="nameAdvancedSearchField" placeholder="Name">
-                                </div>
-                                <div class="col-md-3">
-                                    <input type="search" class="form-control" wire:model="dateCreatedAdvancedSearchField" placeholder="Date Created">
-                                </div>
-                                <div class="col-md-3">
-                                    <button type="submit" class="btn btn-primary" >Search</button>
-                                </div>
-                            </form>
-                        </div>
+            <div class="pt-2" {{ !$showAdvancedSearch ? 'hidden' : '' }}>
+                <div class="card">
+                    <div class="card-body"> 
+                        <form class="row" wire:submit.prevent="performAdvancedSearch">
+                            @csrf
+                            <div class="col-md-3 mb-3">
+                                <input type="search" class="form-control" wire:model="nameAdvancedSearchField" placeholder="Name">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="search" class="form-control" wire:model="dateCreatedAdvancedSearchField" placeholder="Date Created">
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary" >Search</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-            @endif
+            </div>
 
             <div class="table-responsive">
                 <table class="table mb-0 table-striped">
@@ -120,10 +87,10 @@
                                     <td>{{ $row->formatted_created_at }}</td>
                                     <td>
                                         <div class="btn-group" role="group" aria-label="Action Buttons">
-                                            <button type="button" class="btn btn-primary btn-sm" @click="$dispatch('showModalListener', ['Edit Role', 'modal-sm', 'Update'])" wire:click="edit('{{ $row->id }}')">
+                                            <button class="btn btn-primary btn-sm" wire:click="edit('{{ $row->id }}')">
                                                 <i class="bx bx-edit me-0"></i>
                                             </button>
-                                            <button type="button" class="btn btn-danger btn-sm" @click="$dispatch('showModalListener', ['Delete Role', 'modal-sm', 'Delete'])" wire:click="toBeDeleted('{{ $row->id }}')">
+                                            <button class="btn btn-danger btn-sm" wire:click="toBeDeleted('{{ $row->id }}')">
                                                 <i class="bx bx-trash me-0"></i>
                                             </button>
                                         </div>
@@ -132,7 +99,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="7"><div class="text-center">No results found.</div></td>
+                                <td colspan="5"><div class="text-center">No results found.</div></td>
                             </tr>
                         @endif
                     </tbody>
@@ -169,4 +136,78 @@
         </div>
     </div>
     <!--end table-->
+
+    <!--modal(create and update)-->
+    <div wire:ignore.self class="modal fade" id="modelCreateUpdateModal" tabindex="-1" role="dialog" aria-labelledby="modelCreateUpdateModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modelCreateUpdateModalLabel">
+                        {{ $isUpdateMode ? 'Edit Role' : 'Add New Role' }}
+                    </h5>
+                    <button type="button" class="btn-close" wire:click="closeModal" aria-label="Close"></button>
+                </div>
+                <form wire:submit.prevent="{{ $isUpdateMode ? 'update' : 'store' }}">
+                    @csrf
+                    <div class="row modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" placeholder="Name" wire:model="name" required id="focusMe">
+                            @error('name')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">{{ $isUpdateMode ? 'Update' : 'Create' }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--end modal(create and update)-->
+
+    <!--modal(delete)-->
+    <div wire:ignore.self class="modal fade" id="modelDeletionModal" tabindex="-1" role="dialog" aria-labelledby="modelDeletionModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modelDeletionModalLabel">Delete Role</h5>
+                    <button type="button" class="btn-close" wire:click="closeModal" aria-label="Close"></button>
+                </div>
+                <form wire:submit.prevent="delete">
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this record?</p>
+                        <p>Name: <b>{{ $name }}</b> </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger close-modal" data-dismiss="modal">Yes, Delete it.</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--end modal(delete)-->
 </div>
+
+@push('scripts')
+    <script type="text/javascript">
+        document.addEventListener('livewire:initialized', () => {
+            @this.on('openCreateUpdateModal', (data) => {
+                $('#modelCreateUpdateModal').modal('show');
+                $('#modelCreateUpdateModal').on('shown.bs.modal', function (e) {
+                    $('#focusMe').focus();
+                });
+            });
+            
+            @this.on('openDeletionModal', (data) => {
+                $('#modelDeletionModal').modal('show');
+            });
+
+            @this.on('closeModal', (data) => {
+                $('#modelCreateUpdateModal').modal('hide');
+                $('#modelDeletionModal').modal('hide');
+            });
+        });
+    </script>
+@endpush
