@@ -38,7 +38,7 @@
                                 <div class="col-md-3 mb-3">
                                     <select class="form-select" wire:model="userIdAdvancedSearchField">
                                         <option value="">User</option>
-                                        @foreach (getUsers() as $row)
+                                        @foreach (getUsers('') as $row)
                                             <option value="{{ $row->id }}">{{ $row->name }}</option>
                                         @endforeach
                                     </select>

@@ -66,8 +66,31 @@ if ( !function_exists('getUserThemeSettingsTrimmed') ){
 }
 
 if ( !function_exists('getUsers') ){
-    function getUsers(){
-        $table = User::orderBy('created_at', 'desc')->get();
+    function getUsers($param1){
+        if ($param1){
+            $table = User::from('users as u')
+                ->select(
+                    'u.*',
+                    'u.email as u_email',
+                    'upi.firstname as upi_firstname',
+                    'upi.lastname as upi_lastname'
+                )
+                ->leftJoin('user_personal_informations as upi', 'u.id', '=', 'upi.user_id')
+                ->where('u.id', $param1)
+                ->first();
+        } else {
+            $table = User::from('users as u')
+                ->select(
+                    'u.*',
+                    'u.email as u_email',
+                    'upi.firstname as upi_firstname',
+                    'upi.lastname as upi_lastname'
+                )
+                ->leftJoin('user_personal_informations as upi', 'u.id', '=', 'upi.user_id')
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
+
         return $table;
     }
 }

@@ -18,8 +18,8 @@ class UsersTable extends Seeder
 
         // Create a new user
         $user = User::create([
-            'username' => 'bycorpuz',
-            'email' => 'bycorpuz@example.com',
+            'username' => 'user',
+            'email' => 'user@user.com',
             'password' => $commonPassword
         ]);
 

@@ -1,13 +1,13 @@
 <div> 
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">Role Has Permissions</div>
+        <div class="breadcrumb-title pe-3">Model Has Permissions</div>
         <div class="ps-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">Role Has Permissions</li>
+                    <li class="breadcrumb-item active" aria-current="page">Model Has Permissions</li>
                 </ol>
             </nav>
         </div>
@@ -40,10 +40,10 @@
                         <form class="row" wire:submit.prevent="performAdvancedSearch">
                             @csrf
                             <div class="col-md-3 mb-3" wire:ignore>
-                                <select class="form-select" wire:model="roleIdAdvancedSearchField" id="roleIdAdvancedSearchField">
-                                    <option value="">Role Name</option>
-                                    @foreach (getRoles('') as $row)
-                                        <option value="{{ $row->id }}">{{ $row->name }}</option>
+                                <select class="form-select" wire:model="modelIdAdvancedSearchField" id="modelIdAdvancedSearchField">
+                                    <option value="">User Name</option>
+                                    @foreach (getUsers('') as $row)
+                                        <option value="{{ $row->id }}">{{ $row->upi_firstname }} {{ $row->upi_lastname }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -76,15 +76,21 @@
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
-                            <th class="cursor-pointer" wire:click="sortBy('r.name')">
-                                Role Name
-                                @if ($sortField === 'r.name')
+                            <th class="cursor-pointer" wire:click="sortBy('upi.firstname')">
+                                User Name
+                                @if ($sortField === 'upi.firstname')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
-                            <th class="cursor-pointer" wire:click="sortBy('p.name')">
+                            <th class="cursor-pointer" wire:click="sortBy('u.email')">
+                                Email
+                                @if ($sortField === 'u.email')
+                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                @endif
+                            </th>
+                            <th class="cursor-pointer" wire:click="sortBy('permission_id')">
                                 Permission Name
-                                @if ($sortField === 'p.name')
+                                @if ($sortField === 'permission_id')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
@@ -102,12 +108,13 @@
                             @foreach ($tableList as $row)
                                 <tr>
                                     <td>{{ ++ $counter }}</td>
-                                    <td>{{ $row->r_name }}</td>
+                                    <td>{{ $row->upi_firstname }} {{ $row->upi_lastname }}</td>
+                                    <td>{{ $row->u_email }}</td>
                                     <td>{{ $row->p_name }}</td>
                                     <td>{{ $row->formatted_created_at }}</td>
                                     <td>
                                         <div class="btn-group" role="group" aria-label="Action Buttons">
-                                            <button class="btn btn-danger btn-sm" wire:click="toBeDeleted('{{ $row->role_id }}','{{ $row->permission_id }}')">
+                                            <button class="btn btn-danger btn-sm" wire:click="toBeDeleted('{{ $row->model_id }}','{{ $row->permission_id }}')">
                                                 <i class="bx bx-trash me-0"></i>
                                             </button>
                                         </div>
@@ -116,7 +123,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="5"><div class="text-center">No results found.</div></td>
+                                <td colspan="7"><div class="text-center">No results found.</div></td>
                             </tr>
                         @endif
                     </tbody>
@@ -160,7 +167,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modelCreateUpdateModalLabel">
-                        {{ $isUpdateMode ? 'Edit Permission to a Role' : 'Add New Permission to a Role' }}
+                        {{ $isUpdateMode ? 'Edit Permission to a User' : 'Add New Permission to a User' }}
                     </h5>
                     <button type="button" class="btn-close" wire:click="closeModal" aria-label="Close"></button>
                 </div>
@@ -168,14 +175,14 @@
                     @csrf
                     <div class="row modal-body">
                         <div class="mb-3" wire:ignore>
-                            <label class="form-label">Role Name</label>
-                            <select class="form-select" wire:model="role_id" required id="role_id">
+                            <label class="form-label">User Name</label>
+                            <select class="form-select" wire:model="model_id" data-placeholder="Select 1 or more" required multiple id="model_id">
                                 <option value="">Select</option>
-                                @foreach (getRoles('') as $row)
-                                    <option value="{{ $row->id }}">{{ $row->name }}</option>
+                                @foreach (getUsers('') as $row)
+                                    <option value="{{ $row->id }}">{{ $row->upi_firstname }} {{ $row->upi_lastname }}</option>
                                 @endforeach
                             </select>
-                            @error('role_id')
+                            @error('model_id')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
@@ -205,13 +212,13 @@
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modelDeletionModalLabel">Delete Permission to a Role</h5>
+                    <h5 class="modal-title" id="modelDeletionModalLabel">Delete Permission to a User</h5>
                     <button type="button" class="btn-close" wire:click="closeModal" aria-label="Close"></button>
                 </div>
                 <form wire:submit.prevent="delete">
                     <div class="modal-body">
                         <p>Are you sure you want to delete this record?</p>
-                        <p>Role Name: <b>{{ !$role_id ? '' : getRoles($role_id)['name'] }}</b> </p>
+                        <p>User Name: <b>{{ is_array($model_id) ? '' : getUsers($model_id)['upi_firstname'] . ' ' . getUsers($model_id)['upi_lastname'] }}</b> </p>
                         <p>Permission Name: <b>{{ is_array($permission_id) ? '' : getPermissions($permission_id)['name'] }}</b> </p>
                     </div>
                     <div class="modal-footer">
@@ -230,14 +237,15 @@
             @this.on('openCreateUpdateModal', (data) => {
                 $('#modelCreateUpdateModal').modal('show');
                 $('#modelCreateUpdateModal').on('shown.bs.modal', function (e) {
-                    $('#role_id').select2( {
+                    $('#model_id').select2( {
                         dropdownParent: $('#modelCreateUpdateModal'),
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
                         placeholder: $( this ).data( 'placeholder' ),
+                        closeOnSelect: false,
                     });
-                    $('#role_id').on('change', function (e) {
-                        @this.set('role_id', $(this).val());
+                    $('#model_id').on('change', function (e) {
+                        @this.set('model_id', $(this).val());
                     });
 
                     $('#permission_id').select2( {
@@ -265,13 +273,13 @@
 
         advanceSearchSelect2();
         function advanceSearchSelect2(){
-            $('#roleIdAdvancedSearchField').select2( {
+            $('#modelIdAdvancedSearchField').select2( {
                 theme: "bootstrap-5",
                 width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
                 placeholder: $( this ).data( 'placeholder' ),
             });
-            $('#roleIdAdvancedSearchField').on('change', function (e) {
-                @this.set('roleIdAdvancedSearchField', $(this).val());
+            $('#modelIdAdvancedSearchField').on('change', function (e) {
+                @this.set('modelIdAdvancedSearchField', $(this).val());
             });
 
             $('#permissionIdAdvancedSearchField').select2( {
