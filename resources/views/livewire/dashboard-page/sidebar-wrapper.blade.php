@@ -1,7 +1,16 @@
 <div>
     <!--sidebar wrapper -->
     <div class="sidebar-wrapper" data-simplebar="true">
-        <livewire:dashboard-page.sidebar-header>
+        <div class="sidebar-header">
+            <div>
+                <img src="{{ asset('/images/site/'. getSettings()->site_logo) }}" >
+            </div>
+            <div>
+                <h1 class="logo-text" style="font-size: 9pt;">{{ getSettings()->site_name }}</h1>
+            </div>
+            <div class="toggle-icon ms-auto"><i class='bx bx-arrow-back'></i>
+            </div>
+        </div>
 
         <!--navigation-->
         <ul class="metismenu" id="menu">
@@ -42,7 +51,7 @@
                     <a href="javascript:;" class="has-arrow">
                         <div class="parent-icon"><i class='bx bx-cog'></i>
                         </div>
-                        <div class="menu-title">Role-Based Access Control</div>
+                        <div class="menu-title">Role-Based Access Control (RBAC)</div>
                     </a>
                     <ul>
                         @can('rbac-roles')
@@ -70,6 +79,13 @@
                             <li class="{{ Route::is('rbac-model-has-permissions') ? 'mm-active' : '' }}">
                                 <a href="{{ route('rbac-model-has-permissions') }}">
                                     <i class='bx bx-radio-circle'></i>Model Has Permissions
+                                </a>
+                            </li>
+                        @endcan
+                        @can('rbac-model-has-roles')
+                            <li class="{{ Route::is('rbac-model-has-roles') ? 'mm-active' : '' }}">
+                                <a href="{{ route('rbac-model-has-roles') }}">
+                                    <i class='bx bx-radio-circle'></i>Model Has Roles
                                 </a>
                             </li>
                         @endcan

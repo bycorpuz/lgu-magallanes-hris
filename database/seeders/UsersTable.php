@@ -32,8 +32,8 @@ class UsersTable extends Seeder
         
         // You can associate this user with user_personal_informations here
         $user->userPersonalInformations()->create([
-            'firstname' => 'Bobby',
-            'lastname' => 'Corpuz'
+            'firstname' => 'User',
+            'lastname' => 'User'
         ]);
     }
 }
