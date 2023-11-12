@@ -116,13 +116,14 @@ class Permissions extends Component
     }
 
     public function delete(){
+        $oldTable = Permission::find($this->deleteId);
         $table = Permission::find($this->deleteId);
         if ($table->delete()){
             $this->isUpdateMode = false;
             $this->resetInputFields();
             $this->dispatch('closeModal');
             
-            doLog($table, request()->ip(), 'Permissions', 'Deleted');
+            doLog($oldTable, request()->ip(), 'Permissions', 'Deleted');
             $this->js("showNotification('success', 'The selected Permission has been deleted successfully.')");
         } else {
             $this->js("showNotification('error', 'Something went wrong.')");

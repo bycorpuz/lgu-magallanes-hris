@@ -116,6 +116,10 @@ class ModelHasPermissions extends Component
     }
 
     public function delete(){
+        $oldTable = ModelHasPermission::where([
+            ['model_id', $this->model_id],
+            ['permission_id', $this->permission_id],
+        ]);
         $table = ModelHasPermission::where([
             ['model_id', $this->model_id],
             ['permission_id', $this->permission_id],
@@ -126,7 +130,7 @@ class ModelHasPermissions extends Component
             $this->resetInputFields();
             $this->dispatch('closeModal');
             
-            doLog($table, request()->ip(), 'Model Has Permissions', 'Deleted');
+            doLog($oldTable, request()->ip(), 'Model Has Permissions', 'Deleted');
             $this->js("showNotification('success', 'The selected Permission to a User has been deleted successfully.')");
         } else {
             $this->js("showNotification('error', 'Something went wrong.')");

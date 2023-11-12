@@ -114,6 +114,10 @@ class ModelHasRoles extends Component
     }
 
     public function delete(){
+        $oldTable = ModelHasRole::where([
+            ['model_id', $this->model_id],
+            ['role_id', $this->role_id],
+        ]);
         $table = ModelHasRole::where([
             ['model_id', $this->model_id],
             ['role_id', $this->role_id],
@@ -124,7 +128,7 @@ class ModelHasRoles extends Component
             $this->resetInputFields();
             $this->dispatch('closeModal');
             
-            doLog($table, request()->ip(), 'Model Has Roles', 'Deleted');
+            doLog($oldTable, request()->ip(), 'Model Has Roles', 'Deleted');
             $this->js("showNotification('success', 'The selected Role to a User has been deleted successfully.')");
         } else {
             $this->js("showNotification('error', 'Something went wrong.')");

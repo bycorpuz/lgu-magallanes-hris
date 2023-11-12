@@ -112,6 +112,10 @@ class RoleHasPermissions extends Component
     }
 
     public function delete(){
+        $oldTable = RoleHasPermission::where([
+            ['role_id', $this->role_id],
+            ['permission_id', $this->permission_id],
+        ]);
         $table = RoleHasPermission::where([
             ['role_id', $this->role_id],
             ['permission_id', $this->permission_id],
@@ -122,7 +126,7 @@ class RoleHasPermissions extends Component
             $this->resetInputFields();
             $this->dispatch('closeModal');
             
-            doLog($table, request()->ip(), 'Role Has Permissions', 'Deleted');
+            doLog($oldTable, request()->ip(), 'Role Has Permissions', 'Deleted');
             $this->js("showNotification('success', 'The selected Permission to a Role has been deleted successfully.')");
         } else {
             $this->js("showNotification('error', 'Something went wrong.')");

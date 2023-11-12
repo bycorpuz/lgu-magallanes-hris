@@ -116,13 +116,14 @@ class Roles extends Component
     }
 
     public function delete(){
+        $oldTable = Role::find($this->deleteId);
         $table = Role::find($this->deleteId);
         if ($table->delete()){
             $this->isUpdateMode = false;
             $this->resetInputFields();
             $this->dispatch('closeModal');
             
-            doLog($table, request()->ip(), 'Roles', 'Deleted');
+            doLog($oldTable, request()->ip(), 'Roles', 'Deleted');
             $this->js("showNotification('success', 'The selected Role has been deleted successfully.')");
         } else {
             $this->js("showNotification('error', 'Something went wrong.')");
