@@ -28,3 +28,41 @@ function numberToMonthName($monthNumber) {
 
     return isset($months[$monthNumber]) ? $months[$monthNumber] : 'Invalid Month';
 }
+
+function extName(){
+    return [
+        'SR.'   => 'SR.',
+        'JR.'   => 'JR.',
+        'I'     => 'I',
+        'II'    => 'II',
+        'III'   => 'III',
+        'IV'    => 'IV',
+        'V'     => 'V',
+        'VI'    => 'VI',
+        'VII'   => 'VII',
+        'VIII'  => 'VIII',
+        'IX'    => 'IX',
+        'X'     => 'X',
+        'XI'    => 'XI',
+        'XII'   => 'XII',
+    ];
+}
+
+function sex(){
+    return [
+        'male'      => 'Male',
+        'female'    => 'Female',
+        'other'     => 'Other'
+    ];
+}
+
+function civilStatus(){
+    return [
+        'single'    => 'Single',
+        'married'   => 'Married',
+        'divorced'  => 'Divorced',
+        'separated' => 'Separated',
+        'widowed'   => 'Widowed',
+        'other'     => 'Other'
+    ];
+}

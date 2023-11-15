@@ -21,7 +21,7 @@ class ModelHasRoles extends Component
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
     public $showAdvancedSearch = false;
-    public $modelIdAdvancedSearchField, $roleIdAdvancedSearchField,
+    public $modelIdAdvancedSearchField, $emailAdvancedSearchField, $roleIdAdvancedSearchField,
            $dateCreatedAdvancedSearchField = '';
 
     public $counter = 0;
@@ -46,6 +46,7 @@ class ModelHasRoles extends Component
 
     private function resetAdvancedSearchFields(){
         $this->modelIdAdvancedSearchField = '';
+        $this->emailAdvancedSearchField = '';
         $this->roleIdAdvancedSearchField = '';
         $this->dateCreatedAdvancedSearchField = '';
     }
@@ -194,6 +195,7 @@ class ModelHasRoles extends Component
         ->leftJoin('user_personal_informations as upi', 'mhr.model_id', '=', 'upi.user_id')
         ->where('r.id', 'like', '%'.trim($this->roleIdAdvancedSearchField).'%')
         ->where('u.id', 'like', '%'.trim($this->modelIdAdvancedSearchField).'%')
+        ->where('u.email', 'like', '%'.trim($this->emailAdvancedSearchField).'%')
         ->where('mhr.created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField).'%')
         ->orderBy($this->sortField, $this->sortDirection)
         ->paginate($this->perPage);

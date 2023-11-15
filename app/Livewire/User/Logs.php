@@ -25,7 +25,7 @@ class Logs extends Component
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
     public $showAdvancedSearch = false;
-    public $userIdAdvancedSearchField, $moduleAdvancedSearchField,
+    public $userIdAdvancedSearchField, $emailAdvancedSearchField, $moduleAdvancedSearchField,
            $actionAdvancedSearchField, $dataAdvancedSearchField,
            $dateCreatedAdvancedSearchField = '';
 
@@ -35,6 +35,7 @@ class Logs extends Component
 
     private function resetAdvancedSearchFields(){
         $this->userIdAdvancedSearchField = '';
+        $this->emailAdvancedSearchField = '';
         $this->moduleAdvancedSearchField = '';
         $this->actionAdvancedSearchField = '';
         $this->dataAdvancedSearchField = '';
@@ -100,6 +101,7 @@ class Logs extends Component
         )
         ->leftJoin('users as u', 'ul.user_id', '=', 'u.id')
         ->leftJoin('user_personal_informations as upi', 'ul.user_id', '=', 'upi.user_id')
+        ->where('u.email', 'like', '%'.trim($this->emailAdvancedSearchField).'%')
         ->where('ul.user_id', 'like', '%'.trim($this->userIdAdvancedSearchField).'%')
         ->where('ul.module', 'like', '%'.trim($this->moduleAdvancedSearchField).'%')
         ->where('ul.action', 'like', '%'.trim($this->actionAdvancedSearchField).'%')

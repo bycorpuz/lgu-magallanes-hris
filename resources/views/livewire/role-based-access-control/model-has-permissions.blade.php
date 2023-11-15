@@ -47,6 +47,9 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="col-md-3 mb-3">
+                                <input type="search" class="form-control" wire:model="emailAdvancedSearchField" placeholder="Email">
+                            </div>
                             <div class="col-md-3 mb-3" wire:ignore>
                                 <select class="form-select" wire:model="permissionIdAdvancedSearchField" id="permissionIdAdvancedSearchField">
                                     <option value="">Permission Name</option>

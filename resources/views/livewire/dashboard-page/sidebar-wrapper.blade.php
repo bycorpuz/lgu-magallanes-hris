@@ -26,6 +26,7 @@
 
             @if(
                 // for developer and administrator
+                Gate::check('crud-users') ||
                 Gate::check('rbac-model-has-permissions') ||
                 Gate::check('rbac-model-has-roles') ||
                 // for developer
@@ -37,12 +38,12 @@
 
                 <li class="menu-label">User Management</li>
                 
-                @can('view-user-logs')
-                    <li class="{{ Route::is('user-logs') ? 'mm-active' : '' }}">
-                        <a href="{{ route('user-logs') }}">
-                            <div class="parent-icon"><i class="bx bx-history"></i>
+                @can('crud-users')
+                    <li class="{{ Route::is('users') ? 'mm-active' : '' }}">
+                        <a href="{{ route('users') }}">
+                            <div class="parent-icon"><i class="bx bx-user"></i>
                             </div>
-                            <div class="menu-title">User Logs</div>
+                            <div class="menu-title">Users</div>
                         </a>
                     </li>
                 @endcan
@@ -91,6 +92,16 @@
                         @endcan
                     </ul>
                 </li>
+                
+                @can('view-user-logs')
+                    <li class="{{ Route::is('user-logs') ? 'mm-active' : '' }}">
+                        <a href="{{ route('user-logs') }}">
+                            <div class="parent-icon"><i class="bx bx-history"></i>
+                            </div>
+                            <div class="menu-title">User Logs</div>
+                        </a>
+                    </li>
+                @endcan
             @endif
 
         </ul>

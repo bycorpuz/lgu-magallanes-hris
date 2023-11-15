@@ -21,7 +21,7 @@ class ModelHasPermissions extends Component
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
     public $showAdvancedSearch = false;
-    public $modelIdAdvancedSearchField, $permissionIdAdvancedSearchField,
+    public $modelIdAdvancedSearchField, $emailAdvancedSearchField, $permissionIdAdvancedSearchField,
            $dateCreatedAdvancedSearchField = '';
 
     public $counter = 0;
@@ -46,6 +46,7 @@ class ModelHasPermissions extends Component
 
     private function resetAdvancedSearchFields(){
         $this->modelIdAdvancedSearchField = '';
+        $this->emailAdvancedSearchField = '';
         $this->permissionIdAdvancedSearchField = '';
         $this->dateCreatedAdvancedSearchField = '';
     }
@@ -196,6 +197,7 @@ class ModelHasPermissions extends Component
         ->leftJoin('user_personal_informations as upi', 'mhp.model_id', '=', 'upi.user_id')
         ->where('p.id', 'like', '%'.trim($this->permissionIdAdvancedSearchField).'%')
         ->where('u.id', 'like', '%'.trim($this->modelIdAdvancedSearchField).'%')
+        ->where('u.email', 'like', '%'.trim($this->emailAdvancedSearchField).'%')
         ->where('mhp.created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField).'%')
         ->orderBy($this->sortField, $this->sortDirection)
         ->paginate($this->perPage);

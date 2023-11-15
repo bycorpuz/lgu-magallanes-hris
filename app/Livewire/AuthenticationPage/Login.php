@@ -12,26 +12,34 @@ use Livewire\Component;
 #[Layout('layouts.authentication-app')] 
 class Login extends Component
 {
-    public $email;
+    public $emailUsername;
     public $password;
 
     public function loginHandler(Request $request){
         $credentials = $this->validate([
-            'email' => 'required|email|max:255',
-            'password' => 'required|min:8|max:255'
+            'emailUsername' => 'required|max:255',
+            'password' => 'required|min:8|max:255',
         ]);
 
-        if (Auth::attempt($credentials)) {
-            doLog('Default', request()->ip(), 'Login Form', 'Logged In');
+        $loginType = filter_var($credentials['emailUsername'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $attemptCredentials = [
+            $loginType => $credentials['emailUsername'],
+            'password' => $credentials['password'],
+        ];
+
+        if (Auth::attempt($attemptCredentials)) {
+            doLog('Default', $request->ip(), 'Login Form', 'Logged In');
             $this->js("showNotification('success', 'Redirecting to Dashboard...')");
 
             $request->session()->regenerate();
             return $this->redirect('/dashboard');
         } else {
-            $this->addError('email', 'The password provided does not match the email entered.');
+            $this->addError('login', 'The password provided does not match the email or username entered.');
             $this->js("showNotification('error', 'Something went wrong.')");
         }
     }
+
 
     public function render()
     {

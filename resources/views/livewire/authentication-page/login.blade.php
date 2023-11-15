@@ -37,10 +37,10 @@
                     @endif
         
                     <div class="col-12">
-                        <label for="usernameEmailInput" class="form-label">Email</label>
-                        <input type="text" wire:model="email" class="form-control" id="usernameEmailInput" placeholder="Enter Email">
+                        <label for="usernameEmailInput" class="form-label">Email or Username</label>
+                        <input type="text" wire:model="emailUsername" class="form-control" id="usernameEmailInput" placeholder="Enter Email or Username">
                     
-                        @error('email')
+                        @error('emailUsername')
                             <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                         @enderror
                     </div>

@@ -29,40 +29,41 @@
                 </div>
             </div>
 
-            @if ($showAdvancedSearch)
-                <div class="pt-2">
-                    <div class="card">
-                        <div class="card-body"> 
-                            <form class="row" wire:submit.prevent="performAdvancedSearch">
-                                @csrf
-                                <div class="col-md-3 mb-3">
-                                    <select class="form-select" wire:model="userIdAdvancedSearchField">
-                                        <option value="">User</option>
-                                        @foreach (getUsers('') as $row)
-                                            <option value="{{ $row->id }}">{{ $row->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <input type="search" class="form-control" wire:model="actionAdvancedSearchField" placeholder="Action">
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <input type="search" class="form-control" wire:model="moduleAdvancedSearchField" placeholder="Module">
-                                </div>
-                                <div class="col-md-3">
-                                    <input type="search" class="form-control" wire:model="dataAdvancedSearchField" placeholder="Data">
-                                </div>
-                                <div class="col-md-3">
-                                    <input type="search" class="form-control" wire:model="dateCreatedAdvancedSearchField" placeholder="Date Created">
-                                </div>
-                                <div class="col-md-3">
-                                    <button type="submit" class="btn btn-primary" >Search</button>
-                                </div>
-                            </form>
-                        </div>
+            <div class="pt-2" {{ !$showAdvancedSearch ? 'hidden' : '' }}>
+                <div class="card">
+                    <div class="card-body"> 
+                        <form class="row" wire:submit.prevent="performAdvancedSearch">
+                            @csrf
+                            <div class="col-md-3 mb-3" wire:ignore>
+                                <select class="form-select" wire:model="userIdAdvancedSearchField" id="userIdAdvancedSearchField">
+                                    <option value="">User Name</option>
+                                    @foreach (getUsers('') as $row)
+                                        <option value="{{ $row->id }}">{{ $row->upi_firstname }} {{ $row->upi_lastname }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <input type="search" class="form-control" wire:model="emailAdvancedSearchField" placeholder="Email">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <input type="search" class="form-control" wire:model="actionAdvancedSearchField" placeholder="Action">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <input type="search" class="form-control" wire:model="moduleAdvancedSearchField" placeholder="Module">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="search" class="form-control" wire:model="dataAdvancedSearchField" placeholder="Data">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="search" class="form-control" wire:model="dateCreatedAdvancedSearchField" placeholder="Date Created">
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary" >Search</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-            @endif
+            </div>
 
             <div class="table-responsive">
                 <table class="table mb-0 table-striped">
@@ -75,8 +76,14 @@
                                 @endif
                             </th>
                             <th class="cursor-pointer" wire:click="sortBy('user_id')">
-                                User
+                                User Name
                                 @if ($sortField === 'user_id')
+                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                @endif
+                            </th>
+                            <th class="cursor-pointer" wire:click="sortBy('email')">
+                                Email
+                                @if ($sortField === 'email')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
@@ -111,7 +118,8 @@
                             @foreach ($tableList as $row)
                                 <tr>
                                     <td>{{ ++ $counter }}</td>
-                                    <td>{{ $row->upi_firstname }} {{ $row->upi_lastname }}<br>{{ $row->u_email }}</td>
+                                    <td>{{ $row->upi_firstname }} {{ $row->upi_lastname }}</td>
+                                    <td>{{ $row->u_email }}</td>
                                     <td>{{ $row->action }}</td>
                                     <td>{{ $row->module }}</td>
                                     <td>
@@ -124,7 +132,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="6"><div class="text-center">No results found.</div></td>
+                                <td colspan="7"><div class="text-center">No results found.</div></td>
                             </tr>
                         @endif
                     </tbody>
@@ -162,3 +170,19 @@
     </div>
     <!--end table-->
 </div>
+
+@push('scripts')
+    <script type="text/javascript">
+        advanceSearchSelect2();
+        function advanceSearchSelect2(){
+            $('#userIdAdvancedSearchField').select2( {
+                theme: "bootstrap-5",
+                width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                placeholder: $( this ).data( 'placeholder' ),
+            });
+            $('#userIdAdvancedSearchField').on('change', function (e) {
+                @this.set('userIdAdvancedSearchField', $(this).val());
+            });
+        }
+    </script>
+@endpush
