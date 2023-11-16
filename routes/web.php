@@ -3,6 +3,8 @@
 use App\Livewire\AuthenticationPage\Login;
 use App\Livewire\AuthenticationPage\Register;
 use App\Livewire\DashboardPage\Dashboard;
+use App\Livewire\DatabaseLibraries\Positions;
+use App\Livewire\DatabaseLibraries\Salaries;
 use App\Livewire\LandingPage\Welcome;
 use App\Livewire\RoleBasedAccessControl\ModelHasPermissions;
 use App\Livewire\RoleBasedAccessControl\ModelHasRoles;
@@ -43,6 +45,9 @@ Route::group(['middleware' => ['auth', 'preventBackHistory']], function(){
     Route::get('/rbac-role-has-permissions', RoleHasPermissions::class)->middleware('permission:rbac-role-has-permissions')->name('rbac-role-has-permissions');
     Route::get('/rbac-model-has-permissions', ModelHasPermissions::class)->middleware('permission:rbac-model-has-permissions')->name('rbac-model-has-permissions');
     Route::get('/rbac-model-has-roles', ModelHasRoles::class)->middleware('permission:rbac-model-has-roles')->name('rbac-model-has-roles');
+
+    Route::get('/dl-positions', Positions::class)->middleware('permission:crud-positions')->name('dl-positions');
+    Route::get('/dl-salaries', Salaries::class)->middleware('permission:crud-salaries')->name('dl-salaries');
 
     Route::get('/user-logs', Logs::class)->middleware('permission:view-user-logs')->name('user-logs');
 });

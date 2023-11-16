@@ -24,9 +24,28 @@
                 </a>
             </li>
 
+            <li class="menu-label" >Main Navigation</li>
+            <li class="{{ Route::is('dashboard') ? 'mm-active' : '' }}">
+                <a href="{{ route('dashboard') }}">
+                    <div class="parent-icon"><i class="bx bx-user-circle"></i>
+                    </div>
+                    <div class="menu-title">My Profile</div>
+                </a>
+            </li>
+            <li class="{{ Route::is('dashboard') ? 'mm-active' : '' }}">
+                <a href="{{ route('dashboard') }}">
+                    <div class="parent-icon"><i class="bx bx-paper-plane"></i>
+                    </div>
+                    <div class="menu-title">My Leave</div>
+                </a>
+            </li>
+
             @if(
                 // for developer and administrator
                 Gate::check('crud-users') ||
+                Gate::check('crud-positions') ||
+                Gate::check('crud-salaries') ||
+                Gate::check('crud-plantillas') ||
                 Gate::check('rbac-model-has-permissions') ||
                 Gate::check('rbac-model-has-roles') ||
                 // for developer
@@ -36,12 +55,12 @@
                 Gate::check('view-user-logs')
             )
 
-                <li class="menu-label">User Management</li>
+                <li class="menu-label">Human Resource Management</li>
                 
                 @can('crud-users')
                     <li class="{{ Route::is('users') ? 'mm-active' : '' }}">
                         <a href="{{ route('users') }}">
-                            <div class="parent-icon"><i class="bx bx-user"></i>
+                            <div class="parent-icon"><i class="bx bx-group"></i>
                             </div>
                             <div class="menu-title">Users</div>
                         </a>
@@ -87,6 +106,30 @@
                             <li class="{{ Route::is('rbac-model-has-roles') ? 'mm-active' : '' }}">
                                 <a href="{{ route('rbac-model-has-roles') }}">
                                     <i class='bx bx-radio-circle'></i>Model Has Roles
+                                </a>
+                            </li>
+                        @endcan
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="javascript:;" class="has-arrow">
+                        <div class="parent-icon"><i class='bx bx-data'></i>
+                        </div>
+                        <div class="menu-title">Database Libraries</div>
+                    </a>
+                    <ul>
+                        @can('crud-positions')
+                            <li class="{{ Route::is('dl-positions') ? 'mm-active' : '' }}">
+                                <a href="{{ route('dl-positions') }}">
+                                    <i class='bx bx-radio-circle'></i>Positions
+                                </a>
+                            </li>
+                        @endcan
+                        @can('crud-salaries')
+                            <li class="{{ Route::is('dl-salaries') ? 'mm-active' : '' }}">
+                                <a href="{{ route('dl-salaries') }}">
+                                    <i class='bx bx-radio-circle'></i>Salaries
                                 </a>
                             </li>
                         @endcan

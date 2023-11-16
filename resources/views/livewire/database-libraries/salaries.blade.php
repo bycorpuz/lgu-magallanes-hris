@@ -7,7 +7,7 @@
                 <ol class="breadcrumb mb-0 p-0">
                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">RBAC - Model Has Roles</li>
+                    <li class="breadcrumb-item active" aria-current="page">Database Libraries - Salaries</li>
                 </ol>
             </nav>
         </div>
@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <div class="col-sm-3 text-center">
-                    <button class="btn btn-link" wire:click="toggleAdvancedSearch" >Toggle Advanced Search</button>
+                    <button wire:click="toggleAdvancedSearch" class="btn btn-link">Toggle Advanced Search</button>
                 </div>
             </div>
 
@@ -39,24 +39,17 @@
                     <div class="card-body"> 
                         <form class="row" wire:submit.prevent="performAdvancedSearch">
                             @csrf
-                            <div class="col-md-3 mb-3" wire:ignore>
-                                <select class="form-select" wire:model="modelIdAdvancedSearchField" id="modelIdAdvancedSearchField">
-                                    <option value="">User Name</option>
-                                    @foreach (getUsers('') as $row)
-                                        <option value="{{ $row->id }}">{{ $row->upi_firstname }} {{ $row->upi_lastname }}</option>
-                                    @endforeach
-                                </select>
+                            <div class="col-md-3 mb-3">
+                                <input type="search" class="form-control" wire:model="trancheAdvancedSearchField" placeholder="Tranche">
                             </div>
                             <div class="col-md-3 mb-3">
-                                <input type="search" class="form-control" wire:model="emailAdvancedSearchField" placeholder="Email">
+                                <input type="search" class="form-control" wire:model="gradeAdvancedSearchField" placeholder="Grade">
                             </div>
-                            <div class="col-md-3 mb-3" wire:ignore>
-                                <select class="form-select" wire:model="roleIdAdvancedSearchField" id="roleIdAdvancedSearchField">
-                                    <option value="">Role Name</option>
-                                    @foreach (getRoles('') as $row)
-                                        <option value="{{ $row->id }}">{{ $row->name }}</option>
-                                    @endforeach
-                                </select>
+                            <div class="col-md-3 mb-3">
+                                <input type="search" class="form-control" wire:model="stepAdvancedSearchField" placeholder="Step">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <input type="search" class="form-control" wire:model="basicAdvancedSearchField" placeholder="Basic">
                             </div>
                             <div class="col-md-3">
                                 <input type="search" class="form-control" wire:model="dateCreatedAdvancedSearchField" placeholder="Date Created">
@@ -79,21 +72,27 @@
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
-                            <th class="cursor-pointer" wire:click="sortBy('upi.firstname')">
-                                User Name
-                                @if ($sortField === 'upi.firstname')
+                            <th class="cursor-pointer" wire:click="sortBy('tranche')">
+                                Tranche
+                                @if ($sortField === 'tranche')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
-                            <th class="cursor-pointer" wire:click="sortBy('u.email')">
-                                Email
-                                @if ($sortField === 'u.email')
+                            <th class="cursor-pointer" wire:click="sortBy('grade')">
+                                Grade
+                                @if ($sortField === 'grade')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
-                            <th class="cursor-pointer" wire:click="sortBy('role_id')">
-                                Role Name
-                                @if ($sortField === 'role_id')
+                            <th class="cursor-pointer" wire:click="sortBy('step')">
+                                Step
+                                @if ($sortField === 'step')
+                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                @endif
+                            </th>
+                            <th class="cursor-pointer" wire:click="sortBy('basic')">
+                                Basic
+                                @if ($sortField === 'basic')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
@@ -103,7 +102,7 @@
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
-                            <th>Action</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -111,13 +110,17 @@
                             @foreach ($tableList as $row)
                                 <tr>
                                     <td>{{ ++ $counter }}</td>
-                                    <td>{{ $row->upi_firstname }} {{ $row->upi_lastname }}</td>
-                                    <td>{{ $row->u_email }}</td>
-                                    <td>{{ $row->r_name }}</td>
+                                    <td>{{ $row->tranche }}</td>
+                                    <td>{{ $row->grade }}</td>
+                                    <td>{{ $row->step }}</td>
+                                    <td>{{ number_format($row->basic, 2) }}</td>
                                     <td>{{ $row->formatted_created_at }}</td>
                                     <td>
                                         <div class="btn-group" role="group" aria-label="Action Buttons">
-                                            <button class="btn btn-danger btn-sm" wire:click="toBeDeleted('{{ $row->model_id }}','{{ $row->role_id }}')">
+                                            <button class="btn btn-primary btn-sm" wire:click="edit('{{ $row->id }}')">
+                                                <i class="bx bx-edit me-0"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" wire:click="toBeDeleted('{{ $row->id }}')">
                                                 <i class="bx bx-trash me-0"></i>
                                             </button>
                                         </div>
@@ -170,34 +173,38 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modelCreateUpdateModalLabel">
-                        {{ $isUpdateMode ? 'Edit Role to a User' : 'Add New Role to a User' }}
+                        {{ $isUpdateMode ? 'Edit Salary' : 'Add New Salary' }}
                     </h5>
                     <button type="button" class="btn-close" wire:click="closeModal" aria-label="Close"></button>
                 </div>
                 <form wire:submit.prevent="{{ $isUpdateMode ? 'update' : 'store' }}">
                     @csrf
                     <div class="row modal-body">
-                        <div class="mb-3" wire:ignore>
-                            <label class="form-label">User Name</label>
-                            <select class="form-select" wire:model="model_id" data-placeholder="Select 1 or more" required multiple id="model_id">
-                                <option value="">Select</option>
-                                @foreach (getUsers('') as $row)
-                                    <option value="{{ $row->id }}">{{ $row->upi_firstname }} {{ $row->upi_lastname }}</option>
-                                @endforeach
-                            </select>
-                            @error('model_id')
+                        <div class="mb-3">
+                            <label class="form-label">Tranche <span style="color: red;">*</span></label>
+                            <input type="number" step="1" min="0" class="form-control" placeholder="Tranche" wire:model="tranche" required id="focusMe">
+                            @error('tranche')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="mb-3" wire:ignore>
-                            <label class="form-label">Role Name</label>
-                            <select class="form-select" wire:model="role_id" required id="role_id">
-                                <option value="">Select</option>
-                                @foreach (getRoles('') as $row)
-                                    <option value="{{ $row->id }}">{{ $row->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('role_id')
+                        <div class="mb-3">
+                            <label class="form-label">Grade <span style="color: red;">*</span></label>
+                            <input type="number" step="1" min="0" class="form-control" placeholder="Grade" wire:model="grade" required>
+                            @error('grade')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Step <span style="color: red;">*</span></label>
+                            <input type="number" step="1" min="0" class="form-control" placeholder="Step" wire:model="step" required>
+                            @error('step')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Basic <span style="color: red;">*</span></label>
+                            <input type="number" step="0.01" min="0" class="form-control" placeholder="Basic" wire:model="basic" required>
+                            @error('basic')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
@@ -216,14 +223,16 @@
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modelDeletionModalLabel">Delete Role to a User</h5>
+                    <h5 class="modal-title" id="modelDeletionModalLabel">Delete Salary</h5>
                     <button type="button" class="btn-close" wire:click="closeModal" aria-label="Close"></button>
                 </div>
                 <form wire:submit.prevent="delete">
                     <div class="modal-body">
                         <p>Are you sure you want to delete this record?</p>
-                        <p>User Name: <b>{{ is_array($model_id) ? '' : getUsers($model_id)['upi_firstname'] . ' ' . getUsers($model_id)['upi_lastname'] }}</b> </p>
-                        <p>Role Name: <b>{{ is_array($role_id) ? '' : getRoles($role_id)['name'] }}</b> </p>
+                        <p>Tranche: <b>{{ $tranche }}</b> </p>
+                        <p>Grade: <b>{{ $grade }}</b> </p>
+                        <p>Step: <b>{{ $step }}</b> </p>
+                        <p>Basic: <b>{{ $basic }}</b> </p>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-danger close-modal" data-dismiss="modal">Yes, Delete it.</button>
@@ -241,27 +250,7 @@
             @this.on('openCreateUpdateModal', (data) => {
                 $('#modelCreateUpdateModal').modal('show');
                 $('#modelCreateUpdateModal').on('shown.bs.modal', function (e) {
-                    $('#model_id').select2( {
-                        dropdownParent: $('#modelCreateUpdateModal'),
-                        theme: "bootstrap-5",
-                        width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
-                        placeholder: $( this ).data( 'placeholder' ),
-                        closeOnSelect: false,
-                    });
-                    $('#model_id').on('change', function (e) {
-                        @this.set('model_id', $(this).val());
-                    });
-
-                    $('#role_id').select2( {
-                        dropdownParent: $('#modelCreateUpdateModal'),
-                        theme: "bootstrap-5",
-                        width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
-                        placeholder: $( this ).data( 'placeholder' ),
-                        closeOnSelect: false,
-                    });
-                    $('#role_id').on('change', function (e) {
-                        @this.set('role_id', $(this).val());
-                    });
+                    $('#focusMe').focus();
                 });
             });
             
@@ -274,26 +263,5 @@
                 $('#modelDeletionModal').modal('hide');
             });
         });
-
-        advanceSearchSelect2();
-        function advanceSearchSelect2(){
-            $('#modelIdAdvancedSearchField').select2( {
-                theme: "bootstrap-5",
-                width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
-                placeholder: $( this ).data( 'placeholder' ),
-            });
-            $('#modelIdAdvancedSearchField').on('change', function (e) {
-                @this.set('modelIdAdvancedSearchField', $(this).val());
-            });
-
-            $('#roleIdAdvancedSearchField').select2( {
-                theme: "bootstrap-5",
-                width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
-                placeholder: $( this ).data( 'placeholder' ),
-            });
-            $('#roleIdAdvancedSearchField').on('change', function (e) {
-                @this.set('roleIdAdvancedSearchField', $(this).val());
-            });
-        }
     </script>
 @endpush
