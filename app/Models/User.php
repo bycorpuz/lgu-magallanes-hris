@@ -58,6 +58,10 @@ class User extends Authenticatable
         return $this->hasOne(UserPersonalInformation::class, 'user_id');
     }
 
+    public function userHrLeaveCreditsAvailable(){
+        return $this->hasMany(HrLeaveCreditsAvailable::class, 'user_id');
+    }
+
     protected static function boot(){
         parent::boot();
 

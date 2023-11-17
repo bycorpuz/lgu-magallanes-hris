@@ -35,5 +35,25 @@ class UsersTable extends Seeder
             'firstname' => 'User',
             'lastname' => 'User'
         ]);
+
+        // You can associate this user with hr_leave_credits_available here
+        $leaveTypeIds = [
+            '1a46126a-e1ec-4597-9a8e-053ef7b748f4', // SL
+            'e8bfe149-808c-4c72-b52d-1f373bedd548', // VL
+            '2e3fa1d1-aeb5-4693-a097-842b7951281a', // SPL
+        ];
+        
+        foreach ($leaveTypeIds as $leaveTypeId) {
+            // Check if the record exists, and update if it does, or create a new one if it doesn't
+            $user->userHrLeaveCreditsAvailable()
+                ->create(
+                    [
+                        'leave_type_id' => $leaveTypeId,
+                        'available' => '0.00',
+                        'used' => '0.00',
+                        'balance' => '0.00'
+                    ]
+                );
+        }
     }
 }
