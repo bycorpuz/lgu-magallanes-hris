@@ -33,7 +33,7 @@ class Login extends Component
             $this->js("showNotification('success', 'Redirecting to Dashboard...')");
 
             $request->session()->regenerate();
-            return $this->redirect('/dashboard');
+            return $this->redirect('/my-profile');
         } else {
             $this->addError('login', 'The password provided does not match the email or username entered.');
             $this->js("showNotification('error', 'Something went wrong.')");

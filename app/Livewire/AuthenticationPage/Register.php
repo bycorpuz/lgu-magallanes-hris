@@ -34,7 +34,7 @@ class Register extends Component
 
         if ($table->save()){
             Auth::login($table);
-            return $this->redirect('/dashboard');
+            return $this->redirect('/my-profile');
         }
     }
     public function render()

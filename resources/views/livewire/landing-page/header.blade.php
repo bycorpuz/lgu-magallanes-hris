@@ -19,7 +19,7 @@
                 @endguest
                 
                 @auth
-                    <li><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                    <li><a class="nav-link" href="/my-profile">My Profile</a></li>
                 @endauth
             </ul>
             <i class="bi bi-list mobile-nav-toggle"></i>

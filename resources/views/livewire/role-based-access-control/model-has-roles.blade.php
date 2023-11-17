@@ -1,11 +1,11 @@
 <div> 
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">Human Resource Management</div>
+        <div class="breadcrumb-title pe-3">HUMAN RESOURCE - User Management</div>
         <div class="ps-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a>
+                    <li class="breadcrumb-item"><a href="{{ route('my-profile') }}"><i class="bx bx-user-circle"></i></a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">RBAC - Model Has Roles</li>
                 </ol>
