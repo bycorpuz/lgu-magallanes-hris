@@ -3,6 +3,7 @@
 use App\Livewire\AuthenticationPage\Login;
 use App\Livewire\AuthenticationPage\Register;
 use App\Livewire\DashboardPage\Dashboard;
+use App\Livewire\DatabaseLibraries\LeaveTypes;
 use App\Livewire\DatabaseLibraries\Positions;
 use App\Livewire\DatabaseLibraries\Salaries;
 use App\Livewire\LandingPage\Welcome;
@@ -48,6 +49,7 @@ Route::group(['middleware' => ['auth', 'preventBackHistory']], function(){
 
     Route::get('/dl-positions', Positions::class)->middleware('permission:crud-positions')->name('dl-positions');
     Route::get('/dl-salaries', Salaries::class)->middleware('permission:crud-salaries')->name('dl-salaries');
+    Route::get('/dl-leave-types', LeaveTypes::class)->middleware('permission:crud-leave-types')->name('dl-leave-types');
 
     Route::get('/user-logs', Logs::class)->middleware('permission:view-user-logs')->name('user-logs');
 });

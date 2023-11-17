@@ -66,3 +66,17 @@ function civilStatus(){
         'other'     => 'Other'
     ];
 }
+
+function leaveUnit(){
+    return [
+        'yearly'    => 'Yearly',
+        'monthly'   => 'Monthly'
+    ];
+}
+
+function yesNo(){
+    return [
+        'yes'   => 'Yes',
+        'no'    => 'No'
+    ];
+}

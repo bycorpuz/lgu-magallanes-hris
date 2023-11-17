@@ -2,7 +2,7 @@
 
 namespace App\Livewire\DatabaseLibraries;
 
-use App\Models\LibPosition;
+use App\Models\LibLeaveType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Title;
@@ -10,9 +10,9 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Title('Database Libraries - Positions')]
+#[Title('Database Libraries - Leave Types')]
 #[Layout('layouts.dashboard-app')] 
-class Positions extends Component
+class LeaveTypes extends Component
 {
     use WithPagination;
 
@@ -22,12 +22,15 @@ class Positions extends Component
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
     public $showAdvancedSearch = false;
-    public $codeAdvancedSearchField, $abbreviationAdvancedSearchField,
-           $nameAdvancedSearchField, $dateCreatedAdvancedSearchField = '';
+    public $abbreviationAdvancedSearchField, $nameAdvancedSearchField,
+           $descriptionAdvancedSearchField, $daysAdvancedSearchField,
+           $unitAdvancedSearchField, $isWithPayAdvancedSearchField,
+           $dateCreatedAdvancedSearchField = '';
 
     public $counter = 0;
     public $totalTableDataCount = 0;
-    public $id, $code, $abbreviation, $name;
+    public $id, $abbreviation, $name, $description,
+           $days, $unit, $is_with_pay;
 
     public $isUpdateMode = false;
     public $deleteId = '';
@@ -37,16 +40,22 @@ class Positions extends Component
     }
 
     private function resetInputFields(){
-        $this->code = '';
         $this->abbreviation = '';
         $this->name = '';
+        $this->description = '';
+        $this->days = '';
+        $this->unit = '';
+        $this->is_with_pay = '';
         artisanClear();
     }
 
     private function resetAdvancedSearchFields(){
-        $this->codeAdvancedSearchField = '';
         $this->abbreviationAdvancedSearchField = '';
         $this->nameAdvancedSearchField = '';
+        $this->descriptionAdvancedSearchField = '';
+        $this->daysAdvancedSearchField = '';
+        $this->unitAdvancedSearchField = '';
+        $this->isWithPayAdvancedSearchField = '';
         $this->dateCreatedAdvancedSearchField = '';
     }
 
@@ -58,21 +67,26 @@ class Positions extends Component
 
     public function store(){
         $this->validate([
-            'code' => 'required|unique:lib_positions,code|min:3|max:10',
-            'abbreviation' => 'unique:lib_positions,abbreviation',
-            'name' => 'required|unique:lib_positions,name|min:3|max:255',
+            'abbreviation' => 'unique:lib_leave_types,abbreviation',
+            'name' => 'required|unique:lib_leave_types,name|min:3|max:255',
+            'days' => 'required|numeric',
+            'unit' => 'required|min:3|max:255',
+            'is_with_pay' => 'required',
         ]);
 
-        $table = new LibPosition();
-        $table->code = $this->code;
+        $table = new LibLeaveType();
         $table->abbreviation = $this->abbreviation;
         $table->name = $this->name;
+        $table->description = $this->description;
+        $table->days = $this->days;
+        $table->unit = $this->unit;
+        $table->is_with_pay = $this->is_with_pay;
         if ($table->save()){
             $this->resetInputFields();
             $this->dispatch('closeModal');
             
-            doLog($table, request()->ip(), 'Positions', 'Created');
-            $this->js("showNotification('success', 'Position data has been saved successfully.')");
+            doLog($table, request()->ip(), 'Leave Types', 'Created');
+            $this->js("showNotification('success', 'Leave Type data has been saved successfully.')");
         } else {
             $this->js("showNotification('error', 'Something went wrong.')");
         }
@@ -83,25 +97,20 @@ class Positions extends Component
         $this->resetInputFields();
         $this->dispatch('openCreateUpdateModal');
 
-        $table = LibPosition::find($id);
+        $table = LibLeaveType::find($id);
         $this->id = $id;
-        $this->code = $table->code;
         $this->abbreviation = $table->abbreviation;
         $this->name = $table->name;
+        $this->description = $table->description;
+        $this->days = $table->days;
+        $this->unit = $table->unit;
+        $this->is_with_pay = $table->is_with_pay;
     }
 
     public function update(){
         $this->validate([
-            'code' =>  [
-                'required',
-                'min:3',
-                'max:10',
-                Rule::unique('lib_positions')
-                    ->where('code', $this->code)
-                    ->ignore($this->id)
-            ],
             'abbreviation' =>  [
-                Rule::unique('lib_positions')
+                Rule::unique('lib_leave_types')
                     ->where('abbreviation', $this->abbreviation)
                     ->ignore($this->id)
             ],
@@ -109,23 +118,29 @@ class Positions extends Component
                 'required',
                 'min:3',
                 'max:255',
-                Rule::unique('lib_positions')
+                Rule::unique('lib_leave_types')
                     ->where('name', $this->name)
                     ->ignore($this->id)
             ],
+            'days' => 'required|numeric',
+            'unit' => 'required|min:3|max:255',
+            'is_with_pay' => 'required',
         ]);
 
-        $table = LibPosition::find($this->id);
-        $table->code = $this->code;
+        $table = LibLeaveType::find($this->id);
         $table->abbreviation = $this->abbreviation;
         $table->name = $this->name;
+        $table->description = $this->description;
+        $table->days = $this->days;
+        $table->unit = $this->unit;
+        $table->is_with_pay = $this->is_with_pay;
         if ($table->update()){
             $this->isUpdateMode = false;
             $this->resetInputFields();
             $this->dispatch('closeModal');
 
-            doLog($table, request()->ip(), 'Positions', 'Updated');
-            $this->js("showNotification('success', 'Your changes to the Position have been successfully updated.')");
+            doLog($table, request()->ip(), 'Leave Types', 'Updated');
+            $this->js("showNotification('success', 'Your changes to the Leave Type have been successfully updated.')");
         } else {
             $this->js("showNotification('error', 'Something went wrong.')");
         }
@@ -135,22 +150,25 @@ class Positions extends Component
         $this->deleteId = $id;
         $this->dispatch('openDeletionModal');
 
-        $table = LibPosition::find($this->deleteId);
-        $this->code = $table->code;
+        $table = LibLeaveType::find($this->deleteId);
         $this->abbreviation = $table->abbreviation;
         $this->name = $table->name;
+        $this->description = $table->description;
+        $this->days = number_format($table->days, 3);
+        $this->unit = ucwords($table->unit);
+        $this->is_with_pay = ucwords($table->is_with_pay);
     }
 
     public function delete(){
-        $oldTable = LibPosition::find($this->deleteId);
-        $table = LibPosition::find($this->deleteId);
+        $oldTable = LibLeaveType::find($this->deleteId);
+        $table = LibLeaveType::find($this->deleteId);
         if ($table->delete()){
             $this->isUpdateMode = false;
             $this->resetInputFields();
             $this->dispatch('closeModal');
             
-            doLog($oldTable, request()->ip(), 'Positions', 'Deleted');
-            $this->js("showNotification('success', 'The selected Position has been deleted successfully.')");
+            doLog($oldTable, request()->ip(), 'Leave Types', 'Deleted');
+            $this->js("showNotification('success', 'The selected Leave Type has been deleted successfully.')");
         } else {
             $this->js("showNotification('error', 'Something went wrong.')");
         }
@@ -177,13 +195,16 @@ class Positions extends Component
     }
 
     public function performGlobalSearch(){
-        $this->tableList = LibPosition::select(
+        $this->tableList = LibLeaveType::select(
             '*',
             DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %h:%i %p') as formatted_created_at")
         )
-        ->where('code', 'like', '%'.trim($this->search).'%')
-        ->orWhere('abbreviation', 'like', '%'.trim($this->search).'%')
+        ->where('abbreviation', 'like', '%'.trim($this->search).'%')
         ->orWhere('name', 'like', '%'.trim($this->search).'%')
+        ->orWhere('description', 'like', '%'.trim($this->search).'%')
+        ->orWhere('days', 'like', '%'.trim($this->search).'%')
+        ->orWhere('unit', 'like', '%'.trim($this->search).'%')
+        ->orWhere('is_with_pay', 'like', '%'.trim($this->search).'%')
         ->orWhere('created_at', 'like', '%'.trim($this->search).'%')
         ->orderBy($this->sortField, $this->sortDirection)
         ->paginate($this->perPage);
@@ -203,13 +224,38 @@ class Positions extends Component
             };
         }
 
-        $this->tableList = LibPosition::select(
+        if ($this->descriptionAdvancedSearchField){
+            $descriptionCondition = function ($query) {
+                $query->where('description', 'like', '%' . trim($this->descriptionAdvancedSearchField) . '%');
+            };
+        } else {
+            $descriptionCondition = function ($query) {
+                $query->where('description', 'like', '%' . trim($this->descriptionAdvancedSearchField) . '%')
+                    ->orWhereNull('description');
+            };
+        }
+
+        if ($this->unitAdvancedSearchField){
+            $unitCondition = function ($query) {
+                $query->where('unit', 'like', '%' . trim($this->unitAdvancedSearchField) . '%');
+            };
+        } else {
+            $unitCondition = function ($query) {
+                $query->where('unit', 'like', '%' . trim($this->unitAdvancedSearchField) . '%')
+                    ->orWhereNull('unit');
+            };
+        }
+
+        $this->tableList = LibLeaveType::select(
             '*',
             DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %h:%i %p') as formatted_created_at")
         )
-        ->where('code', 'like', '%'.trim($this->codeAdvancedSearchField).'%')
         ->where($abbreviationCondition)
         ->where('name', 'like', '%'.trim($this->nameAdvancedSearchField).'%')
+        ->where($descriptionCondition)
+        ->where('days', 'like', '%'.trim($this->daysAdvancedSearchField).'%')
+        ->where($unitCondition)
+        ->where('is_with_pay', 'like', '%'.trim($this->isWithPayAdvancedSearchField).'%')
         ->where('created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField).'%')
         ->orderBy($this->sortField, $this->sortDirection)
         ->paginate($this->perPage);
@@ -218,7 +264,7 @@ class Positions extends Component
     }
 
     public function totalTableDataCount(){
-        $this->totalTableDataCount = LibPosition::get()->count();
+        $this->totalTableDataCount = LibLeaveType::get()->count();
     }
 
     public function render(){
@@ -230,7 +276,7 @@ class Positions extends Component
         
         $this->totalTableDataCount();
 
-        return view('livewire.database-libraries.positions', [
+        return view('livewire.database-libraries.leave-types', [
             'tableList' => $this->tableList,
         ]);
     }

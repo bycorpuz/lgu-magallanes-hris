@@ -46,6 +46,7 @@
                 Gate::check('crud-positions') ||
                 Gate::check('crud-salaries') ||
                 Gate::check('crud-plantillas') ||
+                Gate::check('crud-leave-types') ||
                 Gate::check('rbac-model-has-permissions') ||
                 Gate::check('rbac-model-has-roles') ||
                 // for developer
@@ -130,6 +131,13 @@
                             <li class="{{ Route::is('dl-salaries') ? 'mm-active' : '' }}">
                                 <a href="{{ route('dl-salaries') }}">
                                     <i class='bx bx-radio-circle'></i>Salaries
+                                </a>
+                            </li>
+                        @endcan
+                        @can('crud-leave-types')
+                            <li class="{{ Route::is('dl-leave-types') ? 'mm-active' : '' }}">
+                                <a href="{{ route('dl-leave-types') }}">
+                                    <i class='bx bx-radio-circle'></i>Leave Types
                                 </a>
                             </li>
                         @endcan
