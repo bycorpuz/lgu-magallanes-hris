@@ -44,7 +44,6 @@ class UsersTable extends Seeder
         ];
         
         foreach ($leaveTypeIds as $leaveTypeId) {
-            // Check if the record exists, and update if it does, or create a new one if it doesn't
             $user->userHrLeaveCreditsAvailable()
                 ->create(
                     [

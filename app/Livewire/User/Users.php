@@ -106,36 +106,72 @@ class Users extends Component
             'civil_status' => 'required|in:single,married,divorced,separated,widowed,other',
         ]);
 
-        $table = new User();
-        $table->email = strtolower($this->email);
-        $table->username = strtolower($this->username);
-        $table->password = Hash::make('password');
-        
-        if ($table->save()) {
-            $table2 = new UserPersonalInformation();
-            $table2->user_id = $table->id;
-            $table2->firstname = strtoupper($this->firstname);
-            $table2->middlename = strtoupper($this->middlename);
-            $table2->lastname = strtoupper($this->lastname);
-            $table2->extname = $this->extname;
-            $table2->date_of_birth = $this->date_of_birth;
-            $table2->place_of_birth = strtoupper($this->place_of_birth);
-            $table2->sex = $this->sex;
-            $table2->civil_status = $this->civil_status;
-            $table2->tel_no = $this->tel_no;
-            $table2->mobile_no = $this->mobile_no;
+        DB::beginTransaction();
+        try {
+            // users
+            $table = new User();
+            $table->email = strtolower($this->email);
+            $table->username = strtolower($this->username);
+            $table->password = Hash::make('password');
+            
+            if ($table->save()) {
+                // user_personal_informations
+                $table2 = new UserPersonalInformation();
+                $table2->user_id = $table->id;
+                $table2->firstname = strtoupper($this->firstname);
+                $table2->middlename = strtoupper($this->middlename);
+                $table2->lastname = strtoupper($this->lastname);
+                $table2->extname = $this->extname;
+                $table2->date_of_birth = $this->date_of_birth;
+                $table2->place_of_birth = strtoupper($this->place_of_birth);
+                $table2->sex = $this->sex;
+                $table2->civil_status = $this->civil_status;
+                $table2->tel_no = $this->tel_no;
+                $table2->mobile_no = $this->mobile_no;
 
-            if ($table2->save()) {
-                $this->resetInputFields();
-                $this->dispatch('closeModal');
+                // user_theme_settings
+                $table->userThemeSettings()->create([
+                    'theme_style' => 'light-theme',
+                    'header_color' => null,
+                    'sidebar_color' => null,
+                ]);
 
-                doLog($table, request()->ip(), 'Users', 'Created');
-                $this->js("showNotification('success', 'User data has been saved successfully.')");
+                // hr_leave_credits_available
+                $leaveTypeIds = [
+                    '1a46126a-e1ec-4597-9a8e-053ef7b748f4', // SL
+                    'e8bfe149-808c-4c72-b52d-1f373bedd548', // VL
+                    '2e3fa1d1-aeb5-4693-a097-842b7951281a', // SPL
+                ];
+                
+                foreach ($leaveTypeIds as $leaveTypeId) {
+                    $table->userHrLeaveCreditsAvailable()
+                        ->create(
+                            [
+                                'leave_type_id' => $leaveTypeId,
+                                'available' => '0.00',
+                                'used' => '0.00',
+                                'balance' => '0.00'
+                            ]
+                        );
+                }
+
+                if ($table2->save()) {               
+                    DB::commit();
+
+                    $this->resetInputFields();
+                    $this->dispatch('closeModal');
+
+                    doLog($table, request()->ip(), 'Users', 'Created');
+                    $this->js("showNotification('success', 'User data has been saved successfully.')");
+                } else {
+                    $this->js("showNotification('error', 'Something went wrong on UserPersonalInformation Table.')");
+                }
             } else {
-                $this->js("showNotification('error', 'Something went wrong on UserPersonalInformation Table.')");
+                $this->js("showNotification('error', 'Something went wrong on User Table.')");
             }
-        } else {
-            $this->js("showNotification('error', 'Something went wrong on User Table.')");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->js("showNotification('error', '{$e->getMessage()}')");
         }
     }
 
