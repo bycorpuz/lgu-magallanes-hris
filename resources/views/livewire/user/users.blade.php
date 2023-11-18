@@ -379,7 +379,7 @@
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
                         placeholder: $( this ).data( 'placeholder' ),
-                        closeOnSelect: false,
+                        closeOnSelect: true,
                         allowClear: true,
                     });
                     $('#extname').on('change', function (e) {
@@ -391,7 +391,7 @@
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
                         placeholder: $( this ).data( 'placeholder' ),
-                        closeOnSelect: false,
+                        closeOnSelect: true,
                     });
                     $('#sex').on('change', function (e) {
                         @this.set('sex', $(this).val());
@@ -402,7 +402,7 @@
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
                         placeholder: $( this ).data( 'placeholder' ),
-                        closeOnSelect: false,
+                        closeOnSelect: true,
                     });
                     $('#civil_status').on('change', function (e) {
                         @this.set('civil_status', $(this).val());

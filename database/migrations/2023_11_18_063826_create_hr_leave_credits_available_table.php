@@ -15,9 +15,9 @@ return new class extends Migration
             $table->uuid('id')->primary()->unique();
             $table->uuid('leave_type_id');
             $table->uuid('user_id');
-            $table->decimal('available', 12, 2);
-            $table->decimal('used', 12, 2);
-            $table->decimal('balance', 12, 2);
+            $table->decimal('available', 12, 3)->default('0.000');
+            $table->decimal('used', 12, 3)->default('0.000');
+            $table->decimal('balance', 12, 3)->default('0.000');
             $table->timestamps();
 
             // Define 'leave_type_id' as a foreign key referencing the 'id' column of the 'lib_leave_types' table

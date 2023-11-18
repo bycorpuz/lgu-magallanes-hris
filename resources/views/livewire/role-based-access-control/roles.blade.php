@@ -151,7 +151,7 @@
                     @csrf
                     <div class="row modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Name</label>
+                            <label class="form-label">Name <span style="color: red;">*</span></label>
                             <input type="text" class="form-control" placeholder="Name" wire:model="name" required id="focusMe">
                             @error('name')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>

@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\GeneralSettings;
+use App\Models\LibPosition;
+use App\Models\LibSalary;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
@@ -113,6 +115,30 @@ if ( !function_exists('getPermissions') ){
             $table = Permission::find($param1);
         } else {
             $table = Permission::orderBy('created_at', 'desc')->get();
+        }
+
+        return $table;
+    }
+}
+
+if ( !function_exists('getPositions') ){
+    function getPositions($param1){
+        if ($param1){
+            $table = LibPosition::find($param1);
+        } else {
+            $table = LibPosition::orderBy('created_at', 'desc')->get();
+        }
+
+        return $table;
+    }
+}
+
+if ( !function_exists('getSalaries') ){
+    function getSalaries($param1){
+        if ($param1){
+            $table = LibSalary::find($param1);
+        } else {
+            $table = LibSalary::orderBy('created_at', 'desc')->get();
         }
 
         return $table;

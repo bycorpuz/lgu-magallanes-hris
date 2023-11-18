@@ -19,7 +19,7 @@
         <x-modal wire:model='showModal' :modalTitle="$modalTitle" :modalSize="$modalSize" :modalAction="$modalAction">
             @if ($modalAction === 'Create')
                 <div>
-                    <label class="form-label">Name</label>
+                    <label class="form-label">Name <span style="color: red;">*</span></label>
                     <input type="text" class="form-control" placeholder="Name" required wire:model="name" x-ref="focusMe" x-init="$nextTick(() => { $refs.focusMe.focus() })">
                     @error('name')
                         <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
@@ -29,7 +29,7 @@
 
             @if ($modalAction === 'Update')
                 <div>
-                    <label class="form-label">Name</label>
+                    <label class="form-label">Name <span style="color: red;">*</span></label>
                     <input type="text" class="form-control" placeholder="Name" required wire:model="name" x-ref="focusMe" x-init="$nextTick(() => { $refs.focusMe.focus() })">
                     @error('name')
                         <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>

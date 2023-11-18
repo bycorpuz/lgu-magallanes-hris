@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('abbreviation', 10)->nullable();
             $table->string('name');
             $table->string('description')->nullable();
-            $table->decimal('days', 12, 3);
+            $table->decimal('days', 12, 3)->default('0.000');
             $table->string('unit')->nullable();
-            $table->enum('is_with_pay', ['yes', 'no'])->default('yes');
+            $table->enum('is_with_pay', ['Yes', 'No'])->default('Yes');
             $table->timestamps();
         });
     }

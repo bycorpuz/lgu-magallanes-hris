@@ -155,8 +155,8 @@ class LeaveTypes extends Component
         $this->name = $table->name;
         $this->description = $table->description;
         $this->days = number_format($table->days, 3);
-        $this->unit = ucwords($table->unit);
-        $this->is_with_pay = ucwords($table->is_with_pay);
+        $this->unit = $table->unit;
+        $this->is_with_pay = $table->is_with_pay;
     }
 
     public function delete(){

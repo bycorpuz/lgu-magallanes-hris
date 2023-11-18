@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('tranche');
             $table->integer('grade');
             $table->integer('step');
-            $table->decimal('basic', 12, 2);
+            $table->decimal('basic', 12, 2)->default('0.00');
             $table->timestamps();
         });
     }

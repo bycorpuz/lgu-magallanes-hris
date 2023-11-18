@@ -16,10 +16,10 @@ return new class extends Migration
             $table->uuid('leave_credits_available_id');
             $table->integer('month')->nullable();
             $table->year('year')->nullable();
-            $table->decimal('value', 12, 3);
-            $table->date('date_from');
-            $table->date('date_to');
-            $table->text('remarks');
+            $table->decimal('value', 12, 3)->nullable();
+            $table->date('date_from')->nullable();
+            $table->date('date_to')->nullable();
+            $table->text('remarks')->nullable();
             $table->timestamps();
 
             // Define 'leave_credits_available_id' as a foreign key referencing the 'id' column of the 'hr_leave_credits_available' table

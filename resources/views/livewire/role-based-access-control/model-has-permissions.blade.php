@@ -178,7 +178,7 @@
                     @csrf
                     <div class="row modal-body">
                         <div class="mb-3" wire:ignore>
-                            <label class="form-label">User Name</label>
+                            <label class="form-label">User Name <span style="color: red;">*</span></label>
                             <select class="form-select" wire:model="model_id" data-placeholder="Select 1 or more" required multiple id="model_id">
                                 <option value="">Select</option>
                                 @foreach (getUsers('') as $row)
@@ -190,7 +190,7 @@
                             @enderror
                         </div>
                         <div class="mb-3" wire:ignore>
-                            <label class="form-label">Permission Name</label>
+                            <label class="form-label">Permission Name <span style="color: red;">*</span></label>
                             <select class="form-select" wire:model="permission_id" data-placeholder="Select 1 or more" required multiple id="permission_id">
                                 @foreach (getPermissions('') as $row)
                                     <option value="{{ $row->id }}">{{ $row->name }}</option>
@@ -245,7 +245,7 @@
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
                         placeholder: $( this ).data( 'placeholder' ),
-                        closeOnSelect: false,
+                        closeOnSelect: true,
                     });
                     $('#model_id').on('change', function (e) {
                         @this.set('model_id', $(this).val());
@@ -256,7 +256,7 @@
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
                         placeholder: $( this ).data( 'placeholder' ),
-                        closeOnSelect: false,
+                        closeOnSelect: true,
                     });
                     $('#permission_id').on('change', function (e) {
                         @this.set('permission_id', $(this).val());

@@ -102,8 +102,8 @@ class Users extends Component
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'date_of_birth' => 'required|date',
-            'sex' => 'required|in:male,female,other',
-            'civil_status' => 'required|in:single,married,divorced,separated,widowed,other',
+            'sex' => 'required|in:Male,Female,Other',
+            'civil_status' => 'required|in:Single,Married,Divorced,Separated,Widowed,Other',
         ]);
 
         DB::beginTransaction();
@@ -218,8 +218,8 @@ class Users extends Component
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'date_of_birth' => 'required|date',
-            'sex' => 'required|in:male,female,other',
-            'civil_status' => 'required|in:single,married,divorced,separated,widowed,other',
+            'sex' => 'required|in:Male,Female,Other',
+            'civil_status' => 'required|in:Single,Married,Divorced,Separated,Widowed,Other',
         ]);
 
         $table = User::find($this->id);
@@ -270,8 +270,8 @@ class Users extends Component
         $this->extname = $table2->extname;
         $this->date_of_birth = $table2->date_of_birth;
         $this->place_of_birth = $table2->place_of_birth;
-        $this->sex = ucwords($table2->sex);
-        $this->civil_status = ucwords($table2->civil_status);
+        $this->sex = $table2->sex;
+        $this->civil_status = $table2->civil_status;
         $this->tel_no = $table2->tel_no;
         $this->mobile_no = $table2->mobile_no;
     }

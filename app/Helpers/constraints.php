@@ -50,33 +50,41 @@ function extName(){
 
 function sex(){
     return [
-        'male'      => 'Male',
-        'female'    => 'Female',
-        'other'     => 'Other'
+        'Male'      => 'Male',
+        'Female'    => 'Female',
+        'Other'     => 'Other'
     ];
 }
 
 function civilStatus(){
     return [
-        'single'    => 'Single',
-        'married'   => 'Married',
-        'divorced'  => 'Divorced',
-        'separated' => 'Separated',
-        'widowed'   => 'Widowed',
-        'other'     => 'Other'
+        'Single'    => 'Single',
+        'Married'   => 'Married',
+        'Divorced'  => 'Divorced',
+        'Separated' => 'Separated',
+        'Widowed'   => 'Widowed',
+        'Other'     => 'Other'
     ];
 }
 
 function leaveUnit(){
     return [
-        'yearly'    => 'Yearly',
-        'monthly'   => 'Monthly'
+        'Yearly'    => 'Yearly',
+        'Monthly'   => 'Monthly'
     ];
 }
 
 function yesNo(){
     return [
-        'yes'   => 'Yes',
-        'no'    => 'No'
+        'Yes'   => 'Yes',
+        'No'    => 'No'
+    ];
+}
+
+function plantillaStatus(){
+    return [
+        'Permanent' => 'Permanent',
+        'Contract of Service' => 'Contract of Service',
+        'Job Order' => 'Job Order',
     ];
 }

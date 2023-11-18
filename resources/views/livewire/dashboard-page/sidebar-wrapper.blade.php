@@ -154,6 +154,16 @@
                     </ul>
                 </li>
 
+                @can('crud-plantillas')
+                    <li class="{{ Route::is('plantillas') ? 'mm-active' : '' }}">
+                        <a href="{{ route('plantillas') }}">
+                            <div class="parent-icon"><i class="bx bx-spreadsheet"></i>
+                            </div>
+                            <div class="menu-title">Plantillas</div>
+                        </a>
+                    </li>
+                @endcan
+
                 <li>
                     <a href="javascript:;" class="has-arrow">
                         <div class="parent-icon"><i class='bx bx-data'></i>

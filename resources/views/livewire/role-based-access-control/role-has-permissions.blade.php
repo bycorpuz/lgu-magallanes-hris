@@ -168,7 +168,7 @@
                     @csrf
                     <div class="row modal-body">
                         <div class="mb-3" wire:ignore>
-                            <label class="form-label">Role Name</label>
+                            <label class="form-label">Role Name <span style="color: red;">*</span></label>
                             <select class="form-select" wire:model="role_id" required id="role_id">
                                 <option value="">Select</option>
                                 @foreach (getRoles('') as $row)
@@ -180,7 +180,7 @@
                             @enderror
                         </div>
                         <div class="mb-3" wire:ignore>
-                            <label class="form-label">Permission Name</label>
+                            <label class="form-label">Permission Name <span style="color: red;">*</span></label>
                             <select class="form-select" wire:model="permission_id" data-placeholder="Select 1 or more" required multiple id="permission_id">
                                 @foreach (getPermissions('') as $row)
                                     <option value="{{ $row->id }}">{{ $row->name }}</option>
@@ -245,7 +245,7 @@
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
                         placeholder: $( this ).data( 'placeholder' ),
-                        closeOnSelect: false,
+                        closeOnSelect: true,
                     });
                     $('#permission_id').on('change', function (e) {
                         @this.set('permission_id', $(this).val());

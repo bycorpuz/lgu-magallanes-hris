@@ -1,13 +1,13 @@
 <div> 
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">HUMAN RESOURCE - Database Libraries</div>
+        <div class="breadcrumb-title pe-3">HUMAN RESOURCE</div>
         <div class="ps-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
                     <li class="breadcrumb-item"><a href="{{ route('my-profile') }}"><i class="bx bx-user-circle"></i></a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">Leave Types</li>
+                    <li class="breadcrumb-item active" aria-current="page">Plantillas</li>
                 </ol>
             </nav>
         </div>
@@ -39,34 +39,52 @@
                     <div class="card-body"> 
                         <form class="row" wire:submit.prevent="performAdvancedSearch">
                             @csrf
-                            <div class="col-md-3 mb-3">
-                                <input type="search" class="form-control" wire:model="abbreviationAdvancedSearchField" placeholder="Abbreviation">
+                            <div class="col-md-3 mb-3" wire:ignore>
+                                <select class="form-select" wire:model="userIdAdvancedSearchField" id="userIdAdvancedSearchField">
+                                    <option value="">User Name</option>
+                                    @foreach (getUsers('') as $row)
+                                        <option value="{{ $row->id }}">{{ $row->upi_firstname }} {{ $row->upi_lastname }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <input type="search" class="form-control" wire:model="nameAdvancedSearchField" placeholder="Name">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <input type="search" class="form-control" wire:model="descriptionAdvancedSearchField" placeholder="Description">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <input type="search" class="form-control" wire:model="daysAdvancedSearchField" placeholder="Days">
+                                <input type="search" class="form-control" wire:model="itemNumberAdvancedSearchField" placeholder="Item Number">
                             </div>
                             <div class="col-md-3 mb-3" wire:ignore>
-                                <select class="form-select" wire:model="unitAdvancedSearchField" id="unitAdvancedSearchField">
-                                    <option value="">Unit</option>
-                                    @foreach (leaveUnit() as $key => $value)
+                                <select class="form-select" wire:model="positionIdAdvancedSearchField" id="positionIdAdvancedSearchField">
+                                    <option value="">Position Name</option>
+                                    @foreach (getPositions('') as $row)
+                                        <option value="{{ $row->id }}">{{ $row->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3" wire:ignore>
+                                <select class="form-select" wire:model="salaryIdAdvancedSearchField" id="salaryIdAdvancedSearchField">
+                                    <option value="">Salary (Tranche - Grade - Step - Basic)</option>
+                                    @foreach (getSalaries('') as $row)
+                                        <option value="{{ $row->id }}">{{ $row->tranche }} - {{ $row->grade }} - {{ $row->step }} - {{ number_format($row->basic, 2) }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3" wire:ignore>
+                                <select class="form-select" wire:model="statusAdvancedSearchField" id="statusAdvancedSearchField">
+                                    <option value="">Status</option>
+                                    @foreach (plantillaStatus() as $key => $value)
                                         <option value="{{ $key }}">{{ $value }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="col-md-3 mb-3" wire:ignore>
-                                <select class="form-select" wire:model="isWithPayAdvancedSearchField" id="isWithPayAdvancedSearchField">
-                                    <option value="">Is With Pay?</option>
+                                <select class="form-select" wire:model="isPlantillaAdvancedSearchField" id="isPlantillaAdvancedSearchField">
+                                    <option value="">Is Plantilla?</option>
                                     @foreach (yesNo() as $key => $value)
                                         <option value="{{ $key }}">{{ $value }}</option>
                                     @endforeach
                                 </select>
-                            </div>                            
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <input type="search" class="form-control" wire:model="remarksAdvancedSearchField" placeholder="Remarks">
+                            </div>
                             <div class="col-md-3">
                                 <input type="search" class="form-control" wire:model="dateCreatedAdvancedSearchField" placeholder="Date Created">
                             </div>
@@ -82,51 +100,57 @@
                 <table class="table mb-0 table-striped">
                     <thead>
                         <tr>
-                            <th class="cursor-pointer" wire:click="sortBy('created_at')">
+                            <th class="cursor-pointer" wire:click="sortBy('u.created_at')">
                                 #
-                                @if ($sortField === 'created_at')
+                                @if ($sortField === 'hp.created_at')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
-                            <th class="cursor-pointer" wire:click="sortBy('abbreviation')">
-                                Abbreviation
-                                @if ($sortField === 'abbreviation')
+                            <th class="cursor-pointer" wire:click="sortBy('upi.firstname')">
+                                User Name
+                                @if ($sortField === 'upi.firstname')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
-                            <th class="cursor-pointer" wire:click="sortBy('name')">
-                                Name
-                                @if ($sortField === 'name')
+                            <th class="cursor-pointer" wire:click="sortBy('hp.item_number')">
+                                Item Number
+                                @if ($sortField === 'hp.item_number')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
-                            <th class="cursor-pointer" wire:click="sortBy('description')">
-                                Description
-                                @if ($sortField === 'description')
+                            <th class="cursor-pointer" wire:click="sortBy('lp.name')">
+                                Position Name
+                                @if ($sortField === 'lp.name')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
-                            <th class="cursor-pointer" wire:click="sortBy('days')">
-                                Days
-                                @if ($sortField === 'days')
+                            <th class="cursor-pointer" wire:click="sortBy('ls.id')">
+                                Salary<br>(Tranche - Grade - Step - Basic)
+                                @if ($sortField === 'ls.id')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
-                            <th class="cursor-pointer" wire:click="sortBy('unit')">
-                                Unit
-                                @if ($sortField === 'unit')
+                            <th class="cursor-pointer" wire:click="sortBy('hp.status')">
+                                Status
+                                @if ($sortField === 'hp.status')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
-                            <th class="cursor-pointer" wire:click="sortBy('is_with_pay')">
-                                Is With Pay?
-                                @if ($sortField === 'is_with_pay')
+                            <th class="cursor-pointer" wire:click="sortBy('hp.is_plantilla')">
+                                Is Plantilla?
+                                @if ($sortField === 'hp.is_plantilla')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
-                            <th class="cursor-pointer" wire:click="sortBy('created_at')">
+                            <th class="cursor-pointer" wire:click="sortBy('hp.remarks')">
+                                Remarks
+                                @if ($sortField === 'hp.remarks')
+                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                @endif
+                            </th>
+                            <th class="cursor-pointer" wire:click="sortBy('u.created_at')">
                                 Date Created
-                                @if ($sortField === 'created_at')
+                                @if ($sortField === 'hp.created_at')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
@@ -138,12 +162,13 @@
                             @foreach ($tableList as $row)
                                 <tr>
                                     <td>{{ ++ $counter }}</td>
-                                    <td>{{ $row->abbreviation }}</td>
-                                    <td>{{ $row->name }}</td>
-                                    <td>{{ $row->description }}</td>
-                                    <td>{{ number_format($row->days, 3) }}</td>
-                                    <td>{{ $row->unit }}</td>
-                                    <td>{{ $row->is_with_pay }}</td>
+                                    <td>{{ $row->upi_firstname }} {{ $row->upi_lastname }}</td>
+                                    <td>{{ $row->item_number }}</td>
+                                    <td>{{ $row->lp_name }}</td>
+                                    <td>{{ $row->ls_tranche }} - {{ $row->ls_grade }} - {{ $row->ls_step }} - {{ number_format($row->ls_basic, 2) }}</td>
+                                    <td>{{ $row->status }}</td>
+                                    <td>{{ $row->is_plantilla }}</td>
+                                    <td>{{ $row->remarks }}</td>
                                     <td>{{ $row->formatted_created_at }}</td>
                                     <td>
                                         <div class="btn-group" role="group" aria-label="Action Buttons">
@@ -159,7 +184,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="9"><div class="text-center">No results found.</div></td>
+                                <td colspan="10"><div class="text-center">No results found.</div></td>
                             </tr>
                         @endif
                     </tbody>
@@ -203,64 +228,83 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modelCreateUpdateModalLabel">
-                        {{ $isUpdateMode ? 'Edit Leave Type' : 'Add New Leave Type' }}
+                        {{ $isUpdateMode ? 'Edit Plantilla' : 'Add New Plantilla' }}
                     </h5>
                     <button type="button" class="btn-close" wire:click="closeModal" aria-label="Close"></button>
                 </div>
                 <form wire:submit.prevent="{{ $isUpdateMode ? 'update' : 'store' }}">
                     @csrf
                     <div class="row modal-body">
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Abbreviation</label>
-                            <input type="text" class="form-control" placeholder="Abbreviation" wire:model="abbreviation" id="focusMe">
-                            @error('abbreviation')
+                        <div class="col-md-6 mb-3" wire:ignore>
+                            <label class="form-label">User Name</label>
+                            <select class="form-select" wire:model="user_id" data-placeholder="Select" id="user_id">
+                                <option value="">Select</option>
+                                @foreach (getUsers('') as $row)
+                                    <option value="{{ $row->id }}">{{ $row->upi_firstname }} {{ $row->upi_lastname }}</option>
+                                @endforeach
+                            </select>
+                            @error('user_id')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="col-md-8 mb-3">
-                            <label class="form-label">Name <span style="color: red;">*</span></label>
-                            <input type="text" class="form-control" placeholder="Name" wire:model="name" required>
-                            @error('name')
-                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div class="col-md-8 mb-3">
-                            <label class="form-label">Description</label>
-                            <input type="text" class="form-control" placeholder="Description" wire:model="description">
-                            @error('description')
-                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Days <span style="color: red;">*</span></label>
-                            <input type="number" step="0.001" min="0" class="form-control" placeholder="Days" wire:model="days" required>
-                            @error('days')
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Item Number <span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" placeholder="Item Number" wire:model="item_number" required id="focusMe">
+                            @error('item_number')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
                         <div class="col-md-6 mb-3" wire:ignore>
-                            <label class="form-label">Unit <span style="color: red;">*</span></label>
-                            <select class="form-select" wire:model="unit" data-placeholder="Select" id="unit" required>
+                            <label class="form-label">Position Name <span style="color: red;">*</span></label>
+                            <select class="form-select" wire:model="position_id" required id="position_id">
                                 <option value="">Select</option>
-                                @foreach (leaveUnit() as $key => $value)
+                                @foreach (getPositions('') as $row)
+                                    <option value="{{ $row->id }}">{{ $row->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('position_id')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3" wire:ignore>
+                            <label class="form-label">Salary <span style="font-size: 8pt;">(Tranche - Grade - Step - Basic)</span> <span style="color: red;">*</span></label></label>
+                            <select class="form-select" wire:model="salary_id" required id="salary_id">
+                                <option value="">Select</option>
+                                @foreach (getSalaries('') as $row)
+                                    <option value="{{ $row->id }}">{{ $row->tranche }} - {{ $row->grade }} - {{ $row->step }} - {{ number_format($row->basic, 2) }}</option>
+                                @endforeach
+                            </select>
+                            @error('salary_id')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3" wire:ignore>
+                            <label class="form-label">Status <span style="color: red;">*</span></label>
+                            <select class="form-select" wire:model="status" required id="status">
+                                <option value="">Select</option>
+                                @foreach (plantillaStatus() as $key => $value)
                                     <option value="{{ $key }}">{{ $value }}</option>
                                 @endforeach
                             </select>
-                            @error('unit')
+                            @error('status')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
                         <div class="col-md-6 mb-3" wire:ignore>
-                            <label class="form-label">Is With Pay? <span style="color: red;">*</span></label>
-                            <select class="form-select" wire:model="is_with_pay" data-placeholder="Select" id="is_with_pay" required>
+                            <label class="form-label">Is Plantilla? <span style="color: red;">*</span></label>
+                            <select class="form-select" wire:model="is_plantilla" required id="is_plantilla">
                                 <option value="">Select</option>
                                 @foreach (yesNo() as $key => $value)
                                     <option value="{{ $key }}">{{ $value }}</option>
                                 @endforeach
                             </select>
-                            @error('is_with_pay')
+                            @error('is_plantilla')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
+                        </div>
+                        <div class="col-md-12">
+                            <label for="remarks" class="form-label">Remarks</label>
+                            <textarea class="form-control" wire:model="remarks" id="remarks" placeholder="Remarks" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -277,18 +321,19 @@
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modelDeletionModalLabel">Delete Leave Type</h5>
+                    <h5 class="modal-title" id="modelDeletionModalLabel">Delete User</h5>
                     <button type="button" class="btn-close" wire:click="closeModal" aria-label="Close"></button>
                 </div>
                 <form wire:submit.prevent="delete">
                     <div class="modal-body">
                         <p>Are you sure you want to delete this record?</p>
-                        <p>Abbreviation: <b>{{ $abbreviation }}</b> </p>
-                        <p>Name: <b>{{ $name }}</b> </p>
-                        <p>Description: <b>{{ $description }}</b> </p>
-                        <p>Days: <b>{{ $days }}</b> </p>
-                        <p>Unit: <b>{{ $unit }}</b> </p>
-                        <p>Is With Pay?: <b>{{ $is_with_pay }}</b> </p>
+                        <p>User Name: <b>{{ $user_id ? getUsers($user_id)['upi_firstname'] . ' ' . getUsers($user_id)['upi_lastname'] : ''  }}</b> </p>
+                        <p>Item Number: <b>{{ $item_number }}</b> </p>
+                        <p>Position Name: <b>{{ $position_id ? getPositions($position_id)['name'] : '' }}</b> </p>
+                        <p>Salary (Tranche - Grade - Step - Basic): <b>{{ $salary_id ? getSalaries($salary_id)['tranche'] . ' - ' . getSalaries($salary_id)['grade'] . ' - ' . getSalaries($salary_id)['step'] . ' - ' . number_format(getSalaries($salary_id)['basic'], 2) : '' }}</b> </p>
+                        <p>Status: <b>{{ $status }}</b> </p>
+                        <p>Is Plantilla?: <b>{{ $is_plantilla }}</b> </p>
+                        <p>Remarks: <b>{{ $remarks }}</b> </p>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-danger close-modal" data-dismiss="modal">Yes, Delete it.</button>
@@ -308,26 +353,60 @@
                 $('#modelCreateUpdateModal').on('shown.bs.modal', function (e) {
                     $('#focusMe').focus();
 
-                    $('#unit').select2( {
+                    $('#user_id').select2( {
                         dropdownParent: $('#modelCreateUpdateModal'),
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
                         placeholder: $( this ).data( 'placeholder' ),
                         closeOnSelect: true,
+                        allowClear: true,
                     });
-                    $('#unit').on('change', function (e) {
-                        @this.set('unit', $(this).val());
+                    $('#user_id').on('change', function (e) {
+                        @this.set('user_id', $(this).val());
                     });
 
-                    $('#is_with_pay').select2( {
+                    $('#position_id').select2( {
                         dropdownParent: $('#modelCreateUpdateModal'),
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
                         placeholder: $( this ).data( 'placeholder' ),
                         closeOnSelect: true,
                     });
-                    $('#is_with_pay').on('change', function (e) {
-                        @this.set('is_with_pay', $(this).val());
+                    $('#position_id').on('change', function (e) {
+                        @this.set('position_id', $(this).val());
+                    });
+
+                    $('#salary_id').select2( {
+                        dropdownParent: $('#modelCreateUpdateModal'),
+                        theme: "bootstrap-5",
+                        width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                        placeholder: $( this ).data( 'placeholder' ),
+                        closeOnSelect: true,
+                    });
+                    $('#salary_id').on('change', function (e) {
+                        @this.set('salary_id', $(this).val());
+                    });
+
+                    $('#status').select2( {
+                        dropdownParent: $('#modelCreateUpdateModal'),
+                        theme: "bootstrap-5",
+                        width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                        placeholder: $( this ).data( 'placeholder' ),
+                        closeOnSelect: true,
+                    });
+                    $('#status').on('change', function (e) {
+                        @this.set('status', $(this).val());
+                    });
+
+                    $('#is_plantilla').select2( {
+                        dropdownParent: $('#modelCreateUpdateModal'),
+                        theme: "bootstrap-5",
+                        width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                        placeholder: $( this ).data( 'placeholder' ),
+                        closeOnSelect: true,
+                    });
+                    $('#is_plantilla').on('change', function (e) {
+                        @this.set('is_plantilla', $(this).val());
                     });
                 });
             });
@@ -344,22 +423,49 @@
 
         advanceSearchSelect2();
         function advanceSearchSelect2(){
-            $('#unitAdvancedSearchField').select2( {
+            $('#userIdAdvancedSearchField').select2( {
                 theme: "bootstrap-5",
                 width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
                 placeholder: $( this ).data( 'placeholder' ),
             });
-            $('#unitAdvancedSearchField').on('change', function (e) {
-                @this.set('unitAdvancedSearchField', $(this).val());
+            $('#userIdAdvancedSearchField').on('change', function (e) {
+                @this.set('userIdAdvancedSearchField', $(this).val());
             });
 
-            $('#isWithPayAdvancedSearchField').select2( {
+            $('#positionIdAdvancedSearchField').select2( {
                 theme: "bootstrap-5",
                 width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
                 placeholder: $( this ).data( 'placeholder' ),
             });
-            $('#isWithPayAdvancedSearchField').on('change', function (e) {
-                @this.set('isWithPayAdvancedSearchField', $(this).val());
+            $('#positionIdAdvancedSearchField').on('change', function (e) {
+                @this.set('positionIdAdvancedSearchField', $(this).val());
+            });
+
+            $('#salaryIdAdvancedSearchField').select2( {
+                theme: "bootstrap-5",
+                width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                placeholder: $( this ).data( 'placeholder' ),
+            });
+            $('#salaryIdAdvancedSearchField').on('change', function (e) {
+                @this.set('salaryIdAdvancedSearchField', $(this).val());
+            });
+
+            $('#statusAdvancedSearchField').select2( {
+                theme: "bootstrap-5",
+                width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                placeholder: $( this ).data( 'placeholder' ),
+            });
+            $('#statusAdvancedSearchField').on('change', function (e) {
+                @this.set('statusAdvancedSearchField', $(this).val());
+            });
+
+            $('#isPlantillaAdvancedSearchField').select2( {
+                theme: "bootstrap-5",
+                width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                placeholder: $( this ).data( 'placeholder' ),
+            });
+            $('#isPlantillaAdvancedSearchField').on('change', function (e) {
+                @this.set('isPlantillaAdvancedSearchField', $(this).val());
             });
         }
     </script>

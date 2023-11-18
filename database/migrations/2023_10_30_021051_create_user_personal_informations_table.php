@@ -24,8 +24,8 @@ return new class extends Migration
                 ->where('date_of_birth', '>=', '1900-01-01')
                 ->where('date_of_birth', '<=', now());
             $table->string('place_of_birth')->nullable();
-            $table->enum('sex', ['male', 'female', 'other'])->default('male');
-            $table->enum('civil_status', ['single', 'married', 'divorced', 'separated', 'widowed', 'other'])->default('single');
+            $table->enum('sex', ['Male', 'Female', 'Other'])->default('Male');
+            $table->enum('civil_status', ['Single', 'Married', 'Divorced', 'Separated', 'Widowed', 'Other'])->default('Single');
             $table->string('ra_house_no')->nullable();
             $table->string('ra_street')->nullable();
             $table->string('ra_subdivision')->nullable();

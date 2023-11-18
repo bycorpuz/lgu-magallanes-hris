@@ -12,6 +12,7 @@ use App\Livewire\Leave\LeaveEarnings;
 use App\Livewire\Leave\Leaves;
 use App\Livewire\My\Leave;
 use App\Livewire\My\Profile;
+use App\Livewire\Plantilla\Plantillas;
 use App\Livewire\RoleBasedAccessControl\ModelHasPermissions;
 use App\Livewire\RoleBasedAccessControl\ModelHasRoles;
 use App\Livewire\RoleBasedAccessControl\Permissions;
@@ -61,6 +62,8 @@ Route::group(['middleware' => ['auth', 'preventBackHistory']], function(){
     Route::get('/leaves', Leaves::class)->middleware('permission:crud-leaves')->name('leaves');
     Route::get('/leave-earnings', LeaveEarnings::class)->middleware('permission:crud-leave-earnings')->name('leave-earnings');
     Route::get('/leave-dashboard', LeaveDashboard::class)->middleware('permission:view-leave-dashboard')->name('leave-dashboard');
+
+    Route::get('/plantillas', Plantillas::class)->middleware('permission:crud-plantillas')->name('plantillas');
 
     Route::get('/user-logs', Logs::class)->middleware('permission:view-user-logs')->name('user-logs');
 });
