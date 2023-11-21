@@ -37,6 +37,7 @@
                 Gate::check('crud-salaries') ||
                 Gate::check('crud-plantillas') ||
                 Gate::check('crud-leave-types') ||
+                Gate::check('crud-designations') ||
                 Gate::check('view-leave-dashboard') ||
                 Gate::check('rbac-model-has-permissions') ||
                 Gate::check('rbac-model-has-roles') ||
@@ -189,6 +190,13 @@
                             <li class="{{ Route::is('dl-leave-types') ? 'mm-active' : '' }}">
                                 <a href="{{ route('dl-leave-types') }}">
                                     <i class='bx bx-radio-circle'></i>Leave Types
+                                </a>
+                            </li>
+                        @endcan
+                        @can('crud-designations')
+                            <li class="{{ Route::is('dl-designations') ? 'mm-active' : '' }}">
+                                <a href="{{ route('dl-designations') }}">
+                                    <i class='bx bx-radio-circle'></i>Designations
                                 </a>
                             </li>
                         @endcan

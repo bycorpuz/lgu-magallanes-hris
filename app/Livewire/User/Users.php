@@ -26,7 +26,7 @@ class Users extends Component
     public $showAdvancedSearch = false;
     public $userIdAdvancedSearchField,
            $firstNameAdvancedSearchField, $middleNameAdvancedSearchField,
-           $lastNameAdvancedSearchField, $extNameAdvancedSearchField,
+           $lastNameAdvancedSearchField, $extNameAdvancedSearchField, $otherExtAdvancedSearchField,
            $emailAdvancedSearchField, $usernameAdvancedSearchField, $mobileNoAdvancedSearchField,
            $dateCreatedAdvancedSearchField = '';
 
@@ -34,7 +34,7 @@ class Users extends Component
     public $totalTableDataCount = 0;
 
     public $id, $username, $email = '';
-    public $user_id, $firstname, $middlename, $lastname, $extname,
+    public $user_id, $firstname, $middlename, $lastname, $extname, $other_ext,
            $date_of_birth, $place_of_birth, $sex, $civil_status,
            $ra_house_no, $ra_street, $ra_subdivision, $ra_brgy_code, $ra_zip_code,
            $tel_no, $mobile_no = '';
@@ -54,6 +54,7 @@ class Users extends Component
         $this->middlename = '';
         $this->lastname = '';
         $this->extname = '';
+        $this->other_ext = '';
         $this->date_of_birth = '';
         $this->place_of_birth = '';
         $this->sex = '';
@@ -74,6 +75,7 @@ class Users extends Component
         $this->middleNameAdvancedSearchField = '';
         $this->lastNameAdvancedSearchField = '';
         $this->extNameAdvancedSearchField = '';
+        $this->otherExtAdvancedSearchField = '';
         $this->emailAdvancedSearchField = '';
         $this->usernameAdvancedSearchField = '';
         $this->mobileNoAdvancedSearchField = '';
@@ -122,6 +124,7 @@ class Users extends Component
                 $table2->middlename = strtoupper($this->middlename);
                 $table2->lastname = strtoupper($this->lastname);
                 $table2->extname = $this->extname;
+                $table2->other_ext = $this->other_ext;
                 $table2->date_of_birth = $this->date_of_birth;
                 $table2->place_of_birth = strtoupper($this->place_of_birth);
                 $table2->sex = $this->sex;
@@ -190,6 +193,7 @@ class Users extends Component
         $this->middlename = $table2->middlename;
         $this->lastname = $table2->lastname;
         $this->extname = $table2->extname;
+        $this->other_ext = $table2->other_ext;
         $this->date_of_birth = $table2->date_of_birth;
         $this->place_of_birth = $table2->place_of_birth;
         $this->sex = $table2->sex;
@@ -233,6 +237,7 @@ class Users extends Component
             $table2->middlename = strtoupper($this->middlename);
             $table2->lastname = strtoupper($this->lastname);
             $table2->extname = $this->extname;
+            $table2->other_ext = $this->other_ext;
             $table2->date_of_birth = $this->date_of_birth;
             $table2->place_of_birth = strtoupper($this->place_of_birth);
             $table2->sex = $this->sex;
@@ -268,6 +273,7 @@ class Users extends Component
         $this->middlename = $table2->middlename;
         $this->lastname = $table2->lastname;
         $this->extname = $table2->extname;
+        $this->other_ext = $table2->other_ext;
         $this->date_of_birth = $table2->date_of_birth;
         $this->place_of_birth = $table2->place_of_birth;
         $this->sex = $table2->sex;
@@ -334,6 +340,7 @@ class Users extends Component
             'upi.middlename',
             'upi.lastname',
             'upi.extname',
+            'upi.other_ext',
             'upi.mobile_no'
         )
         ->leftJoin('user_personal_informations as upi', 'u.id', '=', 'upi.user_id')
@@ -342,6 +349,7 @@ class Users extends Component
         ->orWhere('upi.middlename', 'like', '%'.trim($this->search).'%')
         ->orWhere('upi.lastname', 'like', '%'.trim($this->search).'%')
         ->orWhere('upi.extname', 'like', '%'.trim($this->search).'%')
+        ->orWhere('upi.other_ext', 'like', '%'.trim($this->search).'%')
         ->orWhere('upi.mobile_no', 'like', '%'.trim($this->search).'%')
         ->orWhere('u.email', 'like', '%'.trim($this->search).'%')
         ->orWhere('u.created_at', 'like', '%'.trim($this->search).'%')
@@ -374,6 +382,17 @@ class Users extends Component
             };
         }
 
+        if ($this->otherExtAdvancedSearchField){
+            $otherExtCondition = function ($query) {
+                $query->where('upi.other_ext', 'like', '%' . trim($this->otherExtAdvancedSearchField) . '%');
+            };
+        } else {
+            $otherExtCondition = function ($query) {
+                $query->where('upi.other_ext', 'like', '%' . trim($this->otherExtAdvancedSearchField) . '%')
+                    ->orWhereNull('upi.other_ext');
+            };
+        }
+
         if ($this->mobileNoAdvancedSearchField){
             $mobileNoCondition = function ($query) {
                 $query->where('upi.mobile_no', 'like', '%' . trim($this->mobileNoAdvancedSearchField) . '%');
@@ -396,6 +415,7 @@ class Users extends Component
             'upi.middlename',
             'upi.lastname',
             'upi.extname',
+            'upi.other_ext',
             'upi.mobile_no'
         )
         ->leftJoin('user_personal_informations as upi', 'u.id', '=', 'upi.user_id')
@@ -406,6 +426,7 @@ class Users extends Component
         ->where($middleNameCondition)
         ->where('upi.lastname', 'like', '%'.trim($this->lastNameAdvancedSearchField).'%')
         ->where($extNameCondition)
+        ->where($otherExtCondition)
         ->where($mobileNoCondition)
         ->where('u.created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField).'%')
         ->orderBy($this->sortField, $this->sortDirection)

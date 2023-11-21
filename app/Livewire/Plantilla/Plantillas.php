@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Plantilla;
 
-use App\Models\HrPlantillas;
+use App\Models\HrPlantilla;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Title;
@@ -79,14 +79,14 @@ class Plantillas extends Component
         ]);
 
         if (!empty($this->user_id)){
-            $userExistsInPlantilla = HrPlantillas::where('user_id', $this->user_id)->first();
+            $userExistsInPlantilla = HrPlantilla::where('user_id', $this->user_id)->first();
             if ($userExistsInPlantilla){
                 $this->js("showNotification('error', 'User already exists in Plantilla.')");
                 return;
             }
         }
 
-        $table = new HrPlantillas();
+        $table = new HrPlantilla();
         $table->item_number = $this->item_number;
         $table->user_id = !empty($this->user_id) ? $this->user_id : null;
         $table->position_id = $this->position_id;
@@ -111,7 +111,7 @@ class Plantillas extends Component
         $this->resetInputFields();
         $this->dispatch('openCreateUpdateModal');
 
-        $table = HrPlantillas::find($id);
+        $table = HrPlantilla::find($id);
         $this->id = $table->id;
         $this->item_number = $table->item_number;
         $this->user_id = $table->user_id;
@@ -137,7 +137,7 @@ class Plantillas extends Component
         ]);
 
         if (!empty($this->user_id)){
-            $userExistsInPlantilla = HrPlantillas::where([
+            $userExistsInPlantilla = HrPlantilla::where([
                 ['user_id', $this->user_id],
                 ['item_number', '!=', $this->item_number],
             ])->first();
@@ -147,7 +147,7 @@ class Plantillas extends Component
             }
         }
 
-        $table = HrPlantillas::find($this->id);
+        $table = HrPlantilla::find($this->id);
         $table->item_number = $this->item_number;
         $table->user_id = !empty($this->user_id) ? $this->user_id : null;
         $table->position_id = $this->position_id;
@@ -171,7 +171,7 @@ class Plantillas extends Component
         $this->deleteId = $id;
         $this->dispatch('openDeletionModal');
 
-        $table = HrPlantillas::find($id);
+        $table = HrPlantilla::find($id);
         $this->id = $table->id;
         $this->item_number = $table->item_number;
         $this->user_id = $table->user_id;
@@ -183,7 +183,7 @@ class Plantillas extends Component
     }
 
     public function delete(){
-        $oldTable = HrPlantillas::from('hr_plantillas as hp')
+        $oldTable = HrPlantilla::from('hr_plantillas as hp')
             ->select(
                 'hp.*',
                 'upi.*'
@@ -192,7 +192,7 @@ class Plantillas extends Component
             ->where('hp.id', $this->deleteId)
             ->first();
 
-        $table = HrPlantillas::find($this->deleteId);
+        $table = HrPlantilla::find($this->deleteId);
         if ($table->delete()){
             $this->isUpdateMode = false;
             $this->resetInputFields();
@@ -226,7 +226,7 @@ class Plantillas extends Component
     }
 
     public function performGlobalSearch(){
-        $this->tableList = HrPlantillas::from('hr_plantillas as hp')
+        $this->tableList = HrPlantilla::from('hr_plantillas as hp')
         ->select(
             'hp.*',
             DB::raw("DATE_FORMAT(hp.created_at, '%Y-%m-%d %h:%i %p') as formatted_created_at"),
@@ -246,7 +246,11 @@ class Plantillas extends Component
         ->leftJoin('user_personal_informations as upi', 'hp.user_id', '=', 'upi.user_id')
         ->leftJoin('lib_positions as lp', 'hp.position_id', '=', 'lp.id')
         ->leftJoin('lib_salaries as ls', 'hp.salary_id', '=', 'ls.id')
-        ->where('upi.firstname', 'like', '%'.trim($this->search).'%')
+        ->where('hp.item_number', 'like', '%'.trim($this->search).'%')
+        ->orWhere('hp.status', 'like', '%'.trim($this->search).'%')
+        ->orWhere('hp.remarks', 'like', '%'.trim($this->search).'%')
+        ->orWhere('hp.is_plantilla', 'like', '%'.trim($this->search).'%')
+        ->orWhere('upi.firstname', 'like', '%'.trim($this->search).'%')
         ->orWhere('upi.middlename', 'like', '%'.trim($this->search).'%')
         ->orWhere('upi.lastname', 'like', '%'.trim($this->search).'%')
         ->orWhere('upi.extname', 'like', '%'.trim($this->search).'%')
@@ -287,7 +291,7 @@ class Plantillas extends Component
             };
         }
 
-        $this->tableList = HrPlantillas::from('hr_plantillas as hp')
+        $this->tableList = HrPlantilla::from('hr_plantillas as hp')
         ->select(
             'hp.*',
             DB::raw("DATE_FORMAT(hp.created_at, '%Y-%m-%d %h:%i %p') as formatted_created_at"),
@@ -321,7 +325,7 @@ class Plantillas extends Component
     }
 
     public function totalTableDataCount(){
-        $this->totalTableDataCount = HrPlantillas::get()->count();
+        $this->totalTableDataCount = HrPlantilla::get()->count();
     }
 
     public function render(){

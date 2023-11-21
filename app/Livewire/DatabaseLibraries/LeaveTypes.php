@@ -25,12 +25,12 @@ class LeaveTypes extends Component
     public $abbreviationAdvancedSearchField, $nameAdvancedSearchField,
            $descriptionAdvancedSearchField, $daysAdvancedSearchField,
            $unitAdvancedSearchField, $isWithPayAdvancedSearchField,
-           $dateCreatedAdvancedSearchField = '';
+           $forFormAdvancedSearchField, $dateCreatedAdvancedSearchField = '';
 
     public $counter = 0;
     public $totalTableDataCount = 0;
     public $id, $abbreviation, $name, $description,
-           $days, $unit, $is_with_pay;
+           $days, $unit, $is_with_pay, $for_form;
 
     public $isUpdateMode = false;
     public $deleteId = '';
@@ -46,6 +46,7 @@ class LeaveTypes extends Component
         $this->days = '';
         $this->unit = '';
         $this->is_with_pay = '';
+        $this->for_form = '';
         artisanClear();
     }
 
@@ -56,6 +57,7 @@ class LeaveTypes extends Component
         $this->daysAdvancedSearchField = '';
         $this->unitAdvancedSearchField = '';
         $this->isWithPayAdvancedSearchField = '';
+        $this->forFormAdvancedSearchField = '';
         $this->dateCreatedAdvancedSearchField = '';
     }
 
@@ -72,6 +74,7 @@ class LeaveTypes extends Component
             'days' => 'required|numeric',
             'unit' => 'required|min:3|max:255',
             'is_with_pay' => 'required',
+            'for_form' => 'required',
         ]);
 
         $table = new LibLeaveType();
@@ -81,6 +84,7 @@ class LeaveTypes extends Component
         $table->days = $this->days;
         $table->unit = $this->unit;
         $table->is_with_pay = $this->is_with_pay;
+        $table->for_form = $this->for_form;
         if ($table->save()){
             $this->resetInputFields();
             $this->dispatch('closeModal');
@@ -105,6 +109,7 @@ class LeaveTypes extends Component
         $this->days = $table->days;
         $this->unit = $table->unit;
         $this->is_with_pay = $table->is_with_pay;
+        $this->for_form = $table->for_form;
     }
 
     public function update(){
@@ -125,6 +130,7 @@ class LeaveTypes extends Component
             'days' => 'required|numeric',
             'unit' => 'required|min:3|max:255',
             'is_with_pay' => 'required',
+            'for_form' => 'required',
         ]);
 
         $table = LibLeaveType::find($this->id);
@@ -134,6 +140,7 @@ class LeaveTypes extends Component
         $table->days = $this->days;
         $table->unit = $this->unit;
         $table->is_with_pay = $this->is_with_pay;
+        $table->for_form = $this->for_form;
         if ($table->update()){
             $this->isUpdateMode = false;
             $this->resetInputFields();
@@ -157,6 +164,7 @@ class LeaveTypes extends Component
         $this->days = number_format($table->days, 3);
         $this->unit = $table->unit;
         $this->is_with_pay = $table->is_with_pay;
+        $this->for_form = $table->for_form;
     }
 
     public function delete(){
@@ -205,6 +213,7 @@ class LeaveTypes extends Component
         ->orWhere('days', 'like', '%'.trim($this->search).'%')
         ->orWhere('unit', 'like', '%'.trim($this->search).'%')
         ->orWhere('is_with_pay', 'like', '%'.trim($this->search).'%')
+        ->orWhere('for_form', 'like', '%'.trim($this->search).'%')
         ->orWhere('created_at', 'like', '%'.trim($this->search).'%')
         ->orderBy($this->sortField, $this->sortDirection)
         ->paginate($this->perPage);
@@ -256,7 +265,8 @@ class LeaveTypes extends Component
         ->where('days', 'like', '%'.trim($this->daysAdvancedSearchField).'%')
         ->where($unitCondition)
         ->where('is_with_pay', 'like', '%'.trim($this->isWithPayAdvancedSearchField).'%')
-        ->where('created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField).'%')
+        ->where('is_with_pay', 'like', '%'.trim($this->isWithPayAdvancedSearchField).'%')
+        ->where('for_form', 'like', '%'.trim($this->forFormAdvancedSearchField).'%')
         ->orderBy($this->sortField, $this->sortDirection)
         ->paginate($this->perPage);
 

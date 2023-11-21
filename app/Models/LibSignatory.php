@@ -6,18 +6,20 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class HrPlantillas extends Model
+class LibSignatory extends Model
 {
     use HasFactory;
 
     public $incrementing = false;
-    protected $table = 'hr_plantillas';
-    protected $primaryKey = 'id';   
+    protected $table = 'lib_signatories';
+    protected $primaryKey = 'id';
     protected $keyType = 'string';
 
     protected $fillable = [
-        'item_number', 'user_id', 'position_id', 'salary_id',
-        'status', 'remarks', 'is_plantilla'
+        'user_id', 'for',
+        'param1_signatory', 'param1_designation',
+        'param2_signatory', 'param2_designation',
+        'param3_signatory', 'param3_designation'
     ];
 
     protected static function boot(){

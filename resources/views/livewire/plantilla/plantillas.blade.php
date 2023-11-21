@@ -302,7 +302,7 @@
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-12 mb-3">
                             <label for="remarks" class="form-label">Remarks</label>
                             <textarea class="form-control" wire:model="remarks" id="remarks" placeholder="Remarks" rows="3"></textarea>
                         </div>

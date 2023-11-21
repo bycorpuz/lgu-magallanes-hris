@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('middlename')->nullable();
             $table->string('lastname');
             $table->char('extname', 10)->nullable();
+            $table->string('other_ext')->nullable();
             $table->date('date_of_birth')
                 ->nullable()
                 ->default('1900-01-01')

@@ -11,15 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lib_leave_types', function (Blueprint $table) {
+        Schema::create('lib_designations', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
-            $table->string('abbreviation', 10)->nullable();
             $table->string('name');
-            $table->string('description')->nullable();
-            $table->decimal('days', 12, 3)->default('0.000');
-            $table->string('unit')->nullable();
-            $table->enum('is_with_pay', ['Yes', 'No'])->default('Yes');
-            $table->enum('for_form', ['Yes', 'No'])->default('Yes');
             $table->timestamps();
         });
     }
@@ -29,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lib_leave_types');
+        Schema::dropIfExists('lib_designations');
     }
 };

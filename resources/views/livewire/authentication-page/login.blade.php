@@ -67,7 +67,7 @@
                     <div class="col-12">
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">Sign in</button>
-                            <a href="/register" class="btn btn-light"><i class="bx bx-user-pin me-1"></i>Register</a>
+                            {{-- <a href="/register" class="btn btn-light"><i class="bx bx-user-pin me-1"></i>Register</a> --}}
                             <a href="/" class="btn btn-light"><i class="bx bx-arrow-back me-1"></i>Back to Website</a>
                         </div>
                     </div>

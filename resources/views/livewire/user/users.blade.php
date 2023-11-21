@@ -48,8 +48,16 @@
                             <div class="col-md-3 mb-3">
                                 <input type="search" class="form-control" wire:model="lastNameAdvancedSearchField" placeholder="Last Name">
                             </div>
+                            <div class="col-md-3 mb-3" wire:ignore>
+                                <select class="form-select" wire:model="extNameAdvancedSearchField" id="extNameAdvancedSearchField">
+                                    <option value="">Extension Name</option>
+                                    @foreach (extName() as $key => $value)
+                                        <option value="{{ $key }}">{{ $value }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <div class="col-md-3 mb-3">
-                                <input type="search" class="form-control" wire:model="extNameAdvancedSearchField" placeholder="Extension Name">
+                                <input type="search" class="form-control" wire:model="otherExtAdvancedSearchField" placeholder="Other Extension">
                             </div>
                             <div class="col-md-3 mb-3" wire:ignore>
                                 <select class="form-select" wire:model="userIdAdvancedSearchField" id="userIdAdvancedSearchField">
@@ -83,7 +91,7 @@
                 <table class="table mb-0 table-striped">
                     <thead>
                         <tr>
-                            <th colspan="5" class="text-center">User Name</th>
+                            <th colspan="6" class="text-center">User Name</th>
                             <th colspan="5" class="text-center">Other Information</th>
                         </tr>
                         <tr>
@@ -114,6 +122,12 @@
                             <th class="cursor-pointer" wire:click="sortBy('upi.extname')">
                                 Extension
                                 @if ($sortField === 'upi.extname')
+                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                @endif
+                            </th>
+                            <th class="cursor-pointer" wire:click="sortBy('upi.other_ext')">
+                                Other Extension
+                                @if ($sortField === 'upi.other_ext')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
@@ -153,6 +167,7 @@
                                     <td>{{ $row->middlename }}</td>
                                     <td>{{ $row->lastname }}</td>
                                     <td>{{ $row->extname }}</td>
+                                    <td>{{ $row->other_ext }}</td>
                                     <td>{{ $row->email }}</td>
                                     <td>{{ $row->username }}</td>
                                     <td>{{ $row->mobile_no }}</td>
@@ -171,7 +186,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="10"><div class="text-center">No results found.</div></td>
+                                <td colspan="11"><div class="text-center">No results found.</div></td>
                             </tr>
                         @endif
                     </tbody>
@@ -256,13 +271,20 @@
                             @enderror
                         </div>
                         <div class="col-md-3 mb-3">
+                            <label class="form-label">Other Extension</label>
+                            <input type="text" class="form-control" placeholder="Other Extension" wire:model="other_ext">
+                            @error('other_ext')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="col-md-3 mb-3">
                             <label class="form-label">Date of Birth <span style="color: red;">*</span></label>
                             <input type="date" class="form-control" placeholder="Date of Birth" wire:model="date_of_birth" required>
                             @error('date_of_birth')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="col-md-9 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label class="form-label">Place of Birth</label>
                             <input type="text" class="form-control" placeholder="Place of Birth" wire:model="place_of_birth">
                             @error('place_of_birth')
@@ -346,6 +368,7 @@
                         <p>Middle Name: <b>{{ $middlename }}</b> </p>
                         <p>Last Name: <b>{{ $lastname }}</b> </p>
                         <p>Extension Name: <b>{{ $extname }}</b> </p>
+                        <p>Other Extension: <b>{{ $other_ext }}</b> </p>
                         <p>Date of Birth: <b>{{ $date_of_birth }}</b> </p>
                         <p>Place of Birth: <b>{{ $place_of_birth }}</b> </p>
                         <p>Sex: <b>{{ $sex }}</b> </p>
@@ -429,6 +452,15 @@
             });
             $('#userIdAdvancedSearchField').on('change', function (e) {
                 @this.set('userIdAdvancedSearchField', $(this).val());
+            });
+
+            $('#extNameAdvancedSearchField').select2( {
+                theme: "bootstrap-5",
+                width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                placeholder: $( this ).data( 'placeholder' ),
+            });
+            $('#extNameAdvancedSearchField').on('change', function (e) {
+                @this.set('extNameAdvancedSearchField', $(this).val());
             });
         }
     </script>

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->uuid('leave_credits_available_id');
             $table->integer('month')->nullable();
             $table->year('year')->nullable();
-            $table->decimal('value', 12, 3)->nullable();
+            $table->decimal('value', 12, 3)->default('0.000');
             $table->date('date_from')->nullable();
             $table->date('date_to')->nullable();
             $table->text('remarks')->nullable();

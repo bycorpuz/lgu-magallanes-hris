@@ -16,7 +16,7 @@ class UserPersonalInformation extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'user_id', 'firstname', 'middlename', 'lastname', 'ext_name',
+        'user_id', 'firstname', 'middlename', 'lastname', 'ext_name', 'other_ext',
         'date_of_birth', 'place_of_birth', 'sex', 'civil_status',
         'ra_house_no', 'ra_street', 'ra_subdivision', 'ra_brgy_code', 'ra_zip_code',
         'tel_no', 'mobile_no'
@@ -28,5 +28,9 @@ class UserPersonalInformation extends Model
         static::creating(function ($model) {
             $model->{$model->getKeyName()} = Str::uuid()->toString();
         });
+    }
+
+    public function userPlantilla(){
+        return $this->hasOne(HrPlantilla::class, 'user_id', 'user_id');
     }
 }

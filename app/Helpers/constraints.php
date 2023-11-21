@@ -88,3 +88,13 @@ function plantillaStatus(){
         'Job Order' => 'Job Order',
     ];
 }
+
+function leaveStatus(){
+    return [
+        'Approved'      => 'Approved',
+        'Disapproved'   => 'Disapproved',
+        'Cancelled'     => 'Cancelled',
+        'Processing'    => 'Processing',
+        'Pending'       => 'Pending'
+    ];
+}

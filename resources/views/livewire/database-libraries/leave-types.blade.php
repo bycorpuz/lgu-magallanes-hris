@@ -66,7 +66,15 @@
                                         <option value="{{ $key }}">{{ $value }}</option>
                                     @endforeach
                                 </select>
-                            </div>                            
+                            </div>      
+                            <div class="col-md-3 mb-3" wire:ignore>
+                                <select class="form-select" wire:model="forFormAdvancedSearchField" id="forFormAdvancedSearchField">
+                                    <option value="">For Leave Form?</option>
+                                    @foreach (yesNo() as $key => $value)
+                                        <option value="{{ $key }}">{{ $value }}</option>
+                                    @endforeach
+                                </select>
+                            </div>                        
                             <div class="col-md-3">
                                 <input type="search" class="form-control" wire:model="dateCreatedAdvancedSearchField" placeholder="Date Created">
                             </div>
@@ -124,6 +132,12 @@
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
+                            <th class="cursor-pointer" wire:click="sortBy('for_form')">
+                                For Leave Form?
+                                @if ($sortField === 'for_form')
+                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                @endif
+                            </th>
                             <th class="cursor-pointer" wire:click="sortBy('created_at')">
                                 Date Created
                                 @if ($sortField === 'created_at')
@@ -144,6 +158,7 @@
                                     <td>{{ number_format($row->days, 3) }}</td>
                                     <td>{{ $row->unit }}</td>
                                     <td>{{ $row->is_with_pay }}</td>
+                                    <td>{{ $row->for_form }}</td>
                                     <td>{{ $row->formatted_created_at }}</td>
                                     <td>
                                         <div class="btn-group" role="group" aria-label="Action Buttons">
@@ -159,7 +174,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="9"><div class="text-center">No results found.</div></td>
+                                <td colspan="10"><div class="text-center">No results found.</div></td>
                             </tr>
                         @endif
                     </tbody>
@@ -238,7 +253,7 @@
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="col-md-6 mb-3" wire:ignore>
+                        <div class="col-md-4 mb-3" wire:ignore>
                             <label class="form-label">Unit <span style="color: red;">*</span></label>
                             <select class="form-select" wire:model="unit" data-placeholder="Select" id="unit" required>
                                 <option value="">Select</option>
@@ -250,7 +265,7 @@
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="col-md-6 mb-3" wire:ignore>
+                        <div class="col-md-4 mb-3" wire:ignore>
                             <label class="form-label">Is With Pay? <span style="color: red;">*</span></label>
                             <select class="form-select" wire:model="is_with_pay" data-placeholder="Select" id="is_with_pay" required>
                                 <option value="">Select</option>
@@ -259,6 +274,18 @@
                                 @endforeach
                             </select>
                             @error('is_with_pay')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="col-md-4 mb-3" wire:ignore>
+                            <label class="form-label">For Leave Form? <span style="color: red;">*</span></label>
+                            <select class="form-select" wire:model="for_form" data-placeholder="Select" id="for_form" required>
+                                <option value="">Select</option>
+                                @foreach (yesNo() as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
+                            @error('for_form')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
@@ -289,6 +316,7 @@
                         <p>Days: <b>{{ $days }}</b> </p>
                         <p>Unit: <b>{{ $unit }}</b> </p>
                         <p>Is With Pay?: <b>{{ $is_with_pay }}</b> </p>
+                        <p>For Leave Form?: <b>{{ $for_form }}</b> </p>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-danger close-modal" data-dismiss="modal">Yes, Delete it.</button>
@@ -329,6 +357,17 @@
                     $('#is_with_pay').on('change', function (e) {
                         @this.set('is_with_pay', $(this).val());
                     });
+
+                    $('#for_form').select2( {
+                        dropdownParent: $('#modelCreateUpdateModal'),
+                        theme: "bootstrap-5",
+                        width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                        placeholder: $( this ).data( 'placeholder' ),
+                        closeOnSelect: true,
+                    });
+                    $('#for_form').on('change', function (e) {
+                        @this.set('for_form', $(this).val());
+                    });
                 });
             });
             
@@ -360,6 +399,15 @@
             });
             $('#isWithPayAdvancedSearchField').on('change', function (e) {
                 @this.set('isWithPayAdvancedSearchField', $(this).val());
+            });
+
+            $('#forFormAdvancedSearchField').select2( {
+                theme: "bootstrap-5",
+                width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                placeholder: $( this ).data( 'placeholder' ),
+            });
+            $('#forFormAdvancedSearchField').on('change', function (e) {
+                @this.set('forFormAdvancedSearchField', $(this).val());
             });
         }
     </script>

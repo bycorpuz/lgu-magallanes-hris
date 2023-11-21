@@ -6,18 +6,17 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class LibLeaveType extends Model
+class LibDesignation extends Model
 {
     use HasFactory;
 
     public $incrementing = false;
-    protected $table = 'lib_leave_types';
+    protected $table = 'lib_designations';
     protected $primaryKey = 'id';
     protected $keyType = 'string';
 
     protected $fillable = [
-        'abbreviation', 'name', 'description', 'days',
-        'unit', 'is_with_pay', 'for_form'
+        'name'
     ];
 
     protected static function boot(){

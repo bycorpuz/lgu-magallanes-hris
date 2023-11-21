@@ -3,6 +3,7 @@
 use App\Livewire\AuthenticationPage\Login;
 use App\Livewire\AuthenticationPage\Register;
 use App\Livewire\DashboardPage\Dashboard;
+use App\Livewire\DatabaseLibraries\Designations;
 use App\Livewire\DatabaseLibraries\LeaveTypes;
 use App\Livewire\DatabaseLibraries\Positions;
 use App\Livewire\DatabaseLibraries\Salaries;
@@ -46,6 +47,7 @@ Route::group(['middleware' => ['auth', 'preventBackHistory']], function(){
     // Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/my-profile', Profile::class)->name('my-profile');
     Route::get('/my-leave', Leave::class)->name('my-leave');
+    Route::get('/my-leave-print/{id}', [Leave::class, 'printleave']);
 
     Route::get('/users', Users::class)->middleware('permission:crud-users')->name('users');
 
@@ -58,6 +60,7 @@ Route::group(['middleware' => ['auth', 'preventBackHistory']], function(){
     Route::get('/dl-positions', Positions::class)->middleware('permission:crud-positions')->name('dl-positions');
     Route::get('/dl-salaries', Salaries::class)->middleware('permission:crud-salaries')->name('dl-salaries');
     Route::get('/dl-leave-types', LeaveTypes::class)->middleware('permission:crud-leave-types')->name('dl-leave-types');
+    Route::get('/dl-designations', Designations::class)->middleware('permission:crud-designations')->name('dl-designations');
 
     Route::get('/leaves', Leaves::class)->middleware('permission:crud-leaves')->name('leaves');
     Route::get('/leave-earnings', LeaveEarnings::class)->middleware('permission:crud-leave-earnings')->name('leave-earnings');
