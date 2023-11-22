@@ -364,8 +364,7 @@
                         <div><img class="img" src={{ $src2 }}></div>
                         <div class="details2">Requested</div>
 
-                        <div style="text-align: center; margin-top: 3mm; margin-bottom: -5px;"></div>
-
+                        <div style="text-align: center; margin-top: 3mm; margin-bottom: -5px;"><img src="{{ asset('images/site/blank.png') }}" style="width: 70px;" alt="e-signature"></div>
                         <div class="details3"></div>
                         <div class="details4">(Signature of Applicant)</div>
                     </td>
@@ -418,9 +417,9 @@
                             </table>
                         </div>
 
-                        <div style="text-align: center; margin-top: 3mm; margin-bottom: -5px;"></div>
+                        <div style="text-align: center; margin-top: 3mm; margin-bottom: -5px;"><img src="{{ asset('images/site/blank.png') }}" style="width: 70px;" alt="e-signature"></div>
                         <div class="details7">{{ getUserFullName($signatories->param1_signatory) }}</div>
-                        <div class="details8">{{ $signatories->param1_designation }}</div>
+                        <div class="details8">{{ $signatories->param1_designation ? getDesignations($signatories->param1_designation)->name : '(not-set)' }}</div>
 
                     </td>
                     <td class="td2">
@@ -435,9 +434,9 @@
                         <div class="details4">&nbsp;</div>
                         <div class="details4">&nbsp;</div>
 
-                        <div style="text-align: center; margin-top: 9mm; margin-bottom: -5px;"></div>
+                        <div style="text-align: center; margin-top: 9mm; margin-bottom: -5px;"><img src="{{ asset('images/site/blank.png') }}" style="width: 70px;" alt="e-signature"></div>
                         <div class="details5">{{ getUserFullName($signatories->param2_signatory) }}</div>
-                        <div class="details6">{{ $signatories->param2_designation }}</div>
+                        <div class="details6">{{ $signatories->param2_designation ? getDesignations($signatories->param2_designation)->name : '(not-set)' }}</div>
                     </td>
                 </tr>
             </table>
@@ -469,10 +468,9 @@
 
                 <tr class="tr2">
                     <td class="td1" colspan="2">
-                        <div style="text-align: center; margin-top: 3mm; margin-bottom: -5px;"></div>
-
+                        <div style="text-align: center; margin-top: 3mm; margin-bottom: -5px;"><img src="{{ asset('images/site/blank.png') }}" style="width: 70px;" alt="e-signature"></div>
                         <div class="details3">{{ getUserFullName($signatories->param3_signatory) }}</div>
-                        <div class="details4">{{ $signatories->param3_designation }}</div>
+                        <div class="details4">{{ $signatories->param3_designation ? getDesignations($signatories->param3_designation)->name : '(not-set)' }}</div>
                     </td>
                 </tr>
             </table>

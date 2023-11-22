@@ -26,4 +26,8 @@ class HrLeaveCreditsAvailable extends Model
             $model->{$model->getKeyName()} = Str::uuid()->toString();
         });
     }
+
+    public function leaveType(){
+        return $this->hasOne(LibLeaveType::class, 'id', 'leave_type_id');
+    }
 }
