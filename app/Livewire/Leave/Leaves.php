@@ -4,6 +4,8 @@ namespace App\Livewire\Leave;
 
 use App\Models\HrLeave;
 use App\Models\HrLeaveCreditsAvailable;
+use App\Models\HrLeaveCreditsAvailableList;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
@@ -16,7 +18,7 @@ class Leaves extends Component
 {
     use WithPagination;
 
-    protected $tableList, $tableList2;
+    protected $tableList;
     public $perPage = 10;
     public $search = '';
     public $sortField = 'created_at';
@@ -35,18 +37,36 @@ class Leaves extends Component
            $detailsB5AdvancedSearchField, $detailsD1AdvancedSearchField = '';
     public $counter = 0;
     public $totalTableDataCount = 0;
-    
+
+    public $hlId, $tracking_code, $leave_type_id, $user_id,
+           $days, $date_from, $date_to, $is_with_pay, $remarks,
+           $date_approved, $date_disapproved, $date_cancelled, $date_processing,
+           $details_b1, $details_b1_name, $details_b2, $details_b2_name,
+           $details_b3_name, $details_b4, $details_b5, $details_d1 = '';
+    public $isUpdateMode = false;
+
+    public $printViewFileUrl2;
+    protected $tableList2;
     public $sortField2 = 'created_at';
     public $sortDirection2 = 'desc';
     public $availableAdvancedSearchField2, $usedAdvancedSearchField2,
            $balanceAdvancedSearchField2, $dateCreatedAdvancedSearchField2 = '';
     public $counter2 = 0;
-    public $month2, $year2, $value2, $date_from2, $date_to2, $remarks2, $modal_title2= '';
+    public $hlcaId, $month2, $year2, $value2, $date_from2, $date_to2, $remarks2, $modal_title2= '';
+    public $isUpdateMode2 = false;
+
+    protected $tableList3;
+    public $sortField3 = 'created_at';
+    public $sortDirection3 = 'desc';
+    public $monthAdvancedSearchField3, $yearAdvancedSearchField3,
+           $valueAdvancedSearchField3, $dateFromAdvancedSearchField3, $dateToAdvancedSearchField3,
+           $remarksAdvancedSearchField3, $dateCreatedAdvancedSearchField3 = '';
+    public $counter3 = 0;
+    public $hlcalId, $month3, $year3, $value3, $date_from3, $date_to3, $remarks3, $modal_title3= '';
 
     private function resetAdvancedSearchFields(){
         $this->trackingCodeAdvancedSearchField = '';
         $this->leaveTypeIdAdvancedSearchField = '';
-        $this->userIdAdvancedSearchField = '';
         $this->daysAdvancedSearchField = '';
         $this->dateFromAdvancedSearchField = '';
         $this->dateToAdvancedSearchField = '';
@@ -68,18 +88,240 @@ class Leaves extends Component
         $this->detailsD1AdvancedSearchField = '';
     }
 
-    public function addleavecredits($id){
-        $hlca = HrLeaveCreditsAvailable::find($id);
+    public function closeModal(){
+        $this->isUpdateMode = false;
+        $this->isUpdateMode2 = false;
+        $this->resetInputFields();
+        $this->resetInputFields2();
+        $this->dispatch('closeModal');
+    }
 
+    private function resetInputFields(){
+        $this->tracking_code = '';
+        $this->leave_type_id = '';
+        $this->user_id = '';
+        $this->days = '';
+        $this->date_from = '';
+        $this->date_to = '';
+        $this->is_with_pay = '';
+        $this->remarks = '';
+        $this->date_approved = '';
+        $this->date_disapproved = '';
+        $this->date_cancelled = '';
+        $this->date_processing = '';
+        $this->details_b1 = '';
+        $this->details_b1_name = '';
+        $this->details_b2 = '';
+        $this->details_b2_name = '';
+        $this->details_b3_name = '';
+        $this->details_b4 = '';
+        $this->details_b5 = '';
+        $this->details_d1 = '';
+        artisanClear();
+    }
+
+    private function resetInputFields2(){
+        $this->month2 = '';
+        $this->year2 = '';
+        $this->value2 = '';
+        $this->date_from2 = '';
+        $this->date_to2 = '';
+        $this->remarks2 = '';
+        artisanClear();
+    }
+
+    public function calculateDays(){
+        if ($this->date_from && $this->date_to) {
+            $start = Carbon::parse($this->date_from);
+            $end = Carbon::parse($this->date_to);
+
+            $this->days = $end->diffInDays($start) + 1;
+        } else {
+            $this->days = 1;
+        }
+    }
+
+    public function edit($id){
+        $this->isUpdateMode = true;
+        $this->resetInputFields();
+        $this->dispatch('openCreateUpdateModal');
+
+        $table = HrLeave::find($id);
+        $this->hlId = $table->id;
+        $this->leave_type_id = $table->leave_type_id;
+        $this->days = $table->days;
+        $this->date_from = $table->date_from;
+        $this->date_to = $table->date_to;
+        $this->is_with_pay = $table->is_with_pay;
+        $this->remarks = $table->remarks;
+        $this->details_b1 = $table->details_b1;
+        $this->details_b1_name = $table->details_b1_name;
+        $this->details_b2 = $table->details_b2;
+        $this->details_b2_name = $table->details_b2_name;
+        $this->details_b3_name = $table->details_b3_name;
+        $this->details_b4 = $table->details_b4;
+        $this->details_b5 = $table->details_b5;
+        $this->details_d1 = $table->details_d1;
+    }
+
+    public function updateleave(){
+        $this->validate([
+            'leave_type_id' => 'required',
+            'days' => 'required|numeric',
+            'date_from' => 'required|date',
+            'date_to' => 'required|date',
+            'is_with_pay' => 'required|in:Yes,No'
+        ]);
+
+        $table = HrLeave::find($this->hlId);
+        $table->leave_type_id = $this->leave_type_id;
+        $table->days = $this->days;
+        $table->date_from = $this->date_from;
+        $table->date_to = $this->date_to;
+        $table->is_with_pay = $this->is_with_pay;
+        $table->remarks = $this->remarks;
+        
+        $table->details_b1 = !empty($this->details_b1) ? $this->details_b1 : 'N/A';
+        $table->details_b1_name = $this->details_b1_name;
+        $table->details_b2 = !empty($this->details_b2) ? $this->details_b2 : 'N/A';
+        $table->details_b2_name = $this->details_b2_name;
+        $table->details_b3_name = $this->details_b3_name;
+        $table->details_b4 = !empty($this->details_b4) ? $this->details_b4 : 'N/A';
+        $table->details_b5 = !empty($this->details_b5) ? $this->details_b5 : 'N/A';
+        $table->details_d1 = !empty($this->details_d1) ? $this->details_d1 : 'No';
+        
+        if ($table->update()) {
+            $this->resetInputFields();
+            $this->dispatch('closeModal');
+
+            doLog($table, request()->ip(), 'Leaves', 'Updated');
+            $this->js("showNotification('success', 'Leave data has been updated successfully.')");
+        } else {
+            $this->js("showNotification('error', 'Something went wrong')");
+        }
+    }
+
+    public function addleavecredits($id){
+        $this->hlcaId = $id;
+        $hlca = HrLeaveCreditsAvailable::find($this->hlcaId);
         $this->modal_title2 = $hlca->leaveType->name;
 
         $this->dispatch('openModelAddLeaveCreditsModal');
     }
 
-    public function closeModal(){
-        $this->dispatch('closeModal');
+    public function addleavecreditsform(){
+        $this->validate([
+            'month2' => 'required|integer',
+            'year2' => 'required|digits:4',
+            'value2' => 'required|numeric',
+            'date_from2' => 'required|date',
+            'date_to2' => 'required|date',
+            'remarks2' => 'required'
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $table = new HrLeaveCreditsAvailableList();
+            $table->leave_credits_available_id = $this->hlcaId;
+            $table->month = $this->month2;
+            $table->year = $this->year2;
+            $table->value = $this->value2;
+            $table->date_from = $this->date_from2;
+            $table->date_to = $this->date_to2;
+            $table->remarks = $this->remarks2;
+            
+            if ($table->save()) {
+                $table2 = HrLeaveCreditsAvailable::find($this->hlcaId);
+                $table2->available += $this->value2;
+                $table2->balance += $this->value2;
+                $table2->update();
+
+                DB::commit();
+
+                $this->resetInputFields2();
+
+                doLog($table, request()->ip(), 'Leaves', 'Created');
+                $this->js("showNotification('success', 'Leave Credits data has been saved successfully.')");
+            } else {
+                $this->js("showNotification('error', 'Something went wrong.')");
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->js("showNotification('error', 'Something went wrong.");
+        }
     }
-    
+
+    public function editleavecredits($id){
+        $this->isUpdateMode2 = true;
+        $this->resetInputFields2();
+
+        $table = HrLeaveCreditsAvailableList::find($id);
+        $this->hlcalId = $table->id;
+        $this->month2 = $table->month;
+        $this->year2 = $table->year;
+        $this->value2 = $table->value;
+        $this->date_from2 = $table->date_from;
+        $this->date_to2 = $table->date_to;
+        $this->remarks2 = $table->remarks;
+    }
+
+    public function updateleavecreditsform(){
+        $this->validate([
+            'month2' => 'required|integer',
+            'year2' => 'required|digits:4',
+            'value2' => 'required|numeric',
+            'date_from2' => 'required|date',
+            'date_to2' => 'required|date',
+            'remarks2' => 'required'
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $table = HrLeaveCreditsAvailableList::find($this->hlcalId);
+            $oldValue = $table->value;
+            $table->month = $this->month2;
+            $table->year = $this->year2;
+            $table->value = $this->value2;
+            $table->date_from = $this->date_from2;
+            $table->date_to = $this->date_to2;
+            $table->remarks = $this->remarks2;
+
+            if ($oldValue < 0) {
+                $this->js("showNotification('error', 'Editing of negative values is restricted. Kindly consult with the system administrator for further assistance.')");
+                $this->resetInputFields2();
+                return;
+            } else {
+                $table2 = HrLeaveCreditsAvailable::find($this->hlcaId);
+                $prevAvailable = $table2->available - $oldValue;
+                $prevBalance = $table2->available - $oldValue;
+
+                $table2->available = $prevAvailable + $this->value2;
+                $table2->balance = $prevBalance + $this->value2;
+            }
+            
+            if ($table->update()) {
+                $table2->update();
+                DB::commit();
+
+                $this->isUpdateMode2 = false;
+                $this->resetInputFields2();
+
+                doLog($table, request()->ip(), 'Leaves', 'Created');
+                $this->js("showNotification('success', 'Leave Credits data has been saved successfully.')");
+            } else {
+                $this->js("showNotification('error', 'Something went wrong.')");
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->js("showNotification('error', 'Something went wrong.");
+        }
+    } 
+
+    public function print($id){
+        $this->printViewFileUrl2 = 'my-leave-print/'.$id;
+        $this->dispatch('openNewWindow', ['viewFileUrl' => $this->printViewFileUrl2]);
+    }
+
     public function selectedValuePerPage(){
         $this->perPage;
     }
@@ -101,6 +343,15 @@ class Leaves extends Component
                 $this->sortDirection2 = 'asc';
             }
             $this->sortField2 = $field;
+        }
+
+        if ($alias == 'hlcal'){
+            if ($this->sortField3 === $field) {
+                $this->sortDirection3 = $this->sortDirection3 === 'asc' ? 'desc' : 'asc';
+            } else {
+                $this->sortDirection3 = 'asc';
+            }
+            $this->sortField3 = $field;
         }
     }
 
@@ -217,6 +468,29 @@ class Leaves extends Component
         $this->resetPage();
     }
 
+    public function performAdvancedSearch3(){
+        $this->tableList3 = HrLeaveCreditsAvailableList::from('hr_leave_credits_available_list as hlcal')
+        ->select(
+            'hlcal.*',
+            DB::raw("DATE_FORMAT(hlcal.created_at, '%Y-%m-%d %h:%i %p') as formatted_created_at"),
+            'llt.name as llt_name'
+        )
+        ->leftJoin('hr_leave_credits_available as hlca', 'hlcal.leave_credits_available_id', '=', 'hlca.id')
+        ->leftJoin('lib_leave_types as llt', 'hlca.leave_type_id', '=', 'llt.id')
+        ->where('hlcal.month', 'like', '%'.trim($this->monthAdvancedSearchField3).'%')
+        ->where('hlcal.year', 'like', '%'.trim($this->yearAdvancedSearchField3).'%')
+        ->where('hlcal.value', 'like', '%'.trim($this->valueAdvancedSearchField3).'%')
+        ->where('hlcal.date_from', 'like', '%'.trim($this->dateFromAdvancedSearchField3).'%')
+        ->where('hlcal.date_to', 'like', '%'.trim($this->dateToAdvancedSearchField3).'%')
+        ->where('hlcal.remarks', 'like', '%'.trim($this->remarksAdvancedSearchField3).'%')
+        ->where('hlcal.created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField3).'%')
+        ->where('hlca.id', '=', $this->hlcaId)
+        ->orderBy($this->sortField3, $this->sortDirection3)
+        ->get();
+    
+        $this->resetPage();
+    }
+
     public function render(){
         if ($this->search){
             $this->performGlobalSearch();
@@ -226,9 +500,13 @@ class Leaves extends Component
 
         $this->performAdvancedSearch2();
 
+        $this->performAdvancedSearch3();
+        
+
         return view('livewire.leave.leaves', [
             'tableList' => $this->tableList,
             'tableList2' => $this->tableList2,
+            'tableList3' => $this->tableList3,
         ]);
     }
 }

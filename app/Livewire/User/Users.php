@@ -174,7 +174,7 @@ class Users extends Component
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->js("showNotification('error', '{$e->getMessage()}')");
+            $this->js("showNotification('error', 'Something went wrong.");
         }
     }
 

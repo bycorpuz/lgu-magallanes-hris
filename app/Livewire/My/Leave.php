@@ -362,7 +362,7 @@ class Leave extends Component
         }
 
         $signatories = LibSignatory::where([
-            ['user_id', Auth::user()->id],
+            ['user_id', $data->user_id],
             ['for', 'Leave']
         ])->first();
 

@@ -71,7 +71,7 @@
                                             @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                         @endif
                                     </th>
-                                    <th>Actions</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -85,8 +85,8 @@
                                             <td>{{ $row->balance }}</td>
                                             <td>
                                                 <div class="btn-group" role="group" aria-label="Action Button">
-                                                    <button class="btn btn-primary btn-sm" wire:click="addleavecredits('{{ $row->id }}')">
-                                                        <i class="bx bx-edit me-0"></i>
+                                                    <button class="btn btn-success btn-sm" wire:click="addleavecredits('{{ $row->id }}')">
+                                                        <i class="bx bx-plus me-0"></i>
                                                     </button>
                                                 </div>
                                             </td>
@@ -112,25 +112,26 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modelAddLeaveCreditsModalLabel">
-                        Add Leave Credits to {{ $modal_title2 }}
+                        {{ $isUpdateMode2 ? 'Edit Leave Credits of': 'Add Leave Credits to'}} {{ $modal_title2 }} 
                     </h5>
                     <button type="button" class="btn-close" wire:click="closeModal" aria-label="Close"></button>
                 </div>
-                <form wire:submit.prevent="addleavecreditsform">
+                <form wire:submit.prevent="{{ $isUpdateMode2 ? 'updateleavecreditsform': 'addleavecreditsform'}}">
                     @csrf
                     <div class="row modal-body">
                         <div class="col-md-4 mb-3" wire:ignore>
                             <label class="form-label">Month <span style="color: red;">*</span></label>
-                            <select class="form-select" wire:model="month2" data-placeholder="Select" id="month2" required>
+                            <select class="form-select" wire:model="month2" id="month2" required>
                                 <option value="">Select</option>
                                 @foreach (months() as $key => $value)
-                                    <option value="{{ $row->key }}">{{ $value }}</option>
+                                    <option value="{{ $key }}">{{ $value }}</option>
                                 @endforeach
                             </select>
                             @error('month2')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
+
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Year <span style="color: red;">*</span></label>
                             <input type="number" step="1" min="1900" class="form-control" placeholder="Year" wire:model="year2" required>
@@ -140,7 +141,7 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Value <span style="color: red;">*</span></label>
-                            <input type="number" step="0.001" min="0.001" class="form-control" placeholder="Value" wire:model="value2" required>
+                            <input type="number" step="0.001" class="form-control" placeholder="Value" wire:model="value2" required>
                             @error('value2')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
@@ -168,9 +169,100 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Create</button>
+                        <button type="submit" class="btn btn-primary">{{  $isUpdateMode2 ? 'Update': 'Create' }}</button>
                     </div>
                 </form>
+
+                <!--table3-->
+                <div class="row modal-body">
+                    <div class="table-responsive">
+                        <table class="table mb-0 table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.created_at')">
+                                        #
+                                        @if ($sortField2 === 'hlcal.created_at')
+                                            @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('hlcal', 'llt.name')">
+                                        Leave Type
+                                        @if ($sortField2 === 'llt.name')
+                                            @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.month')">
+                                        Month
+                                        @if ($sortField2 === 'hlcal.month')
+                                            @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.year')">
+                                        Year
+                                        @if ($sortField2 === 'hlcal.year')
+                                            @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.value')">
+                                        Value
+                                        @if ($sortField2 === 'hlcal.value')
+                                            @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.date_from')">
+                                        Date From
+                                        @if ($sortField2 === 'hlcal.date_from')
+                                            @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.date_to')">
+                                        Date To
+                                        @if ($sortField2 === 'hlcal.date_to')
+                                            @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.remarks')">
+                                        Remarks
+                                        @if ($sortField2 === 'hlcal.remarks')
+                                            @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if($tableList3)
+                                    @if($tableList3->count() > 0)
+                                        @foreach ($tableList3 as $row)
+                                            <tr>
+                                                <td>{{ ++ $counter3 }}</td>
+                                                <td>{{ $row->llt_name }}</td>
+                                                <td>{{ numberToMonthName($row->month) }}</td>
+                                                <td>{{ $row->year }}</td>
+                                                <td>{{ $row->value }}</td>
+                                                <td>{{ $row->date_from }}</td>
+                                                <td>{{ $row->date_to }}</td>
+                                                <td>{{ $row->remarks }}</td>
+                                                <td>
+                                                    <div class="btn-group" role="group" aria-label="Action Button">
+                                                        <button class="btn btn-primary btn-sm" wire:click="editleavecredits('{{ $row->id }}')">
+                                                            <i class="bx bx-edit me-0"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="9"><div class="text-center">No results found.</div></td>
+                                        </tr>
+                                    @endif
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!--end table3-->
             </div>
         </div>
     </div>
@@ -332,9 +424,11 @@
                                             <button class="btn btn-success btn-sm" wire:click="print('{{ $row->id }}')">
                                                 <i class="bx bx-printer me-0"></i>
                                             </button>
-                                            <button class="btn btn-primary btn-sm" wire:click="edit('{{ $row->id }}')">
-                                                <i class="bx bx-edit me-0"></i>
-                                            </button>
+                                            @if ($row->status != 'Approved')
+                                                <button class="btn btn-primary btn-sm" wire:click="edit('{{ $row->id }}')">
+                                                    <i class="bx bx-edit me-0"></i>
+                                                </button>
+                                            @endif
                                         </div>
                                         <div class="btn-group">
                                             <button type="button" class="btn btn-secondary btn-sm">Status</button>
@@ -391,18 +485,219 @@
     </div>
     <!--end table-->
 
+    <!--modal(create and update)-->
+    <div wire:ignore.self class="modal fade" id="modelCreateUpdateModal" tabindex="-1" role="dialog" aria-labelledby="modelCreateUpdateModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modelCreateUpdateModalLabel">
+                        {{ $isUpdateMode ? 'Edit Leave' : 'Add New Leave' }}
+                    </h5>
+                    <button type="button" class="btn-close" wire:click="closeModal" aria-label="Close"></button>
+                </div>
+                <form wire:submit.prevent="{{ $isUpdateMode ? 'updateleave' : 'addleave' }}">
+                    @csrf
+                    <div class="row modal-body">
+                        <div class="col-md-6 mb-3" wire:ignore>
+                            <label class="form-label">Leave Type <span style="color: red;">*</span></label>
+                            <select class="form-select" wire:model="leave_type_id" data-placeholder="Select" id="leave_type_id" required id="focusMe">
+                                <option value="">Select</option>
+                                @foreach (getLeaveTypes('') as $row)
+                                    <option value="{{ $row->id }}">{{ $row->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('leave_type_id')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3" wire:ignore>
+                            <label class="form-label">Is With Pay? <span style="color: red;">*</span></label>
+                            <select class="form-select" wire:model="is_with_pay" data-placeholder="Select" id="is_with_pay" required>
+                                <option value="">Select</option>
+                                @foreach (yesNo() as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
+                            @error('is_with_pay')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Date From <span style="color: red;">*</span></label>
+                            <input type="date" class="form-control" placeholder="Date From" wire:model="date_from" required wire:change="calculateDays">
+                            @error('date_from')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Date To <span style="color: red;">*</span></label>
+                            <input type="date" class="form-control" placeholder="Date To" wire:model="date_to" required wire:change="calculateDays">
+                            @error('date_to')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Days <span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" placeholder="Days" wire:model="days" required>
+                            @error('days')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="remarks" class="form-label">Remarks</label>
+                            <textarea class="form-control" wire:model="remarks" id="remarks" placeholder="Remarks" rows="3"></textarea>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label><b>In case of Vacation/Special Privilege Leave:</b></label>
+                        </div>
+                        <div class="col-md-6 mb-3" wire:ignore>
+                            <label class="form-label">Within the Philippines?</label>
+                            <select class="form-select" wire:model="details_b1" data-placeholder="Select" id="details_b1">
+                                <option value="">Select</option>
+                                @foreach (yesNo() as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
+                            @error('details_b1')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Specify</label>
+                            <input type="text" class="form-control" placeholder="Specify" wire:model="details_b1_name">
+                            @error('details_b1_name')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label><b>In case of Sick Leave:</b></label>
+                        </div>
+                        <div class="col-md-6 mb-3" wire:ignore>
+                            <label class="form-label">In Hospital?</label>
+                            <select class="form-select" wire:model="details_b2" data-placeholder="Select" id="details_b2">
+                                <option value="">Select</option>
+                                @foreach (yesNo() as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
+                            @error('details_b2')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Specify Illness</label>
+                            <input type="text" class="form-control" placeholder="Specify Illness" wire:model="details_b2_name">
+                            @error('details_b2_name')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label><b>In case of Special Leave Benefits for Women:</b></label>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Specify Illness</label>
+                            <input type="text" class="form-control" placeholder="Specify Illness" wire:model="details_b3_name">
+                            @error('details_b3_name')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label><b>In case of Study Leave:</b></label>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label><b>Other purpose:</b></label>
+                        </div>
+
+                        <div class="col-md-6 mb-3" wire:ignore>
+                            <label class="form-label">Completion of<br>Master's Degree?</label>
+                            <select class="form-select" wire:model="details_b4" data-placeholder="Select" id="details_b4">
+                                <option value="">Select</option>
+                                @foreach (yesNo() as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
+                            @error('details_b4')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3" wire:ignore>
+                            <label class="form-label">Monetization of<br>Leave Credits?</label>
+                            <select class="form-select" wire:model="details_b5" data-placeholder="Select" id="details_b5">
+                                <option value="">Select</option>
+                                @foreach (yesNo() as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
+                            @error('details_b5')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        
+                        <div class="col-md-6 mb-3" wire:ignore>
+                            <label class="form-label">Commutation Requested?</label>
+                            <select class="form-select" wire:model="details_d1" data-placeholder="Select" id="details_d1">
+                                <option value="">Select</option>
+                                @foreach (yesNo() as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
+                            @error('details_d1')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">{{ $isUpdateMode ? 'Update' : 'Create' }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--end modal(create and update)-->
 
 </div>
 
 @push('scripts')
     <script type="text/javascript">
         document.addEventListener('livewire:initialized', () => {
+            @this.on('openCreateUpdateModal', (data) => {
+                $('#modelCreateUpdateModal').modal('show');
+                $('#modelCreateUpdateModal').on('shown.bs.modal', function (e) {
+                    $('#leave_type_id').select2( {
+                        container: 'body',
+                        dropdownParent: $('#modelCreateUpdateModal'),
+                        theme: "bootstrap-5",
+                        width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                        placeholder: $( this ).data( 'placeholder' ),
+                        closeOnSelect: true,
+                    });
+                    $('#leave_type_id').on('change', function (e) {
+                        @this.set('leave_type_id', $(this).val());
+                    });
+                });
+            });
+
             @this.on('openModelAddLeaveCreditsModal', (data) => {
                 $('#modelAddLeaveCreditsModal').modal('show');
             });
 
             @this.on('closeModal', (data) => {
+                $('#modelCreateUpdateModal').modal('hide');
                 $('#modelAddLeaveCreditsModal').modal('hide');
+            });
+
+            @this.on('openNewWindow', (data) => {
+                var url = data[0].viewFileUrl;
+                var newWindow = window.open(url, "Print Form No. 6", "width="+screen.availWidth+",height="+screen.availHeight)
+                newWindow.onload = function() {
+                    newWindow.print();
+                };
             });
         });
 
