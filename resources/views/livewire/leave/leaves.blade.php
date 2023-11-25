@@ -1,7 +1,7 @@
 <div> 
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">HUMAN RESORUCE</div>
+        <div class="breadcrumb-title pe-3">HUMAN RESOURCE - Leave Management</div>
         <div class="ps-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
@@ -237,7 +237,7 @@
                                             <tr>
                                                 <td>{{ ++ $counter3 }}</td>
                                                 <td>{{ $row->llt_name }}</td>
-                                                <td>{{ numberToMonthName($row->month) }}</td>
+                                                <td>{{ $row->month }}</td>
                                                 <td>{{ $row->year }}</td>
                                                 <td>{{ $row->value }}</td>
                                                 <td>{{ $row->date_from }}</td>
@@ -247,6 +247,9 @@
                                                     <div class="btn-group" role="group" aria-label="Action Button">
                                                         <button class="btn btn-primary btn-sm" wire:click="editleavecredits('{{ $row->id }}')">
                                                             <i class="bx bx-edit me-0"></i>
+                                                        </button>
+                                                        <button class="btn btn-danger btn-sm" wire:click="toBeDeleted('{{ $row->id }}')">
+                                                            <i class="bx bx-trash me-0"></i>
                                                         </button>
                                                     </div>
                                                 </td>
@@ -416,7 +419,19 @@
                                     <td>{{ $row->date_to }}</td>
                                     <td>{{ $row->days }}</td>
                                     <td>{{ $row->is_with_pay }}</td>
-                                    <td>{{ $row->status }}</td>
+                                    <td>
+                                        @if ($row->status == 'Approved')
+                                            <span class="badge bg-success">{{ $row->status }}</span>
+                                        @elseif ($row->status == 'Disapproved')
+                                            <span class="badge bg-danger">{{ $row->status }}</span>
+                                        @elseif ($row->status == 'Cancelled')
+                                            <span class="badge bg-warning">{{ $row->status }}</span>
+                                        @elseif ($row->status == 'Processing')
+                                            <span class="badge bg-info">{{ $row->status }}</span>
+                                        @else
+                                            <span class="badge bg-secondary">{{ $row->status }}</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $row->remarks }}</td>
                                     <td>{{ $row->formatted_created_at }}</td>
                                     <td>
@@ -661,6 +676,32 @@
     </div>
     <!--end modal(create and update)-->
 
+    <!--modal(delete)-->
+    <div wire:ignore.self class="modal fade" id="modelDeletionModal" tabindex="-1" role="dialog" aria-labelledby="modelDeletionModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modelDeletionModalLabel">Delete Leave Earning</h5>
+                    <button type="button" class="btn-close" wire:click="closeDeletionModal" aria-label="Close"></button>
+                </div>
+                <form wire:submit.prevent="deleteleavecredits">
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this record?</p>
+                        <p>Leave Type: <b>{{ $hlcalId }}</b> </p>
+                        <p>Month: <b>{{ $month3 }}</b> </p>
+                        <p>Year: <b>{{ $year3 }}</b> </p>
+                        <p>Value: <b>{{ $value3 }}</b> </p>
+                        <p>Date From: <b>{{ $date_from3 }}</b> </p>
+                        <p>Date To: <b>{{ $date_to3 }}</b> </p>
+                        <p>Remarks: <b>{{ $remarks3 }}</b> </p>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger close-modal" data-dismiss="modal">Yes, Delete it.</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--end modal(delete)-->
 </div>
 
 @push('scripts')
@@ -690,6 +731,14 @@
             @this.on('closeModal', (data) => {
                 $('#modelCreateUpdateModal').modal('hide');
                 $('#modelAddLeaveCreditsModal').modal('hide');
+            });
+
+            @this.on('openDeletionModal', (data) => {
+                $('#modelDeletionModal').modal('show');
+            });
+
+            @this.on('closeDeletionModal', (data) => {
+                $('#modelDeletionModal').modal('hide');
             });
 
             @this.on('openNewWindow', (data) => {

@@ -52,7 +52,7 @@ class Leaves extends Component
     public $availableAdvancedSearchField2, $usedAdvancedSearchField2,
            $balanceAdvancedSearchField2, $dateCreatedAdvancedSearchField2 = '';
     public $counter2 = 0;
-    public $hlcaId, $month2, $year2, $value2, $date_from2, $date_to2, $remarks2, $modal_title2= '';
+    public $hlcaId, $month2, $year2, $value2, $date_from2, $date_to2, $remarks2, $modal_title2, $status2 = '';
     public $isUpdateMode2 = false;
 
     protected $tableList3;
@@ -63,6 +63,7 @@ class Leaves extends Component
            $remarksAdvancedSearchField3, $dateCreatedAdvancedSearchField3 = '';
     public $counter3 = 0;
     public $hlcalId, $month3, $year3, $value3, $date_from3, $date_to3, $remarks3, $modal_title3= '';
+    public $deleteId3;
 
     private function resetAdvancedSearchFields(){
         $this->trackingCodeAdvancedSearchField = '';
@@ -94,6 +95,11 @@ class Leaves extends Component
         $this->resetInputFields();
         $this->resetInputFields2();
         $this->dispatch('closeModal');
+    }
+
+    public function closeDeletionModal(){
+        $this->resetInputFields2();
+        $this->dispatch('closeDeletionModal');
     }
 
     private function resetInputFields(){
@@ -211,7 +217,7 @@ class Leaves extends Component
 
     public function addleavecreditsform(){
         $this->validate([
-            'month2' => 'required|integer',
+            'month2' => 'required|in:January,February,March,April,May,June,July,August,September,October,November,December',
             'year2' => 'required|digits:4',
             'value2' => 'required|numeric',
             'date_from2' => 'required|date',
@@ -267,7 +273,7 @@ class Leaves extends Component
 
     public function updateleavecreditsform(){
         $this->validate([
-            'month2' => 'required|integer',
+            'month2' => 'required|in:January,February,March,April,May,June,July,August,September,October,November,December',
             'year2' => 'required|digits:4',
             'value2' => 'required|numeric',
             'date_from2' => 'required|date',
@@ -293,7 +299,7 @@ class Leaves extends Component
             } else {
                 $table2 = HrLeaveCreditsAvailable::find($this->hlcaId);
                 $prevAvailable = $table2->available - $oldValue;
-                $prevBalance = $table2->available - $oldValue;
+                $prevBalance = $table2->balance - $oldValue;
 
                 $table2->available = $prevAvailable + $this->value2;
                 $table2->balance = $prevBalance + $this->value2;
@@ -306,8 +312,8 @@ class Leaves extends Component
                 $this->isUpdateMode2 = false;
                 $this->resetInputFields2();
 
-                doLog($table, request()->ip(), 'Leaves', 'Created');
-                $this->js("showNotification('success', 'Leave Credits data has been saved successfully.')");
+                doLog($table, request()->ip(), 'Leaves', 'Updated');
+                $this->js("showNotification('success', 'Leave data has been updated successfully.')");
             } else {
                 $this->js("showNotification('error', 'Something went wrong.')");
             }
@@ -320,6 +326,183 @@ class Leaves extends Component
     public function print($id){
         $this->printViewFileUrl2 = 'my-leave-print/'.$id;
         $this->dispatch('openNewWindow', ['viewFileUrl' => $this->printViewFileUrl2]);
+    }
+
+    public function changestatus($action, $id){
+        $flag = 0;
+        $table = HrLeave::find($id);
+
+        if ($table){
+            // check if selected leave is with pay to proceed to deduction
+            if ($table->is_with_pay == 'Yes'){
+
+                $table2 = HrLeaveCreditsAvailable::where([
+                    ['user_id', '=', $table->user_id],
+                    ['leave_type_id', '=', $table->leave_type_id]
+                ])->first();
+
+                // check if selected leave exists
+                if ($table2){
+
+                    // check if what action is being selected
+                    if ($action == 'Approved'){
+                        // check whether to deduct or add selected leave credits
+                        if ($table->status == 'Approved'){
+                            $flag = 1;
+                        } else {
+                            $requestedLeave = $table->days;
+                            $leaveBalance = $table2->balance;
+                            $leaveUsed = $table2->used;
+
+                            // check if selected leave has available leave credits (deduct requested leave to balance and add to used)
+                            if ($requestedLeave > $leaveBalance){
+                                $this->js("showNotification('error', 'Selected Leave number of days is greater than Leave Balance.')");
+                                return;
+                            } else {
+                                $newBalance = $leaveBalance - $requestedLeave;
+                                $used = $leaveUsed + $requestedLeave;
+
+                                $table2->balance = $newBalance;
+                                $table2->used = $used;
+                                
+                                if ($table2->update()){
+                                    $flag = 1;
+                                }
+                            }
+                        }
+                    } else {
+                        // check whether to deduct or add selected leave credits (add back the requested leave to balance and deduct to used)
+                        if ($table->status == 'Approved'){
+                            $requestedLeave = $table->days;
+                            $leaveBalance = $table2->balance;
+                            $leaveUsed = $table2->used;
+
+                            $newBalance = $leaveBalance + $requestedLeave;
+                            $used = $leaveUsed - $requestedLeave;
+
+                            $table2->balance = $newBalance;
+                            $table2->used = $used;
+
+                            if ($table2->update()){
+                                $flag = 1;
+                            }
+                        } else {
+                            $flag = 1;
+                        }
+                    }
+
+                } else {
+                    $this->js("showNotification('error', 'Selected Leave is not yet created. Create Leave Type to proceed.')");
+                    return;
+                }
+            } else {
+                $flag = 1;
+            }
+
+            if ($flag == 1){
+                // updating selected leave status purposes
+
+                $date_approved      = $table->date_approved;
+                $date_disapproved   = $table->date_disapproved;
+                $date_cancelled     = $table->date_cancelled;
+                $date_processing    = $table->date_processing;
+
+                if ($action == 'Approved'){
+                    $status = 'Approved';
+                    $date_approved = date('Y-m-d H:i:s');
+                    $date_disapproved = Null;
+                    $date_cancelled = Null;
+
+                } elseif ($action == 'Disapproved'){
+                    $status = 'Disapproved';
+                    $date_disapproved = date('Y-m-d H:i:s');
+                    $date_approved = Null;
+                    $date_cancelled = Null;
+
+                } elseif ($action == 'Cancelled'){
+                    $status = 'Cancelled';
+                    $date_cancelled = date('Y-m-d H:i:s');
+                    $date_approved = Null;
+                    $date_disapproved = Null;
+
+                } elseif ($action == 'Processing'){
+                    $status = 'Processing';
+                    $date_processing = date('Y-m-d H:i:s');
+
+                } else {
+                    $status = 'Pending';
+                }
+
+                $table->status = $status;
+                $table->date_approved = $date_approved;
+                $table->date_disapproved = $date_disapproved;
+                $table->date_cancelled = $date_cancelled;
+                $table->date_processing = $date_processing;
+
+                if ($table->update()){
+                    doLog($table, request()->ip(), 'Leaves', 'Updated');
+                    $this->js("showNotification('success', 'Leave Status has been updated successfully.')");
+                } else {
+                    $this->js("showNotification('error', 'Leave Status not updated.')");
+                }
+            } else {
+                $this->js("showNotification('error', 'Server Query Error.')");
+            }
+
+        } else {
+            $this->js("showNotification('error', 'Selected Leave not found.')");
+        }
+    }
+
+    public function toBeDeleted($id){
+        $this->deleteId3 = $id;
+        $this->dispatch('openDeletionModal');
+
+        $table = HrLeaveCreditsAvailableList::from('hr_leave_credits_available_list as hlcal')
+        ->select(
+            'hlcal.*',
+            'llt.name as llt_name',
+            'hlca.user_id as hlca_user_id'
+        )
+        ->leftJoin('hr_leave_credits_available as hlca', 'hlcal.leave_credits_available_id', '=', 'hlca.id')
+        ->leftJoin('lib_leave_types as llt', 'hlca.leave_type_id', '=', 'llt.id')
+        ->leftJoin('user_personal_informations as upi', 'hlca.user_id', '=', 'upi.user_id')
+        ->where('hlcal.id', $this->deleteId3)
+        ->first();
+
+        $this->hlcalId = $table->llt_name;
+        $this->month3 = $table->month;
+        $this->year3 = $table->year;
+        $this->value3 = $table->value;
+        $this->date_from3 = $table->date_from;
+        $this->date_to3 = $table->date_to;
+        $this->remarks3 = $table->remarks;
+    }
+
+    public function deleteleavecredits(){
+        $oldTable = HrLeaveCreditsAvailableList::find($this->deleteId3);
+
+        $table2 = HrLeaveCreditsAvailable::find($oldTable->leave_credits_available_id);
+        $prevAvailable = $table2->available - $oldTable->value;
+        $prevBalance = $table2->balance - $oldTable->value;
+        $table2->available = $prevAvailable;
+        $table2->balance = $prevBalance;
+        if ($table2->available < $table2->used){
+            $this->js("showNotification('error', 'Deletion is restricted due to a detected negative balance outcome.')");
+            return;
+        }
+
+        $table = HrLeaveCreditsAvailableList::find($this->deleteId3);
+        if ($table->delete()){
+            $table2->update();
+            
+            $this->dispatch('closeDeletionModal');
+            
+            doLog($oldTable, request()->ip(), 'Leave Earnings', 'Deleted');
+            $this->js("showNotification('success', 'The selected Leave Earning has been deleted successfully.')");
+        } else {
+            $this->js("showNotification('error', 'Something went wrong.')");
+        }
     }
 
     public function selectedValuePerPage(){

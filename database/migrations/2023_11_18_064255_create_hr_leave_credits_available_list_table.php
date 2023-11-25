@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary()->unique();
             $table->uuid('leave_credits_available_id');
             $table->integer('month')->nullable();
+            $table->enum('month', ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'])->default('January');
             $table->year('year')->nullable();
             $table->decimal('value', 12, 3)->default('0.000');
             $table->date('date_from')->nullable();
