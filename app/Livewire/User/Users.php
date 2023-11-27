@@ -131,6 +131,7 @@ class Users extends Component
                 $table2->civil_status = $this->civil_status;
                 $table2->tel_no = $this->tel_no;
                 $table2->mobile_no = $this->mobile_no;
+                $table2->picture = 'default-avatar.png';
 
                 // user_theme_settings
                 $table->userThemeSettings()->create([
@@ -157,6 +158,11 @@ class Users extends Component
                             ]
                         );
                 }
+
+                // lib_signatories
+                $table->userLibSignatory()->create([
+                    'for' => 'Leave'
+                ]);
 
                 if ($table2->save()) {               
                     DB::commit();

@@ -4660,7 +4660,8 @@ input::placeholder {
 
 	position: relative;
 
-	height: 360px
+	/* height: 360px */
+	height: auto
 
 }
 

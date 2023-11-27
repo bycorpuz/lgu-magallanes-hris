@@ -54,5 +54,10 @@ class UsersTable extends Seeder
                     ]
                 );
         }
+
+        // lib_signatories
+        $user->userLibSignatory()->create([
+            'for' => 'Leave'
+        ]);
     }
 }

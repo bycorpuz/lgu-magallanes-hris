@@ -620,7 +620,7 @@ class Leaves extends Component
                 ->orWhere('upi.extname', 'like', '%'.trim($this->search).'%')
                 ->orWhere('hl.created_at', 'like', '%'.trim($this->search).'%');
         })
-        ->where('hl.user_id', '=', $this->userIdAdvancedSearchField)
+        ->where('hl.user_id', 'like', '%'.$this->userIdAdvancedSearchField.'%')
         ->orderBy($this->sortField, $this->sortDirection)
         ->paginate($this->perPage);
 
@@ -632,18 +632,18 @@ class Leaves extends Component
     public function performAdvancedSearch(){
         if ($this->remarksAdvancedSearchField){
             $remarksCondition = function ($query) {
-                $query->where('hl.remarks', 'like', '%' . trim($this->remarksAdvancedSearchField) . '%');
+                $query->where('hl.remarks', 'like', '%'.trim($this->remarksAdvancedSearchField).'%');
             };
         } else {
             $remarksCondition = function ($query) {
-                $query->where('hl.remarks', 'like', '%' . trim($this->remarksAdvancedSearchField) . '%')
+                $query->where('hl.remarks', 'like', '%'.trim($this->remarksAdvancedSearchField).'%')
                     ->orWhereNull('hl.remarks');
             };
         }
 
         if ($this->userIdAdvancedSearchField){
             $userIdCondition = function ($query) {
-                $query->where('hl.user_id', '=', $this->userIdAdvancedSearchField);
+                $query->where('hl.user_id', 'like', '%'.$this->userIdAdvancedSearchField.'%');
             };
         } else {
             $userIdCondition = function ($query) {
@@ -771,7 +771,6 @@ class Leaves extends Component
         }
 
         $this->performAdvancedSearch2();
-
         
         if ($this->search3){
             $this->performGlobalSearch3();
@@ -779,7 +778,6 @@ class Leaves extends Component
             $this->performAdvancedSearch3();
         }
         
-
         return view('livewire.leave.leaves', [
             'tableList' => $this->tableList,
             'tableList2' => $this->tableList2,

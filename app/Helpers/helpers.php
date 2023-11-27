@@ -78,7 +78,8 @@ if ( !function_exists('getUsers') ){
                     'u.*',
                     'u.email as u_email',
                     'upi.firstname as upi_firstname',
-                    'upi.lastname as upi_lastname'
+                    'upi.lastname as upi_lastname',
+                    'upi.picture as upi_picture'
                 )
                 ->leftJoin('user_personal_informations as upi', 'u.id', '=', 'upi.user_id')
                 ->where('u.id', $param1)
@@ -89,7 +90,8 @@ if ( !function_exists('getUsers') ){
                     'u.*',
                     'u.email as u_email',
                     'upi.firstname as upi_firstname',
-                    'upi.lastname as upi_lastname'
+                    'upi.lastname as upi_lastname',
+                    'upi.picture as upi_picture'
                 )
                 ->leftJoin('user_personal_informations as upi', 'u.id', '=', 'upi.user_id')
                 ->orderBy('created_at', 'desc')
@@ -213,7 +215,7 @@ if ( !function_exists('getLeaveTypes') ){
         } elseif ($param1 == 'others'){
             $table = LibLeaveType::where('for_form', 'No')->orderBy('created_at', 'asc')->get();
         } else {
-            $table = LibLeaveType::orderBy('name', 'asc')->find($param1);
+            $table = LibLeaveType::find($param1);
         }
 
         return $table;

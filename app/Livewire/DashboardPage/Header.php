@@ -2,6 +2,7 @@
 
 namespace App\Livewire\DashboardPage;
 
+use App\Models\HrLeave;
 use App\Models\UserThemeSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -9,6 +10,8 @@ use Livewire\Component;
 
 class Header extends Component
 {
+    public $pendingLeave = 0;
+
     public $listeners = [
         'refreshHeaderInfo' => '$refresh'
     ];
@@ -37,9 +40,15 @@ class Header extends Component
         
         return redirect('/');
     }
+
+    public function fetchDataQuickCount(){
+        $this->pendingLeave = HrLeave::where('status', 'Pending')->orderBy('created_at', 'desc')->get();
+    }
     
     public function render()
     {
+        $this->fetchDataQuickCount();
+        
         return view('livewire.dashboard-page.header');
     }
 }

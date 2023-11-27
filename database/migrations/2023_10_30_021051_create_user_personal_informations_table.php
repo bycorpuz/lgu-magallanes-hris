@@ -34,6 +34,7 @@ return new class extends Migration
             $table->string('ra_zip_code')->nullable();
             $table->string('tel_no')->nullable();
             $table->string('mobile_no')->nullable();
+            $table->string('picture')->nullable();
             $table->timestamps();
 
             // Define 'user_id' as a foreign key referencing the 'id' column of the 'users' table

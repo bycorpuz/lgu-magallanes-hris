@@ -152,8 +152,8 @@
                 </tr>
                 <tr class="tr2">
                     <td class="td1"><b>{{date_format(date_create($data->created_at), 'm/d/Y')}}</b></td>
-                    <td><b>{{$data->user_id ? $data->userPersonalInformations->userPlantilla->position->name : '&nbsp;'}}</b></td>
-                    <td><b>{{empty($data->userPersonalInformations->userPlantilla->salary->basic) ? '' : number_format($data->userPersonalInformations->userPlantilla->salary->basic, 2)}}</b></td>
+                    <td><b>{{ !empty($data->userPersonalInformations->userPlantilla->position->name) ? $data->userPersonalInformations->userPlantilla->position->name : '' }}</b></td>
+                    <td><b>{{ !empty($data->userPersonalInformations->userPlantilla->salary->basic) ? number_format($data->userPersonalInformations->userPlantilla->salary->basic, 2) : '' }}</b></td>
                 </tr>
             </table>
         </div>
@@ -418,8 +418,8 @@
                         </div>
 
                         <div style="text-align: center; margin-top: 3mm; margin-bottom: -5px;"><img src="{{ asset('images/site/blank.png') }}" style="width: 70px;" alt="e-signature"></div>
-                        <div class="details7">{{ $signatories ? getUserFullName($signatories->param1_signatory) : '(not-set)' }}</div>
-                        <div class="details8">{{ $signatories ? getDesignations($signatories->param1_designation)->name : '(not-set)' }}</div>
+                        <div class="details7">{{ !empty(getUserFullName($signatories->param1_signatory)) ? getUserFullName($signatories->param1_signatory) : '(not-set)' }}</div>
+                        <div class="details8">{{ !empty(getDesignations($signatories->param1_designation)->name) ? getDesignations($signatories->param1_designation)->name : '(not-set)' }}</div>
 
                     </td>
                     <td class="td2">
@@ -435,8 +435,8 @@
                         <div class="details4">&nbsp;</div>
 
                         <div style="text-align: center; margin-top: 9mm; margin-bottom: -5px;"><img src="{{ asset('images/site/blank.png') }}" style="width: 70px;" alt="e-signature"></div>
-                        <div class="details5">{{ $signatories ? getUserFullName($signatories->param2_signatory) : '(not-set)' }}</div>
-                        <div class="details6">{{ $signatories ? getDesignations($signatories->param2_designation)->name : '(not-set)' }}</div>
+                        <div class="details5">{{ !empty(getUserFullName($signatories->param2_signatory)) ? getUserFullName($signatories->param2_signatory) : '(not-set)' }}</div>
+                        <div class="details6">{{ !empty(getDesignations($signatories->param2_designation)->name) ? getDesignations($signatories->param2_designation)->name : '(not-set)' }}</div>
                     </td>
                 </tr>
             </table>
@@ -469,8 +469,8 @@
                 <tr class="tr2">
                     <td class="td1" colspan="2">
                         <div style="text-align: center; margin-top: 3mm; margin-bottom: -5px;"><img src="{{ asset('images/site/blank.png') }}" style="width: 70px;" alt="e-signature"></div>
-                        <div class="details3">{{ $signatories ? getUserFullName($signatories->param3_signatory) : '(not-set)' }}</div>
-                        <div class="details4">{{ $signatories ? getDesignations($signatories->param3_designation)->name : '(not-set)' }}</div>
+                        <div class="details3">{{ !empty(getUserFullName($signatories->param3_signatory)) ? getUserFullName($signatories->param3_signatory) : '(not-set)' }}</div>
+                        <div class="details4">{{ !empty(getDesignations($signatories->param3_designation)->name) ? getDesignations($signatories->param3_designation)->name : '(not-set)' }}</div>
                     </td>
                 </tr>
             </table>

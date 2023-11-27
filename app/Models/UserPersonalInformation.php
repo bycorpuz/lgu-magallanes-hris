@@ -19,7 +19,7 @@ class UserPersonalInformation extends Model
         'user_id', 'firstname', 'middlename', 'lastname', 'ext_name', 'other_ext',
         'date_of_birth', 'place_of_birth', 'sex', 'civil_status',
         'ra_house_no', 'ra_street', 'ra_subdivision', 'ra_brgy_code', 'ra_zip_code',
-        'tel_no', 'mobile_no'
+        'tel_no', 'mobile_no', 'picture'
     ];
 
     protected static function boot(){

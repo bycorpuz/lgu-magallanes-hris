@@ -62,6 +62,10 @@ class User extends Authenticatable
         return $this->hasMany(HrLeaveCreditsAvailable::class, 'user_id');
     }
 
+    public function userLibSignatory(){
+        return $this->hasMany(LibSignatory::class, 'user_id');
+    }
+
     protected static function boot(){
         parent::boot();
 

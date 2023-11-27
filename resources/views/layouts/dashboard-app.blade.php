@@ -84,7 +84,9 @@
 		<script src="{{ asset('/backend-template/assets/js/app.js?v='.filemtime('backend-template/assets/js/app.js')) }}"></script>
 		
 		{{-- global js --}}
-		<script src="{{ asset('/system-scripts/global/dashboard.js?v='.filemtime('system-scripts/global/dashboard.js')) }}"></script>
+		@can('view-leave-dashboard')
+			<script src="{{ asset('/system-scripts/global/leave-dashboard.js?v='.filemtime('system-scripts/global/leave-dashboard.js')) }}"></script>
+		@endcan
 		<script src="{{ asset('/system-scripts/global/global.js?v='.filemtime('system-scripts/global/global.js')) }}"></script>
 		{{-- <script src="{{ asset('/system-scripts/global/alpine-init.js?v='.filemtime('system-scripts/global/alpine-init.js')) }}"></script> --}}
 
