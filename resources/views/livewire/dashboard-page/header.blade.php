@@ -78,16 +78,16 @@
 				
 				<div class="user-box dropdown px-3">
 					<a class="d-flex align-items-center nav-link dropdown-toggle gap-3 dropdown-toggle-nocaret" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-						<img src="{{ asset('/images/users/default-avatar.png') }}" class="user-img" alt="user avatar">
+						<img src="{{ asset('/images/users/'.getUsers(Auth::user()->id)['upi_picture']) }}" class="user-img" alt="user avatar">
 						<div class="user-info">
-							<p class="user-name mb-0">{{ Auth::user()->email }}</p>
+							<p class="user-name mb-0">{{ getUsers(Auth::user()->id)['upi_firstname'] }} {{ getUsers(Auth::user()->id)['upi_lastname'] }}</p>
 							<p class="designattion mb-0">{{ Auth::user()->email }}</p>
 						</div>
 					</a>
 					<ul class="dropdown-menu dropdown-menu-end">
-						<li><a class="dropdown-item d-flex align-items-center" href="{{ route('my-profile') }}"><i class="bx bx-user fs-5"></i><span>Profile</span></a>
+						<li><a class="dropdown-item d-flex align-items-center" href="{{ route('my-profile') }}"><i class="bx bx-user fs-5"></i><span>My Profile</span></a>
 						</li>
-						<li><a class="dropdown-item d-flex align-items-center" href="javascript:;"><i class="bx bx-cog fs-5"></i><span>Settings</span></a>
+						<li><a class="dropdown-item d-flex align-items-center" href="{{ route('my-leave') }}"><i class="bx bx-cog fs-5"></i><span>My Leave</span></a>
 						</li>
 						<li>
 							<div class="dropdown-divider mb-0"></div>
