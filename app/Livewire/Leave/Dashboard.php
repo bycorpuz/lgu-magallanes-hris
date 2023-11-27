@@ -18,6 +18,15 @@ class Dashboard extends Component
     public $leaveDisapprovedCounter = 0;
     public $leaveApprovedCounter = 0;
 
+    public function mount(){
+        $this->leaveDataCounter('');
+        $this->leaveDataCounter('Pending');
+        $this->leaveDataCounter('Processing');
+        $this->leaveDataCounter('Cancelled');
+        $this->leaveDataCounter('Disapproved');
+        $this->leaveDataCounter('Approved');
+    }
+
     public function leaveDataCounter($status){
         if ($status == 'Pending'){
             $this->leavePendingCounter = HrLeave::where('status', $status)->count();
@@ -36,13 +45,6 @@ class Dashboard extends Component
 
     public function render()
     {
-        $this->leaveDataCounter('');
-        $this->leaveDataCounter('Pending');
-        $this->leaveDataCounter('Processing');
-        $this->leaveDataCounter('Cancelled');
-        $this->leaveDataCounter('Disapproved');
-        $this->leaveDataCounter('Approved');
-        
         return view('livewire.leave.dashboard');
     }
 }
