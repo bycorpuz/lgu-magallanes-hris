@@ -25,220 +25,252 @@
     <!--end breadcrumb-->
        
     <!--table-->
-    <div class="card">
-        <div class="card-body"> 
-            <div class="row pb-3">
-                <div class="col-sm-2 text-center">
-                    <button type="button" class="btn btn-primary" wire:click="openCreateUpdateModal">
-                        <i class="bx bx-plus-circle me-0"></i> Add New
-                    </button>
-                </div>
-                <div class="col-sm-7">
-                    <div class="position-relative search-bar d-lg-block d-none">
-                        <input class="form-control px-5" type="search" placeholder="Search" wire:model.live.debounce.100ms="search" {{ $showAdvancedSearch ? 'disabled' : '' }}>
-                        <span class="position-absolute top-50 search-show ms-3 translate-middle-y start-0 top-50 fs-5"><i class="bx bx-search"></i></span>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-body"> 
+                    <div class="row pb-3">
+                        <div class="col-sm-3 text-center">
+                            <button type="button" class="btn btn-primary" wire:click="openCreateUpdateModal">
+                                <i class="bx bx-plus-circle me-0"></i> Add New
+                            </button>
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="position-relative search-bar d-lg-block d-none">
+                                <input class="form-control px-5" type="search" placeholder="Search" wire:model.live.debounce.100ms="search" {{ $showAdvancedSearch ? 'disabled' : '' }}>
+                                <span class="position-absolute top-50 search-show ms-3 translate-middle-y start-0 top-50 fs-5"><i class="bx bx-search"></i></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 text-center">
+                            <button wire:click="toggleAdvancedSearch" class="btn btn-link">Toggle Advanced Search</button>
+                        </div>
                     </div>
-                </div>
-                <div class="col-sm-3 text-center">
-                    <button wire:click="toggleAdvancedSearch" class="btn btn-link">Toggle Advanced Search</button>
-                </div>
-            </div>
-
-            <div class="pt-2" {{ !$showAdvancedSearch ? 'hidden' : '' }}>
-                <div class="card">
-                    <div class="card-body"> 
-                        <form class="row" wire:submit.prevent="performAdvancedSearch">
-                            @csrf
-                            <div class="col-md-3 mb-3">
-                                <input type="search" class="form-control" wire:model="trackingCodeAdvancedSearchField" placeholder="Tracking Code">
+        
+                    <div class="pt-2" {{ !$showAdvancedSearch ? 'hidden' : '' }}>
+                        <div class="card">
+                            <div class="card-body"> 
+                                <form class="row" wire:submit.prevent="performAdvancedSearch">
+                                    @csrf
+                                    <div class="col-md-3 mb-3">
+                                        <input type="search" class="form-control" wire:model="trackingCodeAdvancedSearchField" placeholder="Tracking Code">
+                                    </div>
+                                    <div class="col-md-3 mb-3" wire:ignore>
+                                        <select class="form-select" wire:model="leaveTypeIdAdvancedSearchField" id="leaveTypeIdAdvancedSearchField">
+                                            <option value="">Leave Type</option>
+                                            @foreach (getLeaveTypes('') as $row)
+                                                <option value="{{ $row->id }}">{{ $row->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <input type="search" class="form-control" wire:model="dateFromAdvancedSearchField" placeholder="Date From">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <input type="search" class="form-control" wire:model="dateToAdvancedSearchField" placeholder="Date To">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <input type="search" class="form-control" wire:model="daysAdvancedSearchField" placeholder="Days">
+                                    </div>
+                                    <div class="col-md-3 mb-3" wire:ignore>
+                                        <select class="form-select" wire:model="isWithPayAdvancedSearchField" id="isWithPayAdvancedSearchField">
+                                            <option value="">Is With Pay?</option>
+                                            @foreach (yesNo() as $key => $value)
+                                                <option value="{{ $key }}">{{ $value }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 mb-3" wire:ignore>
+                                        <select class="form-select" wire:model="statusAdvancedSearchField" id="statusAdvancedSearchField">
+                                            <option value="">Status</option>
+                                            @foreach (leaveStatus() as $key => $value)
+                                                <option value="{{ $key }}">{{ $value }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <input type="search" class="form-control" wire:model="remarksAdvancedSearchField" placeholder="Remarks">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="search" class="form-control" wire:model="dateCreatedAdvancedSearchField" placeholder="Date Created">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="submit" class="btn btn-primary" >Search</button>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="col-md-3 mb-3" wire:ignore>
-                                <select class="form-select" wire:model="leaveTypeIdAdvancedSearchField" id="leaveTypeIdAdvancedSearchField">
-                                    <option value="">Leave Type</option>
-                                    @foreach (getLeaveTypes('') as $row)
-                                        <option value="{{ $row->id }}">{{ $row->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <input type="search" class="form-control" wire:model="dateFromAdvancedSearchField" placeholder="Date From">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <input type="search" class="form-control" wire:model="dateToAdvancedSearchField" placeholder="Date To">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <input type="search" class="form-control" wire:model="daysAdvancedSearchField" placeholder="Days">
-                            </div>
-                            <div class="col-md-3 mb-3" wire:ignore>
-                                <select class="form-select" wire:model="isWithPayAdvancedSearchField" id="isWithPayAdvancedSearchField">
-                                    <option value="">Is With Pay?</option>
-                                    @foreach (yesNo() as $key => $value)
-                                        <option value="{{ $key }}">{{ $value }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3 mb-3" wire:ignore>
-                                <select class="form-select" wire:model="statusAdvancedSearchField" id="statusAdvancedSearchField">
-                                    <option value="">Status</option>
-                                    @foreach (leaveStatus() as $key => $value)
-                                        <option value="{{ $key }}">{{ $value }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <input type="search" class="form-control" wire:model="remarksAdvancedSearchField" placeholder="Remarks">
-                            </div>
-                            <div class="col-md-3">
-                                <input type="search" class="form-control" wire:model="dateCreatedAdvancedSearchField" placeholder="Date Created">
-                            </div>
-                            <div class="col-md-3">
-                                <button type="submit" class="btn btn-primary" >Search</button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table mb-0 table-striped">
-                    <thead>
-                        <tr>
-                            <th class="cursor-pointer" wire:click="sortBy('u.created_at')">
-                                #
-                                @if ($sortField === 'hl.created_at')
-                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                @endif
-                            </th>
-                            <th class="cursor-pointer" wire:click="sortBy('hl.tracking_code')">
-                                Tracking Code
-                                @if ($sortField === 'hl.tracking_code')
-                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                @endif
-                            </th>
-                            <th class="cursor-pointer" wire:click="sortBy('llt.name')">
-                                Leave Type
-                                @if ($sortField === 'llt.name')
-                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                @endif
-                            </th>
-                            <th class="cursor-pointer" wire:click="sortBy('hl.date_from')">
-                                Date From
-                                @if ($sortField === 'hl.date_from')
-                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                @endif
-                            </th>
-                            <th class="cursor-pointer" wire:click="sortBy('hl.date_to')">
-                                Date To
-                                @if ($sortField === 'hl.date_to')
-                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                @endif
-                            </th>
-                            <th class="cursor-pointer" wire:click="sortBy('hl.days')">
-                                Days
-                                @if ($sortField === 'hl.days')
-                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                @endif
-                            </th>
-                            <th class="cursor-pointer" wire:click="sortBy('hl.is_with_pay')">
-                                Is With Pay?
-                                @if ($sortField === 'hl.is_with_pay')
-                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                @endif
-                            </th>
-                            <th class="cursor-pointer" wire:click="sortBy('hl.status')">
-                                Status
-                                @if ($sortField === 'hl.status')
-                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                @endif
-                            </th>
-                            <th class="cursor-pointer" wire:click="sortBy('hl.remarks')">
-                                Remarks
-                                @if ($sortField === 'hl.remarks')
-                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                @endif
-                            </th>
-                            <th class="cursor-pointer" wire:click="sortBy('u.created_at')">
-                                Date Created
-                                @if ($sortField === 'hl.created_at')
-                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                @endif
-                            </th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if($tableList->count() > 0)
-                            @foreach ($tableList as $row)
+        
+                    <div class="table-responsive">
+                        <table class="table mb-0 table-striped">
+                            <thead>
                                 <tr>
-                                    <td>{{ ++ $counter }}</td>
-                                    <td>{{ $row->tracking_code }}</td>
-                                    <td>{{ $row->llt_name }}</td>
-                                    <td>{{ $row->date_from }}</td>
-                                    <td>{{ $row->date_to }}</td>
-                                    <td>{{ $row->days }}</td>
-                                    <td>{{ $row->is_with_pay }}</td>
-                                    <td>{{ $row->status }}</td>
-                                    <td>{{ $row->remarks }}</td>
-                                    <td>{{ $row->formatted_created_at }}</td>
-                                    <td>
-                                        @if ($row->status != 'Pending')
-                                            <div class="btn-group" role="group" aria-label="Action Buttons">
-                                                <button class="btn btn-success btn-sm" wire:click="print('{{ $row->id }}')">
-                                                    <i class="bx bx-printer me-0"></i>
-                                                </button>
-                                            </div>
-                                        @else
-                                            <div class="btn-group" role="group" aria-label="Action Buttons">
-                                                <button class="btn btn-success btn-sm" wire:click="print('{{ $row->id }}')">
-                                                    <i class="bx bx-printer me-0"></i>
-                                                </button>
-                                                <button class="btn btn-primary btn-sm" wire:click="edit('{{ $row->id }}')">
-                                                    <i class="bx bx-edit me-0"></i>
-                                                </button>
-                                                <button class="btn btn-danger btn-sm" wire:click="toBeDeleted('{{ $row->id }}')">
-                                                    <i class="bx bx-trash me-0"></i>
-                                                </button>
-                                            </div>
+                                    <th class="cursor-pointer" wire:click="sortBy('u.created_at')">
+                                        #
+                                        @if ($sortField === 'hl.created_at')
+                                            @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                         @endif
-                                    </td>
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('hl.tracking_code')">
+                                        Tracking Code
+                                        @if ($sortField === 'hl.tracking_code')
+                                            @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('llt.name')">
+                                        Leave Type
+                                        @if ($sortField === 'llt.name')
+                                            @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('hl.date_from')">
+                                        Date From
+                                        @if ($sortField === 'hl.date_from')
+                                            @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('hl.date_to')">
+                                        Date To
+                                        @if ($sortField === 'hl.date_to')
+                                            @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('hl.days')">
+                                        Days
+                                        @if ($sortField === 'hl.days')
+                                            @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('hl.is_with_pay')">
+                                        Is With Pay?
+                                        @if ($sortField === 'hl.is_with_pay')
+                                            @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('hl.status')">
+                                        Status
+                                        @if ($sortField === 'hl.status')
+                                            @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('hl.remarks')">
+                                        Remarks
+                                        @if ($sortField === 'hl.remarks')
+                                            @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('u.created_at')">
+                                        Date Created
+                                        @if ($sortField === 'hl.created_at')
+                                            @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th>Actions</th>
                                 </tr>
-                            @endforeach
-                        @else
-                            <tr>
-                                <td colspan="11"><div class="text-center">No results found.</div></td>
-                            </tr>
-                        @endif
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="row pt-3">
-                <div class="col-sm-9">{{ $tableList->links() }}</div>
-                <div class="col-sm-3">
+                            </thead>
+                            <tbody>
+                                @if($tableList->count() > 0)
+                                    @foreach ($tableList as $row)
+                                        <tr>
+                                            <td>{{ ++ $counter }}</td>
+                                            <td>{{ $row->tracking_code }}</td>
+                                            <td>{{ $row->llt_name }}</td>
+                                            <td>{{ $row->date_from }}</td>
+                                            <td>{{ $row->date_to }}</td>
+                                            <td>{{ $row->days }}</td>
+                                            <td>{{ $row->is_with_pay }}</td>
+                                            <td>{{ $row->status }}</td>
+                                            <td>{{ $row->remarks }}</td>
+                                            <td>{{ $row->formatted_created_at }}</td>
+                                            <td>
+                                                @if ($row->status != 'Pending')
+                                                    <div class="btn-group" role="group" aria-label="Action Buttons">
+                                                        <button class="btn btn-success btn-sm" wire:click="print('{{ $row->id }}')">
+                                                            <i class="bx bx-printer me-0"></i>
+                                                        </button>
+                                                    </div>
+                                                @else
+                                                    <div class="btn-group" role="group" aria-label="Action Buttons">
+                                                        <button class="btn btn-success btn-sm" wire:click="print('{{ $row->id }}')">
+                                                            <i class="bx bx-printer me-0"></i>
+                                                        </button>
+                                                        <button class="btn btn-primary btn-sm" wire:click="edit('{{ $row->id }}')">
+                                                            <i class="bx bx-edit me-0"></i>
+                                                        </button>
+                                                        <button class="btn btn-danger btn-sm" wire:click="toBeDeleted('{{ $row->id }}')">
+                                                            <i class="bx bx-trash me-0"></i>
+                                                        </button>
+                                                    </div>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="11"><div class="text-center">No results found.</div></td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+        
+                    <div class="row pt-3">
+                        <div class="col-sm-9">{{ $tableList->links() }}</div>
+                        <div class="col-sm-3">
+                            <div class="row">
+                                Show &nbsp;
+                                <select class="form-select form-select-sm" wire:model="perPage" wire:change="selectedValuePerPage" style="width: 80px;">
+                                    <option value="10">10</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                    <option value="500">500</option>
+                                    <option value="1000">1000</option>
+                                </select>
+                                &nbsp; entries
+                            </div>
+                        </div>
+                    </div>
+        
                     <div class="row">
-                        Show &nbsp;
-                        <select class="form-select form-select-sm" wire:model="perPage" wire:change="selectedValuePerPage" style="width: 80px;">
-                            <option value="10">10</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                            <option value="500">500</option>
-                            <option value="1000">1000</option>
-                        </select>
-                        &nbsp; entries
+                        <div class="col-sm-9">
+                            Showing {{ number_format($tableList->firstItem(), 0) }} to {{ number_format($tableList->lastItem(), 0) }} of {{ number_format($tableList->total(), 0) }} entries
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="row">
+                                Total entries: {{ $totalTableDataCount }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-sm-9">
-                    Showing {{ number_format($tableList->firstItem(), 0) }} to {{ number_format($tableList->lastItem(), 0) }} of {{ number_format($tableList->total(), 0) }} entries
-                </div>
-                <div class="col-sm-3">
+        </div>
+        <div class="col-md-3">
+            @if($myLeaveCreditsAvailable->count() > 0)
+                @foreach ($myLeaveCreditsAvailable as $leaveType)
                     <div class="row">
-                        Total entries: {{ $totalTableDataCount }}
+                        <div class="col">
+                            <div class="card radius-10">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <p class="mb-0 text-secondary">Total {{ getLeaveTypes($leaveType->leave_type_id)['name'] }}</p>
+                                            <h4 class="my-1">{{ $leaveType->available }}</h4>
+                                            <p class="mb-0 font-13 text-danger"><i class="bx bx-list-minus align-middle"></i>&nbsp;{{ $leaveType->used }} Leave Used</p>
+                                            <p class="mb-0 font-13 text-success"><i class="bx bx-list-plus align-middle"></i>&nbsp;{{ $leaveType->balance }} Leave Balance</p>
+                                        </div>
+                                        <div class="widgets-icons bg-light-success text-success ms-auto"><i class="bx bx-list-ul"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                @endforeach
+            @else
+                <div class="row">
+                    No Leave Type Found.
                 </div>
-            </div>
+            @endif
         </div>
     </div>
     <!--end table-->

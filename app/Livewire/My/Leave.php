@@ -3,6 +3,7 @@
 namespace App\Livewire\My;
 
 use App\Models\HrLeave;
+use App\Models\HrLeaveCreditsAvailable;
 use App\Models\LibSignatory;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -53,6 +54,8 @@ class Leave extends Component
     public $signatory_id, $param1_signatory, $param1_designation,
            $param2_signatory, $param2_designation,
            $param3_signatory, $param3_designation;
+
+    public $myLeaveCreditsAvailable = '';
 
     public function calculateDays(){
         if ($this->date_from && $this->date_to) {
@@ -473,10 +476,12 @@ class Leave extends Component
         ->paginate($this->perPage);
     
         $this->resetPage();
+
+        $this->totalTableDataCount = $this->tableList->count();
     }
 
-    public function totalTableDataCount(){
-        $this->totalTableDataCount = HrLeave::where('user_id', '=', Auth::user()->id)->get()->count();
+    public function myLeaveCreditsAvailable(){
+        $this->myLeaveCreditsAvailable = HrLeaveCreditsAvailable::where('user_id', Auth::user()->id)->get();
     }
 
     public function render(){
@@ -485,8 +490,8 @@ class Leave extends Component
         } else {
             $this->performAdvancedSearch();
         }
-        
-        $this->totalTableDataCount();
+
+        $this->myLeaveCreditsAvailable();
 
         return view('livewire.my.leave', [
             'tableList' => $this->tableList,
