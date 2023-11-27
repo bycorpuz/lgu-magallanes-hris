@@ -651,6 +651,16 @@ class Leaves extends Component
             };
         }
 
+        if ($this->statusAdvancedSearchField){
+            $statusCondition = function ($query) {
+                $query->where('hl.status', '=', $this->statusAdvancedSearchField);
+            };
+        } else {
+            $statusCondition = function ($query) {
+                $query->whereNotNull('hl.status');
+            };
+        }
+        
         $this->tableList = HrLeave::from('hr_leaves as hl')
         ->select(
             'hl.*',
@@ -669,7 +679,7 @@ class Leaves extends Component
         ->where('hl.date_from', 'like', '%'.trim($this->dateFromAdvancedSearchField).'%')
         ->where('hl.date_to', 'like', '%'.trim($this->dateToAdvancedSearchField).'%')
         ->where('hl.is_with_pay', 'like', '%'.trim($this->isWithPayAdvancedSearchField).'%')
-        ->where('hl.status', 'like', '%'.trim($this->statusAdvancedSearchField).'%')
+        ->where($statusCondition)
         ->where($remarksCondition)
         ->where('hl.created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField).'%')
         ->where($userIdCondition)
