@@ -220,79 +220,72 @@
     <!--end table-->
 
     <!--modal(create and update)-->
-    {{-- <div wire:ignore.self class="modal fade" id="modelCreateUpdateModal" tabindex="-1" role="dialog" aria-labelledby="modelCreateUpdateModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div wire:ignore.self class="modal fade" id="modelCreateUpdateModal" tabindex="-1" role="dialog" aria-labelledby="modelCreateUpdateModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modelCreateUpdateModalLabel">
-                        {{ $isUpdateMode ? 'Edit Leave Type' : 'Add New Leave Type' }}
+                        {{ $isUpdateMode ? 'Edit Leave Earnings' : 'Add New Leave Earnings' }}
                     </h5>
                     <button type="button" class="btn-close" wire:click="closeModal" aria-label="Close"></button>
                 </div>
                 <form wire:submit.prevent="{{ $isUpdateMode ? 'update' : 'store' }}">
                     @csrf
                     <div class="row modal-body">
+                        <div class="col-md-6 mb-3" wire:ignore>
+                            <label class="form-label">Leave Type <span style="color: red;">*</span></label>
+                            <select class="form-select" wire:model="leave_type_id" data-placeholder="Select 1 or more" id="leave_type_id" required multiple>
+                                @foreach (getLeaveTypes('') as $row)
+                                    <option value="{{ $row->id }}">{{ $row->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('leave_type_id')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3" wire:ignore>
+                            <label class="form-label">User Name <span style="color: red;">*</span></label>
+                            <select class="form-select" wire:model="user_id" data-placeholder="Select 1 or more" id="user_id" required multiple>
+                                <option value="All Plantilla Users">All Plantilla Users</option>
+                                @foreach (getUsers('') as $row)
+                                    <option value="{{ $row->id }}">{{ $row->upi_firstname }} {{ $row->upi_lastname }}</option>
+                                @endforeach
+                            </select>
+                            @error('user_id')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-4 mb-3" wire:ignore>
+                            <label class="form-label">Month <span style="color: red;">*</span></label>
+                            <select class="form-select" wire:model="month" id="month" required>
+                                <option value="">Select</option>
+                                @foreach (months() as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
+                            @error('month')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
                         <div class="col-md-4 mb-3">
-                            <label class="form-label">Abbreviation</label>
-                            <input type="text" class="form-control" placeholder="Abbreviation" wire:model="abbreviation" id="focusMe">
-                            @error('abbreviation')
-                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div class="col-md-8 mb-3">
-                            <label class="form-label">Name <span style="color: red;">*</span></label>
-                            <input type="text" class="form-control" placeholder="Name" wire:model="name" required>
-                            @error('name')
-                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div class="col-md-8 mb-3">
-                            <label class="form-label">Description</label>
-                            <input type="text" class="form-control" placeholder="Description" wire:model="description">
-                            @error('description')
+                            <label class="form-label">Year <span style="color: red;">*</span></label>
+                            <input type="number" step="1" min="1900" class="form-control" placeholder="Year" wire:model="year" required>
+                            @error('year')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label class="form-label">Days <span style="color: red;">*</span></label>
-                            <input type="number" step="0.001" min="0" class="form-control" placeholder="Days" wire:model="days" required>
-                            @error('days')
+                            <label class="form-label">Value <span style="color: red;">*</span></label>
+                            <input type="number" step="0.001" class="form-control" placeholder="Value" wire:model="hlcalValue" required>
+                            @error('hlcalValue')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="col-md-4 mb-3" wire:ignore>
-                            <label class="form-label">Unit <span style="color: red;">*</span></label>
-                            <select class="form-select" wire:model="unit" data-placeholder="Select" id="unit" required>
-                                <option value="">Select</option>
-                                @foreach (leaveUnit() as $key => $value)
-                                    <option value="{{ $key }}">{{ $value }}</option>
-                                @endforeach
-                            </select>
-                            @error('unit')
-                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div class="col-md-4 mb-3" wire:ignore>
-                            <label class="form-label">Is With Pay? <span style="color: red;">*</span></label>
-                            <select class="form-select" wire:model="is_with_pay" data-placeholder="Select" id="is_with_pay" required>
-                                <option value="">Select</option>
-                                @foreach (yesNo() as $key => $value)
-                                    <option value="{{ $key }}">{{ $value }}</option>
-                                @endforeach
-                            </select>
-                            @error('is_with_pay')
-                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div class="col-md-4 mb-3" wire:ignore>
-                            <label class="form-label">For Leave Form? <span style="color: red;">*</span></label>
-                            <select class="form-select" wire:model="for_form" data-placeholder="Select" id="for_form" required>
-                                <option value="">Select</option>
-                                @foreach (yesNo() as $key => $value)
-                                    <option value="{{ $key }}">{{ $value }}</option>
-                                @endforeach
-                            </select>
-                            @error('for_form')
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Remarks <span style="color: red;">*</span></label>
+                            <textarea class="form-control" wire:model="remarks" placeholder="Remarks" rows="3"></textarea>
+                            @error('remarks')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
@@ -303,7 +296,7 @@
                 </form>
             </div>
         </div>
-    </div> --}}
+    </div>
     <!--end modal(create and update)-->
 
     <!--modal(delete)-->
@@ -317,8 +310,8 @@
                 <form wire:submit.prevent="delete">
                     <div class="modal-body">
                         <p>Are you sure you want to delete this record?</p>
-                        <p>User Name: <b>{{ $user_id ? getUsers($user_id)['upi_firstname'] . ' ' . getUsers($user_id)['upi_lastname'] : '' }}</b> </p>
-                        <p>Leave Type: <b>{{ $leave_credits_available_id }}</b> </p>
+                        <p>User Name: <b>{{ $user_name }}</b> </p>
+                        <p>Leave Type: <b>{{ $leave_type_name }}</b> </p>
                         <p>Month: <b>{{ $month }}</b> </p>
                         <p>Year: <b>{{ $year }}</b> </p>
                         <p>Value: <b>{{ $hlcalValue }}</b> </p>
@@ -341,39 +334,37 @@
             @this.on('openCreateUpdateModal', (data) => {
                 $('#modelCreateUpdateModal').modal('show');
                 $('#modelCreateUpdateModal').on('shown.bs.modal', function (e) {
-                    $('#focusMe').focus();
-
-                    $('#unit').select2( {
+                    $('#leave_type_id').select2( {
                         dropdownParent: $('#modelCreateUpdateModal'),
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
                         placeholder: $( this ).data( 'placeholder' ),
                         closeOnSelect: true,
                     });
-                    $('#unit').on('change', function (e) {
-                        @this.set('unit', $(this).val());
+                    $('#leave_type_id').on('change', function (e) {
+                        @this.set('leave_type_id', $(this).val());
                     });
 
-                    $('#is_with_pay').select2( {
+                    $('#user_id').select2( {
                         dropdownParent: $('#modelCreateUpdateModal'),
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
                         placeholder: $( this ).data( 'placeholder' ),
                         closeOnSelect: true,
                     });
-                    $('#is_with_pay').on('change', function (e) {
-                        @this.set('is_with_pay', $(this).val());
+                    $('#user_id').on('change', function (e) {
+                        @this.set('user_id', $(this).val());
                     });
 
-                    $('#for_form').select2( {
+                    $('#month').select2( {
                         dropdownParent: $('#modelCreateUpdateModal'),
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
                         placeholder: $( this ).data( 'placeholder' ),
                         closeOnSelect: true,
                     });
-                    $('#for_form').on('change', function (e) {
-                        @this.set('for_form', $(this).val());
+                    $('#month').on('change', function (e) {
+                        @this.set('month', $(this).val());
                     });
                 });
             });

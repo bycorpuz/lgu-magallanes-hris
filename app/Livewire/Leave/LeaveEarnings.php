@@ -4,6 +4,7 @@ namespace App\Livewire\Leave;
 
 use App\Models\HrLeaveCreditsAvailable;
 use App\Models\HrLeaveCreditsAvailableList;
+use App\Models\HrPlantilla;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
@@ -29,8 +30,10 @@ class LeaveEarnings extends Component
 
     public $counter = 0;
     public $totalTableDataCount = 0;
-    public $id, $user_id, $leave_credits_available_id, $month, $year,
+    public $id, $leave_type_name, $user_name, $leave_credits_available_id, $month, $year,
            $hlcalValue, $date_from, $date_to, $remarks;
+    public $leave_type_id = [];
+    public $user_id = [];
 
     public $isUpdateMode = false;
     public $deleteId = '';
@@ -40,7 +43,10 @@ class LeaveEarnings extends Component
     }
 
     private function resetInputFields(){
-        $this->user_id = '';
+        $this->user_id = [];
+        $this->user_name = '';
+        $this->leave_type_id = [];
+        $this->leave_type_name = '';
         $this->leave_credits_available_id = '';
         $this->month = '';
         $this->year = '';
@@ -69,134 +75,123 @@ class LeaveEarnings extends Component
         $this->dispatch('closeModal');
     }
 
-    // public function store(){
-    //     $this->validate([
-    //         'month' => 'required|in:January,February,March,April,May,June,July,August,September,October,November,December',
-    //         'year' => 'required|digits:4',
-    //         'value' => 'required|numeric',
-    //         'date_from' => 'required|date',
-    //         'date_to' => 'required|date',
-    //         'remarks' => 'required'
-    //     ]);
+    public function store(){
+        $this->validate([
+            'month' => 'required|in:January,February,March,April,May,June,July,August,September,October,November,December',
+            'year' => 'required|digits:4',
+            'hlcalValue' => 'required|numeric',
+            'remarks' => 'required'
+        ]);
 
-    //     DB::beginTransaction();
-    //     try {
-    //         $credit = 1.25;
+        DB::beginTransaction();
+        try {
+            $successNewCounter = 0;
+            $noLeaveCounter = 0;
+            $inHlcalCounter = 0;
 
-    //         $successNewCounter = 0;
-    //         $noLeaveCounter = 0;
-    //         $inHlclCounter = 0;
+            if (count($this->user_id) > 1 && in_array('All Plantilla Users', $this->user_id)) {
+                $this->js("showNotification('error', 'Selecting \'All Plantilla Users\' along with individual users is not permitted.')");
+                return;
+            } else {
+                if (in_array('All Plantilla Users', $this->user_id)){
+                    $plantillaUsers = HrPlantilla::where(function($query) {
+                        $query->whereNotNull('user_id')
+                            ->where('is_plantilla', 'Yes');
+                    })->get();
+    
+                    $this->user_id = $plantillaUsers->pluck('user_id')->toArray();
+                }
+            }
 
-    //         // removing duplicate ids
-    //         $user_ids = implode(',',array_unique(explode(',', $request['user_ids'])));
+            foreach ($this->leave_type_id as $leaveTypeId){
+                foreach ($this->user_id as $userId){
+                    // check if exist in credit available table
+                    $hlca = HrLeaveCreditsAvailable::where([
+                        ['leave_type_id', '=', $leaveTypeId],
+                        ['user_id', '=', $userId]
+                    ])->first();
 
-    //         // uses to loop in multiple data
-    //         $userIds = explode(',', $user_ids);
-    //         $leaveIds = $request['leave_types'];
+                    if ($hlca){
+                        // check if exist in credit list table
+                        $hlcal = HrLeaveCreditsAvailableList::where([
+                            ['leave_credits_available_id', '=', $hlca->id],
+                            ['month', '=', $this->month],
+                            ['year', '=', $this->year],
+                            ['remarks', '=', $this->remarks]
+                        ])->first();
 
-    //         foreach ($leaveIds as $leaveId){
-    //             foreach ($userIds as $userId){
-    //                 // check if exist in credit available table
-    //                 $hlca = HrLeaveCreditsAvailable::where([
-    //                     ['leave_id', '=', $leaveId],
-    //                     ['user_id', '=', $userId],
-    //                     ['year', '=', $request['year']]
-    //                 ])->first();
+                        if ($hlcal){
+                            // exists
+                            $inHlcalCounter ++;
+                        } else {
+                            // not exists | create
+                            $query_date = $this->year . '-' . months2($this->month) . '-01';
+                            $this->date_from = date('Y-m-01', strtotime($query_date));
+                            $this->date_to = date('Y-m-t', strtotime($query_date));
 
-    //                 if ($hlca){
-    //                     // check if exist in credit list table
-    //                     $hlcl = HrLeaveCreditsList::where([
-    //                         ['leave_credits_available_id', '=', $hlca->id],
-    //                         ['month', '=', $request['month']],
-    //                         ['year', '=', $request['year']]
-    //                     ])->first();
+                            $table = new HrLeaveCreditsAvailableList();
+                            $table->leave_credits_available_id = $hlca->id;
+                            $table->month = $this->month;
+                            $table->year = $this->year;
+                            $table->value = $this->hlcalValue;
+                            $table->date_from = $this->date_from;
+                            $table->date_to = $this->date_to;
+                            $table->remarks = $this->remarks;
 
-    //                     if ($hlcl){
-    //                         // exists
-    //                         $inHlclCounter ++;
-    //                     } else {
-    //                         // not exists | create
-    //                         $table = new HrLeaveCreditsList();
+                            if ($table->save()){
+                                $successNewCounter ++;
 
-    //                         $query_date = $request['year'] . '-' . month2($request['month']) . '-01';
-    //                         $date_from = date('Y-m-01', strtotime($query_date));
-    //                         $date_to = date('Y-m-t', strtotime($query_date));
+                                $hlca->available += $this->hlcalValue;
+                                $hlca->balance += $this->hlcalValue;
+                                $hlca->update();
+                            }
+                        }
+                    } else {
+                        $hlca = new HrLeaveCreditsAvailable();
+                        $hlca->leave_type_id = $leaveTypeId;
+                        $hlca->user_id = $userId;
+                        $hlca->available = $this->hlcalValue;
+                        $hlca->used = 0;
+                        $hlca->balance = $this->hlcalValue;
+                        if ($hlca->save()){
+                            // not exists | create
+                            $query_date = $this->year . '-' . months2($this->month) . '-01';
+                            $this->date_from = date('Y-m-01', strtotime($query_date));
+                            $this->date_to = date('Y-m-t', strtotime($query_date));
 
-    //                         $formData = array(
-    //                             'leave_credits_available_id' => $hlca->id,
-    //                             'month' => $request['month'],
-    //                             'year' => $request['year'],
-    //                             'value' => $credit,
-    //                             'date_from' => $date_from,
-    //                             'date_to' => $date_to,
-    //                             'remarks' => $request['remarks'],
-    //                             'is_expired' => 0
-    //                         );
+                            $table = new HrLeaveCreditsAvailableList();
+                            $table->leave_credits_available_id = $hlca->id;
+                            $table->month = $this->month;
+                            $table->year = $this->year;
+                            $table->value = $this->hlcalValue;
+                            $table->date_from = $this->date_from;
+                            $table->date_to = $this->date_to;
+                            $table->remarks = $this->remarks;
 
-    //                         if ($table->create($formData)){
-    //                             $successNewCounter ++;
+                            if ($table->save()){
+                                $successNewCounter ++;
+                                doLog($table, request()->ip(), 'Leave Earnings', 'Created');
+                            }
+                        }
+                    }
+                }
+            }
 
-    //                             $formData = array(
-    //                                 'available' => $hlca->available + $credit,
-    //                                 'balance' => $hlca->balance + $credit
-    //                             );
-    //                             $hlca->update($formData);
-    //                         }
-    //                     }
-    //                 } else {
-    //                     $hlca = new HrLeaveCreditsAvailable();
-    //                     $hlca->leave_id     = $leaveId;
-    //                     $hlca->user_id      = $userId;
-    //                     $hlca->year         = $request['year'];
-    //                     $hlca->available    = $request['value'];
-    //                     $hlca->used         = 0;
-    //                     $hlca->balance      = $request['value'];
-    //                     if ($hlca->save()){
-    //                         // not exists | create
-    //                         $table = new HrLeaveCreditsList();
+            if ($inHlcalCounter > 0 || $successNewCounter > 0 || $noLeaveCounter > 0){
+                DB::commit();
+                $message = "Leave Earnings successfully created: $successNewCounter <br>" .
+                           "Leave Earnings already exists: $inHlcalCounter <br><br>";
 
-    //                         $query_date = $request['year'] . '-' . month2($request['month']) . '-01';
-    //                         $date_from = date('Y-m-01', strtotime($query_date));
-    //                         $date_to = date('Y-m-t', strtotime($query_date));
-
-    //                         $formData = array(
-    //                             'leave_credits_available_id' => $hlca->id,
-    //                             'month' => $request['month'],
-    //                             'year' => $request['year'],
-    //                             'value' => $credit,
-    //                             'date_from' => $date_from,
-    //                             'date_to' => $date_to,
-    //                             'remarks' => $request['remarks'],
-    //                             'is_expired' => 0
-    //                         );
-
-    //                         if ($table->create($formData)){
-    //                             $successNewCounter ++;
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-            
-
-    //         if ($inHlclCounter > 0 || $successNewCounter > 0 || $noLeaveCounter > 0){
-    //             doLog('Leave Earning for '.$request['month'].' '.$request['year'], 'Human Resource - Leave Management - Monthly Leave Earnings (Non-Teaching)', 'Create');
-
-    //             DB::commit();
-    //             return response()->json([
-    //                 'success' =>
-    //                     'Leave Earned successfully created: ' . $successNewCounter . '<br><br>' .
-    //                     'Leave Earned already exists: ' . $inHlclCounter . '<br><br>'
-    //             ]);
-    //         } else {
-    //             DB::rollback();
-    //             return response()->json(['error' => 'Leave Earned not created.']);
-    //         }
-    //     } catch (\Throwable $e){
-    //         DB::rollback();
-    //         return response()->json(['error' => $e]);
-    //     }
-    // }
+                $this->js("showNotification('success', '$message')");
+            } else {
+                DB::rollback();
+                $this->js("showNotification('error', 'Something went wrong.')");
+            }
+        } catch (\Throwable $e){
+            DB::rollback();
+            $this->js("showNotification('error', 'Something went wrong 2.')");
+        }
+    }
 
     public function toBeDeleted($id){
         $this->deleteId = $id;
@@ -206,7 +201,9 @@ class LeaveEarnings extends Component
         ->select(
             'hlcal.*',
             'llt.name as llt_name',
-            'hlca.user_id as hlca_user_id'
+            'hlca.user_id as hlca_user_id',
+            'upi.firstname as upi_firstname',
+            'upi.lastname as upi_lastname'
         )
         ->leftJoin('hr_leave_credits_available as hlca', 'hlcal.leave_credits_available_id', '=', 'hlca.id')
         ->leftJoin('lib_leave_types as llt', 'hlca.leave_type_id', '=', 'llt.id')
@@ -214,8 +211,8 @@ class LeaveEarnings extends Component
         ->where('hlcal.id', $this->deleteId)
         ->first();
 
-        $this->user_id = $table->hlca_user_id;
-        $this->leave_credits_available_id = $table->llt_name;
+        $this->user_name = $table->upi_firstname . ' ' . $table->upi_lastname;
+        $this->leave_type_name = $table->llt_name;
         $this->month = $table->month;
         $this->year = $table->year;
         $this->hlcalValue = number_format($table->value, 3);

@@ -173,99 +173,195 @@
                     </div>
                 </form>
 
-                <!--table3-->
-                <div class="row modal-body">
-                    <div class="table-responsive">
-                        <table class="table mb-0 table-striped">
-                            <thead>
-                                <tr>
-                                    <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.created_at')">
-                                        #
-                                        @if ($sortField2 === 'hlcal.created_at')
-                                            @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                        @endif
-                                    </th>
-                                    <th class="cursor-pointer" wire:click="sortBy('hlcal', 'llt.name')">
-                                        Leave Type
-                                        @if ($sortField2 === 'llt.name')
-                                            @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                        @endif
-                                    </th>
-                                    <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.month')">
-                                        Month
-                                        @if ($sortField2 === 'hlcal.month')
-                                            @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                        @endif
-                                    </th>
-                                    <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.year')">
-                                        Year
-                                        @if ($sortField2 === 'hlcal.year')
-                                            @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                        @endif
-                                    </th>
-                                    <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.value')">
-                                        Value
-                                        @if ($sortField2 === 'hlcal.value')
-                                            @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                        @endif
-                                    </th>
-                                    <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.date_from')">
-                                        Date From
-                                        @if ($sortField2 === 'hlcal.date_from')
-                                            @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                        @endif
-                                    </th>
-                                    <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.date_to')">
-                                        Date To
-                                        @if ($sortField2 === 'hlcal.date_to')
-                                            @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                        @endif
-                                    </th>
-                                    <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.remarks')">
-                                        Remarks
-                                        @if ($sortField2 === 'hlcal.remarks')
-                                            @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
-                                        @endif
-                                    </th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if($tableList3)
-                                    @if($tableList3->count() > 0)
-                                        @foreach ($tableList3 as $row)
-                                            <tr>
-                                                <td>{{ ++ $counter3 }}</td>
-                                                <td>{{ $row->llt_name }}</td>
-                                                <td>{{ $row->month }}</td>
-                                                <td>{{ $row->year }}</td>
-                                                <td>{{ $row->value }}</td>
-                                                <td>{{ $row->date_from }}</td>
-                                                <td>{{ $row->date_to }}</td>
-                                                <td>{{ $row->remarks }}</td>
-                                                <td>
-                                                    <div class="btn-group" role="group" aria-label="Action Button">
-                                                        <button class="btn btn-primary btn-sm" wire:click="editleavecredits('{{ $row->id }}')">
-                                                            <i class="bx bx-edit me-0"></i>
-                                                        </button>
-                                                        <button class="btn btn-danger btn-sm" wire:click="toBeDeleted('{{ $row->id }}')">
-                                                            <i class="bx bx-trash me-0"></i>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    @else
+                <div class="card m-3">
+                    <div class="card-body"> 
+                        <div class="row pb-3">
+                            <div class="col-sm-8">
+                                <div class="position-relative search-bar d-lg-block d-none">
+                                    <input class="form-control px-5" type="search" placeholder="Search" wire:model.live.debounce.100ms="search3" {{ $showAdvancedSearch3 ? 'disabled' : '' }}>
+                                    <span class="position-absolute top-50 search-show ms-3 translate-middle-y start-0 top-50 fs-5"><i class="bx bx-search"></i></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 text-center">
+                                <button wire:click="toggleAdvancedSearch3" class="btn btn-link">Toggle Advanced Search</button>
+                            </div>
+                        </div>
+    
+                        <div class="pt-2" {{ !$showAdvancedSearch3 ? 'hidden' : '' }}>
+                            <div class="card">
+                                <div class="card-body">
+                                    <form class="row" wire:submit.prevent="performAdvancedSearch3">
+                                        @csrf
+                                        <div class="col-md-3 mb-3" wire:ignore>
+                                            <select class="form-select" wire:model="leaveTypeIdAdvancedSearchField3" id="leaveTypeIdAdvancedSearchField3">
+                                                <option value="">Leave Type</option>
+                                                @foreach (getLeaveTypes('') as $row)
+                                                    <option value="{{ $row->id }}">{{ $row->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 mb-3" wire:ignore>
+                                            <select class="form-select" wire:model="monthAdvancedSearchField3" id="monthAdvancedSearchField3">
+                                                <option value="">Month</option>
+                                                @foreach (months() as $key => $value)
+                                                    <option value="{{ $key }}">{{ $value }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <input type="search" class="form-control" wire:model="yearAdvancedSearchField3" placeholder="Year">
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <input type="search" class="form-control" wire:model="valueAdvancedSearchField3" placeholder="Value">
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <input type="search" class="form-control" wire:model="dateFromAdvancedSearchField3" placeholder="Date From">
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <input type="search" class="form-control" wire:model="dateToAdvancedSearchField3" placeholder="Date To">
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <input type="search" class="form-control" wire:model="remarksAdvancedSearchField3" placeholder="Remarks">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="search" class="form-control" wire:model="dateCreatedAdvancedSearchField3" placeholder="Date Created">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button type="submit" class="btn btn-primary" >Search</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--table3-->
+                            <div class="table-responsive">
+                                <table class="table mb-0 table-striped">
+                                    <thead>
                                         <tr>
-                                            <td colspan="9"><div class="text-center">No results found.</div></td>
+                                            <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.created_at')">
+                                                #
+                                                @if ($sortField2 === 'hlcal.created_at')
+                                                    @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                                @endif
+                                            </th>
+                                            <th class="cursor-pointer" wire:click="sortBy('hlcal', 'llt.name')">
+                                                Leave Type
+                                                @if ($sortField2 === 'llt.name')
+                                                    @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                                @endif
+                                            </th>
+                                            <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.month')">
+                                                Month
+                                                @if ($sortField2 === 'hlcal.month')
+                                                    @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                                @endif
+                                            </th>
+                                            <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.year')">
+                                                Year
+                                                @if ($sortField2 === 'hlcal.year')
+                                                    @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                                @endif
+                                            </th>
+                                            <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.value')">
+                                                Value
+                                                @if ($sortField2 === 'hlcal.value')
+                                                    @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                                @endif
+                                            </th>
+                                            <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.date_from')">
+                                                Date From
+                                                @if ($sortField2 === 'hlcal.date_from')
+                                                    @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                                @endif
+                                            </th>
+                                            <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.date_to')">
+                                                Date To
+                                                @if ($sortField2 === 'hlcal.date_to')
+                                                    @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                                @endif
+                                            </th>
+                                            <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.remarks')">
+                                                Remarks
+                                                @if ($sortField2 === 'hlcal.remarks')
+                                                    @if ($sortDirection2 === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                                @endif
+                                            </th>
+                                            <th class="cursor-pointer" wire:click="sortBy('hlcal', 'hlcal.created_at')">
+                                                Date Created
+                                                @if ($sortField2 === 'hlcal.created_at')
+                                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                                @endif
+                                            </th>
+                                            <th>Action</th>
                                         </tr>
-                                    @endif
-                                @endif
-                            </tbody>
-                        </table>
+                                    </thead>
+                                    <tbody>
+                                        @if($tableList3)
+                                            @if($tableList3->count() > 0)
+                                                @foreach ($tableList3 as $row)
+                                                    <tr>
+                                                        <td>{{ ++ $counter3 }}</td>
+                                                        <td>{{ $row->llt_name }}</td>
+                                                        <td>{{ $row->month }}</td>
+                                                        <td>{{ $row->year }}</td>
+                                                        <td>{{ $row->value }}</td>
+                                                        <td>{{ $row->date_from }}</td>
+                                                        <td>{{ $row->date_to }}</td>
+                                                        <td>{{ $row->remarks }}</td>
+                                                        <td>{{ $row->formatted_created_at }}</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group" aria-label="Action Button">
+                                                                <button class="btn btn-primary btn-sm" wire:click="editleavecredits('{{ $row->id }}')">
+                                                                    <i class="bx bx-edit me-0"></i>
+                                                                </button>
+                                                                <button class="btn btn-danger btn-sm" wire:click="toBeDeleted('{{ $row->id }}')">
+                                                                    <i class="bx bx-trash me-0"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            @else
+                                                <tr>
+                                                    <td colspan="10"><div class="text-center">No results found.</div></td>
+                                                </tr>
+                                            @endif
+                                        @endif
+                                    </tbody>
+                                </table>
+                            </div>
+                        <!--end table3-->
+
+                        <div class="row pt-3">
+                            <div class="col-sm-9">{{ $tableList3->links() }}</div>
+                            <div class="col-sm-3">
+                                <div class="row">
+                                    Show &nbsp;
+                                    <select class="form-select form-select-sm" wire:model="perPage" wire:change="selectedValuePerPage" style="width: 80px;">
+                                        <option value="10">10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                        <option value="500">500</option>
+                                        <option value="1000">1000</option>
+                                    </select>
+                                    &nbsp; entries
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div class="row">
+                            <div class="col-sm-9">
+                                Showing {{ number_format($tableList3->firstItem(), 0) }} to {{ number_format($tableList3->lastItem(), 0) }} of {{ number_format($tableList3->total(), 0) }} entries
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="row">
+                                    Total entries: {{ $totalTableDataCount3 }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <!--end table3-->
             </div>
         </div>
     </div>
@@ -515,7 +611,7 @@
                     <div class="row modal-body">
                         <div class="col-md-6 mb-3" wire:ignore>
                             <label class="form-label">Leave Type <span style="color: red;">*</span></label>
-                            <select class="form-select" wire:model="leave_type_id" data-placeholder="Select" id="leave_type_id" required id="focusMe">
+                            <select class="form-select" wire:model="leave_type_id" data-placeholder="Select" id="leave_type_id" required>
                                 <option value="">Select</option>
                                 @foreach (getLeaveTypes('') as $row)
                                     <option value="{{ $row->id }}">{{ $row->name }}</option>
@@ -726,6 +822,31 @@
 
             @this.on('openModelAddLeaveCreditsModal', (data) => {
                 $('#modelAddLeaveCreditsModal').modal('show');
+                $('#modelAddLeaveCreditsModal').on('shown.bs.modal', function (e) {
+                    $('#leaveTypeIdAdvancedSearchField3').select2( {
+                        container: 'body',
+                        dropdownParent: $('#modelAddLeaveCreditsModal'),
+                        theme: "bootstrap-5",
+                        width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                        placeholder: $( this ).data( 'placeholder' ),
+                        closeOnSelect: true,
+                    });
+                    $('#leaveTypeIdAdvancedSearchField3').on('change', function (e) {
+                        @this.set('leaveTypeIdAdvancedSearchField3', $(this).val());
+                    });
+                    
+                    $('#monthAdvancedSearchField3').select2( {
+                        container: 'body',
+                        dropdownParent: $('#modelAddLeaveCreditsModal'),
+                        theme: "bootstrap-5",
+                        width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                        placeholder: $( this ).data( 'placeholder' ),
+                        closeOnSelect: true,
+                    });
+                    $('#monthAdvancedSearchField3').on('change', function (e) {
+                        @this.set('monthAdvancedSearchField3', $(this).val());
+                    });
+                });
             });
 
             @this.on('closeModal', (data) => {

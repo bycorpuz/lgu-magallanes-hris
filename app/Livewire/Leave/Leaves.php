@@ -23,7 +23,7 @@ class Leaves extends Component
     public $search = '';
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
-    public $showAdvancedSearch, $showAdvancedSearch2 = false;
+    public $showAdvancedSearch = false;
     public $trackingCodeAdvancedSearchField, $leaveTypeIdAdvancedSearchField,
            $userIdAdvancedSearchField, $daysAdvancedSearchField,
            $dateFromAdvancedSearchField, $dateToAdvancedSearchField,
@@ -56,12 +56,15 @@ class Leaves extends Component
     public $isUpdateMode2 = false;
 
     protected $tableList3;
+    public $search3 = '';
     public $sortField3 = 'created_at';
     public $sortDirection3 = 'desc';
-    public $monthAdvancedSearchField3, $yearAdvancedSearchField3,
+    public $showAdvancedSearch3 = false;
+    public $userIdAdvancedSearchField3, $leaveTypeIdAdvancedSearchField3, $monthAdvancedSearchField3, $yearAdvancedSearchField3,
            $valueAdvancedSearchField3, $dateFromAdvancedSearchField3, $dateToAdvancedSearchField3,
            $remarksAdvancedSearchField3, $dateCreatedAdvancedSearchField3 = '';
     public $counter3 = 0;
+    public $totalTableDataCount3 = 0;
     public $hlcalId, $month3, $year3, $value3, $date_from3, $date_to3, $remarks3, $modal_title3= '';
     public $deleteId3;
 
@@ -87,6 +90,18 @@ class Leaves extends Component
         $this->detailsB4AdvancedSearchField = '';
         $this->detailsB5AdvancedSearchField = '';
         $this->detailsD1AdvancedSearchField = '';
+    }
+
+    private function resetAdvancedSearchFields3(){
+        $this->userIdAdvancedSearchField3 = '';
+        $this->leaveTypeIdAdvancedSearchField3 = '';
+        $this->monthAdvancedSearchField3 = '';
+        $this->yearAdvancedSearchField3 = '';
+        $this->valueAdvancedSearchField3 = '';
+        $this->dateFromAdvancedSearchField3 = '';
+        $this->dateToAdvancedSearchField3 = '';
+        $this->remarksAdvancedSearchField3 = '';
+        $this->dateCreatedAdvancedSearchField3 = '';
     }
 
     public function closeModal(){
@@ -269,6 +284,10 @@ class Leaves extends Component
         $this->date_from2 = $table->date_from;
         $this->date_to2 = $table->date_to;
         $this->remarks2 = $table->remarks;
+        
+        $this->showAdvancedSearch3 = false;
+        $this->search3 = '';
+        $this->resetAdvancedSearchFields3();
     }
 
     public function updateleavecreditsform(){
@@ -544,6 +563,14 @@ class Leaves extends Component
         $this->resetAdvancedSearchFields();
     }
 
+    public function toggleAdvancedSearch3(){
+        $this->showAdvancedSearch3 = !$this->showAdvancedSearch3;
+        $this->search3 = '';
+        $this->resetAdvancedSearchFields3();
+        $this->isUpdateMode2 = false;
+        $this->resetInputFields2();
+    }
+
     public function performGlobalSearch(){
         $this->tableList = HrLeave::from('hr_leaves as hl')
         ->select(
@@ -651,15 +678,53 @@ class Leaves extends Component
         $this->resetPage();
     }
 
+    public function performGlobalSearch3(){
+        $this->tableList3 = HrLeaveCreditsAvailableList::from('hr_leave_credits_available_list as hlcal')
+        ->select(
+            'hlcal.*',
+            DB::raw("DATE_FORMAT(hlcal.created_at, '%Y-%m-%d %h:%i %p') as formatted_created_at"),
+            'llt.name as llt_name',
+            'upi.firstname as upi_firstname',
+            'upi.lastname as upi_lastname'
+        )
+        ->leftJoin('hr_leave_credits_available as hlca', 'hlcal.leave_credits_available_id', '=', 'hlca.id')
+        ->leftJoin('lib_leave_types as llt', 'hlca.leave_type_id', '=', 'llt.id')
+        ->leftJoin('user_personal_informations as upi', 'hlca.user_id', '=', 'upi.user_id')
+        ->where(function ($query) {
+            $query->where('upi.firstname', 'like', '%'.trim($this->search3).'%')
+                ->orWhere('upi.lastname', 'like', '%'.trim($this->search3).'%')
+                ->orWhere('llt.name', 'like', '%'.trim($this->search3).'%')
+                ->orWhere('hlcal.month', 'like', '%'.trim($this->search3).'%')
+                ->orWhere('hlcal.year', 'like', '%'.trim($this->search3).'%')
+                ->orWhere('hlcal.value', 'like', '%'.trim($this->search3).'%')
+                ->orWhere('hlcal.date_from', 'like', '%'.trim($this->search3).'%')
+                ->orWhere('hlcal.date_to', 'like', '%'.trim($this->search3).'%')
+                ->orWhere('hlcal.remarks', 'like', '%'.trim($this->search3).'%')
+                ->orWhere('hlcal.created_at', 'like', '%'.trim($this->search3).'%');
+        })
+        ->where('hlca.id', '=', $this->hlcaId)
+        ->orderBy($this->sortField3, $this->sortDirection3)
+        ->paginate($this->perPage);
+
+        $this->resetPage();
+        
+        $this->totalTableDataCount3 = $this->tableList3->count();
+    }
+
     public function performAdvancedSearch3(){
         $this->tableList3 = HrLeaveCreditsAvailableList::from('hr_leave_credits_available_list as hlcal')
         ->select(
             'hlcal.*',
             DB::raw("DATE_FORMAT(hlcal.created_at, '%Y-%m-%d %h:%i %p') as formatted_created_at"),
-            'llt.name as llt_name'
+            'llt.name as llt_name',
+            'upi.firstname as upi_firstname',
+            'upi.lastname as upi_lastname'
         )
         ->leftJoin('hr_leave_credits_available as hlca', 'hlcal.leave_credits_available_id', '=', 'hlca.id')
         ->leftJoin('lib_leave_types as llt', 'hlca.leave_type_id', '=', 'llt.id')
+        ->leftJoin('user_personal_informations as upi', 'hlca.user_id', '=', 'upi.user_id')
+        ->where('hlca.user_id', 'like', '%'.trim($this->userIdAdvancedSearchField3).'%')
+        ->where('llt.id', 'like', '%'.trim($this->leaveTypeIdAdvancedSearchField3).'%')
         ->where('hlcal.month', 'like', '%'.trim($this->monthAdvancedSearchField3).'%')
         ->where('hlcal.year', 'like', '%'.trim($this->yearAdvancedSearchField3).'%')
         ->where('hlcal.value', 'like', '%'.trim($this->valueAdvancedSearchField3).'%')
@@ -669,9 +734,11 @@ class Leaves extends Component
         ->where('hlcal.created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField3).'%')
         ->where('hlca.id', '=', $this->hlcaId)
         ->orderBy($this->sortField3, $this->sortDirection3)
-        ->get();
+        ->paginate($this->perPage);
     
         $this->resetPage();
+        
+        $this->totalTableDataCount3 = $this->tableList3->count();
     }
 
     public function render(){
@@ -683,7 +750,12 @@ class Leaves extends Component
 
         $this->performAdvancedSearch2();
 
-        $this->performAdvancedSearch3();
+        
+        if ($this->search3){
+            $this->performGlobalSearch3();
+        } else {
+            $this->performAdvancedSearch3();
+        }
         
 
         return view('livewire.leave.leaves', [
