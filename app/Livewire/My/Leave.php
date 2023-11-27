@@ -128,7 +128,7 @@ class Leave extends Component
     }
 
     public function generateTrackingCode(){
-        $latestData = HrLeave::orderBy('id', 'DESC')->first();
+        $latestData = HrLeave::orderBy('created_at', 'DESC')->first();
         $currYear = date('Y');
         $trackingCode = '';
         if ($latestData) {

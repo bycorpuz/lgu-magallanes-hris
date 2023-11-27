@@ -213,7 +213,7 @@ if ( !function_exists('getLeaveTypes') ){
         } elseif ($param1 == 'others'){
             $table = LibLeaveType::where('for_form', 'No')->orderBy('created_at', 'asc')->get();
         } else {
-            $table = LibLeaveType::find($param1);
+            $table = LibLeaveType::orderBy('name', 'asc')->find($param1);
         }
 
         return $table;

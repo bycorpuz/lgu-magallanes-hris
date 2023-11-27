@@ -88,6 +88,11 @@
                                                     <button class="btn btn-success btn-sm" wire:click="addleavecredits('{{ $row->id }}')">
                                                         <i class="bx bx-plus me-0"></i>
                                                     </button>
+                                                    @if ($row->available == 0 && $row->used == 0 && $row->balance)
+                                                        <button class="btn btn-danger btn-sm" wire:click="deleteleavecreditsavailable('{{ $row->id }}')">
+                                                            <i class="bx bx-trash me-0"></i>
+                                                        </button>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
@@ -447,6 +452,12 @@
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
+                            <th class="cursor-pointer" wire:click="sortBy('hlca.firstname')">
+                                User Name
+                                @if ($sortField === 'hlca.firstname')
+                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                @endif
+                            </th>
                             <th class="cursor-pointer" wire:click="sortBy('hl', 'hl.tracking_code')">
                                 Tracking Code
                                 @if ($sortField === 'hl.tracking_code')
@@ -509,6 +520,7 @@
                             @foreach ($tableList as $row)
                                 <tr>
                                     <td>{{ ++ $counter }}</td>
+                                    <td>{{ $row->upi_firstname }} {{ $row->upi_lastname }}</td>
                                     <td>{{ $row->tracking_code }}</td>
                                     <td>{{ $row->llt_name }}</td>
                                     <td>{{ $row->date_from }}</td>
@@ -558,7 +570,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="11"><div class="text-center">No results found.</div></td>
+                                <td colspan="12"><div class="text-center">No results found.</div></td>
                             </tr>
                         @endif
                     </tbody>

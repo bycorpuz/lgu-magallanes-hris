@@ -456,7 +456,7 @@
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modelDeletionModalLabel">Delete User</h5>
+                    <h5 class="modal-title" id="modelDeletionModalLabel">Delete Leave</h5>
                     <button type="button" class="btn-close" wire:click="closeModal" aria-label="Close"></button>
                 </div>
                 <form wire:submit.prevent="delete">

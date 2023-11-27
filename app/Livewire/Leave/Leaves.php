@@ -524,6 +524,18 @@ class Leaves extends Component
         }
     }
 
+    public function deleteleavecreditsavailable($id){
+        $oldTable = HrLeaveCreditsAvailable::find($id);
+        $table = HrLeaveCreditsAvailable::find($id);
+
+        if ($table->delete()){
+            doLog($oldTable, request()->ip(), 'Leaves', 'Deleted');
+            $this->js("showNotification('success', 'The selected Leave Credit has been deleted successfully.')");
+        } else {
+            $this->js("showNotification('error', 'Something went wrong.')");
+        }
+    }
+
     public function selectedValuePerPage(){
         $this->perPage;
     }
@@ -629,6 +641,16 @@ class Leaves extends Component
             };
         }
 
+        if ($this->userIdAdvancedSearchField){
+            $userIdCondition = function ($query) {
+                $query->where('hl.user_id', '=', $this->userIdAdvancedSearchField);
+            };
+        } else {
+            $userIdCondition = function ($query) {
+                $query->whereNotNull('hl.user_id');
+            };
+        }
+
         $this->tableList = HrLeave::from('hr_leaves as hl')
         ->select(
             'hl.*',
@@ -650,7 +672,7 @@ class Leaves extends Component
         ->where('hl.status', 'like', '%'.trim($this->statusAdvancedSearchField).'%')
         ->where($remarksCondition)
         ->where('hl.created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField).'%')
-        ->where('hl.user_id', '=', $this->userIdAdvancedSearchField)
+        ->where($userIdCondition)
         ->orderBy($this->sortField, $this->sortDirection)
         ->paginate($this->perPage);
     
