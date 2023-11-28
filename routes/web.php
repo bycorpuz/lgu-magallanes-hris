@@ -13,6 +13,7 @@ use App\Livewire\Leave\LeaveEarnings;
 use App\Livewire\Leave\Leaves;
 use App\Livewire\My\Leave;
 use App\Livewire\My\Profile;
+use App\Livewire\My\ProfilePicture;
 use App\Livewire\Plantilla\Plantillas;
 use App\Livewire\RoleBasedAccessControl\ModelHasPermissions;
 use App\Livewire\RoleBasedAccessControl\ModelHasRoles;
@@ -46,6 +47,8 @@ Route::group(['middleware' => ['guest','preventBackHistory']], function(){
 Route::group(['middleware' => ['auth', 'preventBackHistory']], function(){
     // Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/my-profile', Profile::class)->name('my-profile');
+    Route::post('/my-profile-change-profile-picture', [ProfilePicture::class, 'changeProfilePicture'])->name('my-profile-change-profile-picture');
+
     Route::get('/my-leave', Leave::class)->name('my-leave');
     Route::get('/my-leave-print/{id}', [Leave::class, 'printleave']);
 

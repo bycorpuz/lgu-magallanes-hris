@@ -97,6 +97,7 @@ class ProfileTabs extends Component
                 if ($table2->update()) {
                     DB::commit();
                     $this->dispatch('refreshHeaderInfo');
+                    $this->dispatch('refreshProfilePictureInfo');
 
                     doLog($table, request()->ip(), 'My Profile', 'Updated Personal Details');
                     $this->js("showNotification('success', 'Personal Details data has been updated successfully.')");

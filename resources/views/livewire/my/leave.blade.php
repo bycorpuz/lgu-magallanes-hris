@@ -179,7 +179,19 @@
                                             <td>{{ $row->date_to }}</td>
                                             <td>{{ $row->days }}</td>
                                             <td>{{ $row->is_with_pay }}</td>
-                                            <td>{{ $row->status }}</td>
+                                            <td>
+                                                @if ($row->status == 'Approved')
+                                                    <span class="badge bg-success">{{ $row->status }}</span>
+                                                @elseif ($row->status == 'Disapproved')
+                                                    <span class="badge bg-danger">{{ $row->status }}</span>
+                                                @elseif ($row->status == 'Cancelled')
+                                                    <span class="badge bg-warning">{{ $row->status }}</span>
+                                                @elseif ($row->status == 'Processing')
+                                                    <span class="badge bg-info">{{ $row->status }}</span>
+                                                @else
+                                                    <span class="badge bg-secondary">{{ $row->status }}</span>
+                                                @endif
+                                            </td>
                                             <td>{{ $row->remarks }}</td>
                                             <td>{{ $row->formatted_created_at }}</td>
                                             <td>

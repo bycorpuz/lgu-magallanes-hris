@@ -29,6 +29,9 @@
 		<link rel="stylesheet" href="{{ asset('/backend-template/assets/css/dark-theme.css') }}" />
 		<link rel="stylesheet" href="{{ asset('/backend-template/assets/css/semi-dark.css') }}" />
 		<link rel="stylesheet" href="{{ asset('/backend-template/assets/css/header-colors.css') }}" />
+
+		<!--ijaboCropTool -->
+		<link rel="stylesheet" href="{{ asset('/extra-assests/ijaboCropTool/ijaboCropTool.min.css') }}" />
 		
         <title>{{ $title ?? 'Page Title' }}</title>
 
@@ -89,6 +92,9 @@
 		@endcan
 		<script src="{{ asset('/system-scripts/global/global.js?v='.filemtime('system-scripts/global/global.js')) }}"></script>
 		{{-- <script src="{{ asset('/system-scripts/global/alpine-init.js?v='.filemtime('system-scripts/global/alpine-init.js')) }}"></script> --}}
+
+		<!--ijaboCropTool -->
+		<script src="{{ asset('/extra-assests/ijaboCropTool/ijaboCropTool.min.js') }}"></script>
 
 		@stack('scripts')
 		@livewireScripts

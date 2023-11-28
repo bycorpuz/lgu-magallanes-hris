@@ -67,7 +67,7 @@
 									</div>
 									<a href="{{ route('leaves') }}">
 										<div class="text-center msg-footer">
-											<button class="btn btn-primary w-100">View All Pending Leaves</button>
+											<button class="btn btn-primary w-100">View All Leaves</button>
 										</div>
 									</a>
 								</div>

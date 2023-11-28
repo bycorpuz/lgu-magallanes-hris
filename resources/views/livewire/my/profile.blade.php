@@ -16,7 +16,7 @@
 
     <div class="row">
         <div class="col-lg-4">
-            {{-- @livewire('admin.admin-profile-picture') --}}
+            @livewire('my.profile-picture')
         </div>
         <div class="col-lg-8">
             @livewire('my.profile-tabs')
