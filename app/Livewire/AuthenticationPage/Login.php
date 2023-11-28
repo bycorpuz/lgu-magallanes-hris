@@ -30,7 +30,7 @@ class Login extends Component
 
         if (Auth::attempt($attemptCredentials)) {
             doLog('Default', $request->ip(), 'Login Form', 'Logged In');
-            $this->js("showNotification('success', 'Redirecting to Dashboard...')");
+            $this->js("showNotification('success', 'Redirecting to your Profile...')");
 
             $request->session()->regenerate();
             return $this->redirect('/my-profile');

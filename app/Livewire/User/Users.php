@@ -232,36 +232,43 @@ class Users extends Component
             'civil_status' => 'required|in:Single,Married,Divorced,Separated,Widowed,Other',
         ]);
 
-        $table = User::find($this->id);
-        $table->email = strtolower($this->email);
-        $table->username = strtolower($this->username);
-        $table->password = Hash::make('password');
-        
-        if ($table->update()) {
-            $table2 = UserPersonalInformation::where('user_id', $this->id)->first();
-            $table2->firstname = strtoupper($this->firstname);
-            $table2->middlename = strtoupper($this->middlename);
-            $table2->lastname = strtoupper($this->lastname);
-            $table2->extname = $this->extname;
-            $table2->other_ext = $this->other_ext;
-            $table2->date_of_birth = $this->date_of_birth;
-            $table2->place_of_birth = strtoupper($this->place_of_birth);
-            $table2->sex = $this->sex;
-            $table2->civil_status = $this->civil_status;
-            $table2->tel_no = $this->tel_no;
-            $table2->mobile_no = $this->mobile_no;
+        DB::beginTransaction();
+        try {
+            $table = User::find($this->id);
+            $table->email = strtolower($this->email);
+            $table->username = strtolower($this->username);
+            
+            if ($table->update()) {
+                $table2 = UserPersonalInformation::where('user_id', $this->id)->first();
+                $table2->firstname = strtoupper($this->firstname);
+                $table2->middlename = strtoupper($this->middlename);
+                $table2->lastname = strtoupper($this->lastname);
+                $table2->extname = $this->extname;
+                $table2->other_ext = $this->other_ext;
+                $table2->date_of_birth = $this->date_of_birth;
+                $table2->place_of_birth = strtoupper($this->place_of_birth);
+                $table2->sex = $this->sex;
+                $table2->civil_status = $this->civil_status;
+                $table2->tel_no = $this->tel_no;
+                $table2->mobile_no = $this->mobile_no;
 
-            if ($table2->update()) {
-                $this->resetInputFields();
-                $this->dispatch('closeModal');
+                if ($table2->update()) {
+                    DB::commit();
+                    
+                    $this->resetInputFields();
+                    $this->dispatch('closeModal');
 
-                doLog($table, request()->ip(), 'Users', 'Updated');
-                $this->js("showNotification('success', 'User data has been updated successfully.')");
+                    doLog($table, request()->ip(), 'Users', 'Updated');
+                    $this->js("showNotification('success', 'User data has been updated successfully.')");
+                } else {
+                    $this->js("showNotification('error', 'Something went wrong on UserPersonalInformation Table.')");
+                }
             } else {
-                $this->js("showNotification('error', 'Something went wrong on UserPersonalInformation Table.')");
+                $this->js("showNotification('error', 'Something went wrong on User Table.')");
             }
-        } else {
-            $this->js("showNotification('error', 'Something went wrong on User Table.')");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->js("showNotification('error', 'Something went wrong.");
         }
     }
 

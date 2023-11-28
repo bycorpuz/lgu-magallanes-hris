@@ -272,9 +272,10 @@
                 $('#modelCreateUpdateModal').modal('hide');
                 $('#modelDeletionModal').modal('hide');
             });
+            
+            advanceSearchSelect2();
         });
 
-        advanceSearchSelect2();
         function advanceSearchSelect2(){
             $('#modelIdAdvancedSearchField').select2( {
                 theme: "bootstrap-5",

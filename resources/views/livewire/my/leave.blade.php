@@ -583,7 +583,6 @@
                 $('#modelCreateUpdateModal').modal('show');
                 $('#modelCreateUpdateModal').on('shown.bs.modal', function (e) {
                     $('#leave_type_id').select2( {
-                        container: 'body',
                         dropdownParent: $('#modelCreateUpdateModal'),
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
@@ -618,7 +617,6 @@
                 $('#modelCreateUpdateSignatoriesModal').modal('show');
                 $('#modelCreateUpdateSignatoriesModal').on('shown.bs.modal', function (e) {
                     $('#param1_signatory').select2( {
-                        container: 'body',
                         dropdownParent: $('#modelCreateUpdateSignatoriesModal'),
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
@@ -630,7 +628,6 @@
                     });
                     
                     $('#param1_designation').select2( {
-                        container: 'body',
                         dropdownParent: $('#modelCreateUpdateSignatoriesModal'),
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
@@ -642,7 +639,6 @@
                     });
                     
                     $('#param2_signatory').select2( {
-                        container: 'body',
                         dropdownParent: $('#modelCreateUpdateSignatoriesModal'),
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
@@ -654,7 +650,6 @@
                     });
                     
                     $('#param2_designation').select2( {
-                        container: 'body',
                         dropdownParent: $('#modelCreateUpdateSignatoriesModal'),
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
@@ -666,7 +661,6 @@
                     });
                     
                     $('#param3_signatory').select2( {
-                        container: 'body',
                         dropdownParent: $('#modelCreateUpdateSignatoriesModal'),
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
@@ -678,7 +672,6 @@
                     });
                     
                     $('#param3_designation').select2( {
-                        container: 'body',
                         dropdownParent: $('#modelCreateUpdateSignatoriesModal'),
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
@@ -690,9 +683,10 @@
                     });
                 });
             });
+
+            advanceSearchSelect2();
         });
 
-        advanceSearchSelect2();
         function advanceSearchSelect2(){
             $('#leaveTypeIdAdvancedSearchField').select2( {
                 theme: "bootstrap-5",

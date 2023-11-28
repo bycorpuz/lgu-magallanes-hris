@@ -819,7 +819,6 @@
                 $('#modelCreateUpdateModal').modal('show');
                 $('#modelCreateUpdateModal').on('shown.bs.modal', function (e) {
                     $('#leave_type_id').select2( {
-                        container: 'body',
                         dropdownParent: $('#modelCreateUpdateModal'),
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
@@ -836,7 +835,6 @@
                 $('#modelAddLeaveCreditsModal').modal('show');
                 $('#modelAddLeaveCreditsModal').on('shown.bs.modal', function (e) {
                     $('#leaveTypeIdAdvancedSearchField3').select2( {
-                        container: 'body',
                         dropdownParent: $('#modelAddLeaveCreditsModal'),
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
@@ -848,7 +846,6 @@
                     });
                     
                     $('#monthAdvancedSearchField3').select2( {
-                        container: 'body',
                         dropdownParent: $('#modelAddLeaveCreditsModal'),
                         theme: "bootstrap-5",
                         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
@@ -881,9 +878,10 @@
                     newWindow.print();
                 };
             });
+
+            advanceSearchSelect2();
         });
 
-        advanceSearchSelect2();
         function advanceSearchSelect2(){
             $('#leaveTypeIdAdvancedSearchField').select2( {
                 theme: "bootstrap-5",

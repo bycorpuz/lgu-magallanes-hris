@@ -29,21 +29,21 @@
                             <div class="row">
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">First Name <span style="color: red;">*</span></label>
-                                    <input type="text" class="form-control" placeholder="First Name" id="focusMe" wire:model="firstname" wire:keyup="generateUsername" required>
+                                    <input type="text" class="form-control" placeholder="First Name" id="focusMe" wire:model="firstname" required>
                                     @error('firstname')
                                         <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">Middle Name</label>
-                                    <input type="text" class="form-control" placeholder="Middle Name" wire:model="middlename" wire:keyup="generateUsername">
+                                    <input type="text" class="form-control" placeholder="Middle Name" wire:model="middlename">
                                     @error('middlename')
                                         <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">Last Name <span style="color: red;">*</span></label>
-                                    <input type="text" class="form-control" placeholder="Last Name" wire:model="lastname" wire:keyup="generateUsername" required>
+                                    <input type="text" class="form-control" placeholder="Last Name" wire:model="lastname" required>
                                     @error('lastname')
                                         <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                                     @enderror
@@ -198,43 +198,83 @@
 </div>
 @push('scripts')
     <script>
-        $("#show_hide_current_password a").on('click', function (event) {
-            event.preventDefault();
-            if ($('#show_hide_current_password input').attr("type") == "text") {
-                $('#show_hide_current_password input').attr('type', 'password');
-                $('#show_hide_current_password i').addClass("bx-hide");
-                $('#show_hide_current_password i').removeClass("bx-show");
-            } else if ($('#show_hide_current_password input').attr("type") == "password") {
-                $('#show_hide_current_password input').attr('type', 'text');
-                $('#show_hide_current_password i').removeClass("bx-hide");
-                $('#show_hide_current_password i').addClass("bx-show");
-            }
+        document.addEventListener('livewire:initialized', () => {
+            showHideInput();
+            personalDetailsSelect2();
         });
-        
-        $("#show_hide_new_password a").on('click', function (event) {
-            event.preventDefault();
-            if ($('#show_hide_new_password input').attr("type") == "text") {
-                $('#show_hide_new_password input').attr('type', 'password');
-                $('#show_hide_new_password i').addClass("bx-hide");
-                $('#show_hide_new_password i').removeClass("bx-show");
-            } else if ($('#show_hide_new_password input').attr("type") == "password") {
-                $('#show_hide_new_password input').attr('type', 'text');
-                $('#show_hide_new_password i').removeClass("bx-hide");
-                $('#show_hide_new_password i').addClass("bx-show");
-            }
-        });
-        
-        $("#show_hide_new_password_confirmation a").on('click', function (event) {
-            event.preventDefault();
-            if ($('#show_hide_new_password_confirmation input').attr("type") == "text") {
-                $('#show_hide_new_password_confirmation input').attr('type', 'password');
-                $('#show_hide_new_password_confirmation i').addClass("bx-hide");
-                $('#show_hide_new_password_confirmation i').removeClass("bx-show");
-            } else if ($('#show_hide_new_password_confirmation input').attr("type") == "password") {
-                $('#show_hide_new_password_confirmation input').attr('type', 'text');
-                $('#show_hide_new_password_confirmation i').removeClass("bx-hide");
-                $('#show_hide_new_password_confirmation i').addClass("bx-show");
-            }
-        });
+
+        function showHideInput(){
+            $("#show_hide_current_password a").on('click', function (event) {
+                event.preventDefault();
+                if ($('#show_hide_current_password input').attr("type") == "text") {
+                    $('#show_hide_current_password input').attr('type', 'password');
+                    $('#show_hide_current_password i').addClass("bx-hide");
+                    $('#show_hide_current_password i').removeClass("bx-show");
+                } else if ($('#show_hide_current_password input').attr("type") == "password") {
+                    $('#show_hide_current_password input').attr('type', 'text');
+                    $('#show_hide_current_password i').removeClass("bx-hide");
+                    $('#show_hide_current_password i').addClass("bx-show");
+                }
+            });
+            
+            $("#show_hide_new_password a").on('click', function (event) {
+                event.preventDefault();
+                if ($('#show_hide_new_password input').attr("type") == "text") {
+                    $('#show_hide_new_password input').attr('type', 'password');
+                    $('#show_hide_new_password i').addClass("bx-hide");
+                    $('#show_hide_new_password i').removeClass("bx-show");
+                } else if ($('#show_hide_new_password input').attr("type") == "password") {
+                    $('#show_hide_new_password input').attr('type', 'text');
+                    $('#show_hide_new_password i').removeClass("bx-hide");
+                    $('#show_hide_new_password i').addClass("bx-show");
+                }
+            });
+            
+            $("#show_hide_new_password_confirmation a").on('click', function (event) {
+                event.preventDefault();
+                if ($('#show_hide_new_password_confirmation input').attr("type") == "text") {
+                    $('#show_hide_new_password_confirmation input').attr('type', 'password');
+                    $('#show_hide_new_password_confirmation i').addClass("bx-hide");
+                    $('#show_hide_new_password_confirmation i').removeClass("bx-show");
+                } else if ($('#show_hide_new_password_confirmation input').attr("type") == "password") {
+                    $('#show_hide_new_password_confirmation input').attr('type', 'text');
+                    $('#show_hide_new_password_confirmation i').removeClass("bx-hide");
+                    $('#show_hide_new_password_confirmation i').addClass("bx-show");
+                }
+            });
+        }
+
+        function personalDetailsSelect2(){
+            $('#extname').select2( {
+                theme: "bootstrap-5",
+                width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                placeholder: $( this ).data( 'placeholder' ),
+                closeOnSelect: true,
+                allowClear: true,
+            });
+            $('#extname').on('change', function (e) {
+                @this.set('extname', $(this).val());
+            });
+
+            $('#sex').select2( {
+                theme: "bootstrap-5",
+                width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                placeholder: $( this ).data( 'placeholder' ),
+                closeOnSelect: true,
+            });
+            $('#sex').on('change', function (e) {
+                @this.set('sex', $(this).val());
+            });
+
+            $('#civil_status').select2( {
+                theme: "bootstrap-5",
+                width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                placeholder: $( this ).data( 'placeholder' ),
+                closeOnSelect: true,
+            });
+            $('#civil_status').on('change', function (e) {
+                @this.set('civil_status', $(this).val());
+            });
+        }
     </script>
 @endpush

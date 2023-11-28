@@ -173,7 +173,10 @@
 
 @push('scripts')
     <script type="text/javascript">
-        advanceSearchSelect2();
+        document.addEventListener('livewire:initialized', () => {
+            advanceSearchSelect2();
+        });
+
         function advanceSearchSelect2(){
             $('#userIdAdvancedSearchField').select2( {
                 theme: "bootstrap-5",

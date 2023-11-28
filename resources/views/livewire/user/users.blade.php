@@ -239,21 +239,21 @@
                     <div class="row modal-body">
                         <div class="col-md-3 mb-3">
                             <label class="form-label">First Name <span style="color: red;">*</span></label>
-                            <input type="text" class="form-control" placeholder="First Name" id="focusMe" wire:model="firstname" wire:keyup="generateUsername" required>
+                            <input type="text" class="form-control" placeholder="First Name" id="focusMe" wire:model="firstname" {{ $isUpdateMode ? '' : "wire:keyup=generateUsername" }} required>
                             @error('firstname')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">Middle Name</label>
-                            <input type="text" class="form-control" placeholder="Middle Name" wire:model="middlename" wire:keyup="generateUsername">
+                            <input type="text" class="form-control" placeholder="Middle Name" wire:model="middlename" {{ $isUpdateMode ? '' : "wire:keyup=generateUsername" }}>
                             @error('middlename')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">Last Name <span style="color: red;">*</span></label>
-                            <input type="text" class="form-control" placeholder="Last Name" wire:model="lastname" wire:keyup="generateUsername" required>
+                            <input type="text" class="form-control" placeholder="Last Name" wire:model="lastname" {{ $isUpdateMode ? '' : "wire:keyup=generateUsername" }} required>
                             @error('lastname')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
@@ -441,9 +441,10 @@
                 $('#modelCreateUpdateModal').modal('hide');
                 $('#modelDeletionModal').modal('hide');
             });
+
+            advanceSearchSelect2();
         });
 
-        advanceSearchSelect2();
         function advanceSearchSelect2(){
             $('#userIdAdvancedSearchField').select2( {
                 theme: "bootstrap-5",
