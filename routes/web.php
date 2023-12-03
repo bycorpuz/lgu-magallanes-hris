@@ -20,6 +20,7 @@ use App\Livewire\RoleBasedAccessControl\ModelHasRoles;
 use App\Livewire\RoleBasedAccessControl\Permissions;
 use App\Livewire\RoleBasedAccessControl\RoleHasPermissions;
 use App\Livewire\RoleBasedAccessControl\Roles;
+use App\Livewire\Settings\Site;
 use App\Livewire\User\Logs;
 use App\Livewire\User\Users;
 use Illuminate\Support\Facades\Route;
@@ -70,6 +71,9 @@ Route::group(['middleware' => ['auth', 'preventBackHistory']], function(){
     Route::get('/leave-dashboard', LeaveDashboard::class)->middleware('permission:view-leave-dashboard')->name('leave-dashboard');
 
     Route::get('/plantillas', Plantillas::class)->middleware('permission:crud-plantillas')->name('plantillas');
+
+    Route::get('/site-settings', Site::class)->middleware('permission:update-site-settings')->name('site-settings');
+    Route::post('/site-settings-change-logo', [Site::class, 'changeLogo'])->middleware('permission:update-site-settings')->name('site-settings-change-logo');
 
     Route::get('/user-logs', Logs::class)->middleware('permission:view-user-logs')->name('user-logs');
 });

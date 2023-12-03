@@ -4,7 +4,7 @@
 
         <div class="container py-4">
         <div class="copyright">
-            &copy; Copyright <strong><span>{{ getSettings()->site_name }}</span></strong>. All Rights Reserved
+            &copy; Copyright <strong><span>{{ getSiteSettings()->site_name }}</span></strong>. All Rights Reserved
         </div>
         <div class="credits">
             <!-- All the links in the footer should remain intact. -->

@@ -19,8 +19,8 @@ function artisanClear(){
     Artisan::call('optimize:clear');
 }
 
-if ( !function_exists('getSettings') ){
-    function getSettings(){
+if ( !function_exists('getSiteSettings') ){
+    function getSiteSettings(){
         $results = null;
         $settings = new GeneralSettings();
         $settings_data = $settings->first();
@@ -29,7 +29,7 @@ if ( !function_exists('getSettings') ){
             $results = $settings_data;
         } else {
             $settings->id = Str::uuid();
-            $settings->site_name = 'LGU Magallanes HRIS';
+            $settings->site_name = 'Your Company HRIS';
             $settings->site_email = 'your@email.com';
             $settings->save();
 

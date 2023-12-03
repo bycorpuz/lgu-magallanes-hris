@@ -1,16 +1,7 @@
 <div>
     <!--sidebar wrapper -->
     <div class="sidebar-wrapper" data-simplebar="true">
-        <div class="sidebar-header">
-            <div>
-                <img src="{{ asset('/images/site/'. getSettings()->site_logo) }}" >
-            </div>
-            <div>
-                <h1 class="logo-text" style="font-size: 9pt;">{{ getSettings()->site_name }}</h1>
-            </div>
-            <div class="toggle-icon ms-auto"><i class='bx bx-arrow-back'></i>
-            </div>
-        </div>
+        @livewire('dashboard-page.sidebar-wrapper-header')
 
         <!--navigation-->
         <ul class="metismenu" id="menu">
@@ -201,6 +192,21 @@
                             </li>
                         @endcan
                     </ul>
+                </li>
+            @endif
+
+            @if(
+                // for developer and administrator
+                Gate::check('update-site-settings')
+            )
+                <li class="menu-label">SETTINGS</li>
+                
+                <li class="{{ Route::is('site-settings') ? 'mm-active' : '' }}">
+                    <a href="{{ route('site-settings') }}">
+                        <div class="parent-icon"><i class="bx bx-cog"></i>
+                        </div>
+                        <div class="menu-title">Site Settings</div>
+                    </a>
                 </li>
             @endif
 

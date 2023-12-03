@@ -298,7 +298,7 @@
                         <div class="info-box  mb-4">
                         <i class="bx bx-envelope"></i>
                         <h3>Email Us</h3>
-                        <p>{{ getSettings()->site_email ?? 'system@email.com' }}</p>
+                        <p>{{ getSiteSettings()->site_email ?? 'system@email.com' }}</p>
                         </div>
                     </div>
 
@@ -306,7 +306,7 @@
                         <div class="info-box  mb-4">
                         <i class="bx bx-phone-call"></i>
                         <h3>Call Us</h3>
-                        <p>{{ getSettings()->site_phone ?? '0123 456 7890' }}</p>
+                        <p>{{ getSiteSettings()->site_phone ?? '0123 456 7890' }}</p>
                         </div>
                     </div>
 

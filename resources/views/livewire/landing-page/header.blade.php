@@ -3,7 +3,7 @@
     <header id="header" class="d-flex align-items-center">
         <div class="container d-flex align-items-center justify-content-between">
 
-        <h1 class="logo"><a href="/">{{ getSettings()->site_name }}<span></span></a></h1>
+        <h1 class="logo"><a href="/">{{ getSiteSettings()->site_name }}<span></span></a></h1>
         <!-- Uncomment below if you prefer to use an image logo -->
         <!-- <a href="#hero" class="logo"><img src="{{ asset('/landing-page-template/assets/img/logo.png') }}" alt=""></a>-->
 
