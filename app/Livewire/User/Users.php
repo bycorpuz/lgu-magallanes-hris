@@ -320,7 +320,17 @@ class Users extends Component
             $this->js("showNotification('error', 'Something went wrong.')");
         }
     }
-    
+
+    public function changePassword($id){
+        $table = User::find($id);
+        $table->password = Hash::make('password');
+        if ($table->update()){
+            doLog($table, request()->ip(), 'Users', 'Changed Password');
+            $this->js("showNotification('success', 'Password successfully changed.')");        
+        } else {
+            $this->js("showNotification('error', 'Something went wrong.')");
+        }
+    }
     public function selectedValuePerPage(){
         $this->perPage;
     }
