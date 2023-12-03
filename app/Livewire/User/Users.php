@@ -331,6 +331,7 @@ class Users extends Component
             $this->js("showNotification('error', 'Something went wrong.')");
         }
     }
+    
     public function selectedValuePerPage(){
         $this->perPage;
     }

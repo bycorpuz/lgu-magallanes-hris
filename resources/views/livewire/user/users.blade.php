@@ -25,7 +25,7 @@
                 </div>
                 <div class="col-sm-7">
                     <div class="position-relative search-bar d-lg-block d-none">
-                        <input class="form-control px-5" type="search" placeholder="Search" wire:model.live.d   ebounce.100ms="search" {{ $showAdvancedSearch ? 'disabled' : '' }}>
+                        <input class="form-control px-5" type="search" placeholder="Search" wire:model.live.debounce.100ms="search" {{ $showAdvancedSearch ? 'disabled' : '' }}>
                         <span class="position-absolute top-50 search-show ms-3 translate-middle-y start-0 top-50 fs-5"><i class="bx bx-search"></i></span>
                     </div>
                 </div>
