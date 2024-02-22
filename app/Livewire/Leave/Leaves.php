@@ -13,7 +13,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 #[Title('Leaves')]
-#[Layout('layouts.dashboard-app')] 
+#[Layout('layouts.dashboard-app')]
 class Leaves extends Component
 {
     use WithPagination;
@@ -68,6 +68,10 @@ class Leaves extends Component
     public $hlcalId, $month3, $year3, $value3, $date_from3, $date_to3, $remarks3, $modal_title3= '';
     public $deleteId3;
 
+    public $leave_type = '';
+    public $available = 0, $used = 0, $balance = 0;
+    public $isUpdateMode3 = false;
+
     private function resetAdvancedSearchFields(){
         $this->trackingCodeAdvancedSearchField = '';
         $this->leaveTypeIdAdvancedSearchField = '';
@@ -107,8 +111,10 @@ class Leaves extends Component
     public function closeModal(){
         $this->isUpdateMode = false;
         $this->isUpdateMode2 = false;
+        $this->isUpdateMode3 = false;
         $this->resetInputFields();
         $this->resetInputFields2();
+        $this->resetInputFields3();
         $this->dispatch('closeModal');
     }
 
@@ -148,6 +154,14 @@ class Leaves extends Component
         $this->date_from2 = '';
         $this->date_to2 = '';
         $this->remarks2 = '';
+        artisanClear();
+    }
+
+    private function resetInputFields3(){
+        $this->leave_type = '';
+        $this->available = '0';
+        $this->used = '0';
+        $this->balance = '0';
         artisanClear();
     }
 
@@ -201,7 +215,7 @@ class Leaves extends Component
         $table->date_to = $this->date_to;
         $table->is_with_pay = $this->is_with_pay;
         $table->remarks = $this->remarks;
-        
+
         $table->details_b1 = !empty($this->details_b1) ? $this->details_b1 : 'N/A';
         $table->details_b1_name = $this->details_b1_name;
         $table->details_b2 = !empty($this->details_b2) ? $this->details_b2 : 'N/A';
@@ -210,7 +224,7 @@ class Leaves extends Component
         $table->details_b4 = !empty($this->details_b4) ? $this->details_b4 : 'N/A';
         $table->details_b5 = !empty($this->details_b5) ? $this->details_b5 : 'N/A';
         $table->details_d1 = !empty($this->details_d1) ? $this->details_d1 : 'No';
-        
+
         if ($table->update()) {
             $this->resetInputFields();
             $this->dispatch('closeModal');
@@ -250,7 +264,7 @@ class Leaves extends Component
             $table->date_from = $this->date_from2;
             $table->date_to = $this->date_to2;
             $table->remarks = $this->remarks2;
-            
+
             if ($table->save()) {
                 $table2 = HrLeaveCreditsAvailable::find($this->hlcaId);
                 $table2->available += $this->value2;
@@ -284,7 +298,7 @@ class Leaves extends Component
         $this->date_from2 = $table->date_from;
         $this->date_to2 = $table->date_to;
         $this->remarks2 = $table->remarks;
-        
+
         $this->showAdvancedSearch3 = false;
         $this->search3 = '';
         $this->resetAdvancedSearchFields3();
@@ -323,7 +337,7 @@ class Leaves extends Component
                 $table2->available = $prevAvailable + $this->value2;
                 $table2->balance = $prevBalance + $this->value2;
             }
-            
+
             if ($table->update()) {
                 $table2->update();
                 DB::commit();
@@ -340,7 +354,7 @@ class Leaves extends Component
             DB::rollBack();
             $this->js("showNotification('error', 'Something went wrong.");
         }
-    } 
+    }
 
     public function print($id){
         $this->printViewFileUrl2 = 'my-leave-print/'.$id;
@@ -383,7 +397,7 @@ class Leaves extends Component
 
                                 $table2->balance = $newBalance;
                                 $table2->used = $used;
-                                
+
                                 if ($table2->update()){
                                     $flag = 1;
                                 }
@@ -514,9 +528,9 @@ class Leaves extends Component
         $table = HrLeaveCreditsAvailableList::find($this->deleteId3);
         if ($table->delete()){
             $table2->update();
-            
+
             $this->dispatch('closeDeletionModal');
-            
+
             doLog($oldTable, request()->ip(), 'Leave Earnings', 'Deleted');
             $this->js("showNotification('success', 'The selected Leave Earning has been deleted successfully.')");
         } else {
@@ -625,7 +639,7 @@ class Leaves extends Component
         ->paginate($this->perPage);
 
         $this->resetPage();
-        
+
         $this->totalTableDataCount = $this->tableList->count();
     }
 
@@ -660,7 +674,7 @@ class Leaves extends Component
                 $query->whereNotNull('hl.status');
             };
         }
-        
+
         $this->tableList = HrLeave::from('hr_leaves as hl')
         ->select(
             'hl.*',
@@ -685,9 +699,9 @@ class Leaves extends Component
         ->where($userIdCondition)
         ->orderBy($this->sortField, $this->sortDirection)
         ->paginate($this->perPage);
-    
+
         $this->resetPage();
-        
+
         $this->totalTableDataCount = $this->tableList->count();
     }
 
@@ -706,7 +720,7 @@ class Leaves extends Component
         ->where('hlca.user_id', '=', $this->userIdAdvancedSearchField)
         ->orderBy($this->sortField2, $this->sortDirection2)
         ->get();
-    
+
         $this->resetPage();
     }
 
@@ -739,7 +753,7 @@ class Leaves extends Component
         ->paginate($this->perPage);
 
         $this->resetPage();
-        
+
         $this->totalTableDataCount3 = $this->tableList3->count();
     }
 
@@ -767,9 +781,9 @@ class Leaves extends Component
         ->where('hlca.id', '=', $this->hlcaId)
         ->orderBy($this->sortField3, $this->sortDirection3)
         ->paginate($this->perPage);
-    
+
         $this->resetPage();
-        
+
         $this->totalTableDataCount3 = $this->tableList3->count();
     }
 
@@ -781,17 +795,107 @@ class Leaves extends Component
         }
 
         $this->performAdvancedSearch2();
-        
+
         if ($this->search3){
             $this->performGlobalSearch3();
         } else {
             $this->performAdvancedSearch3();
         }
-        
+
         return view('livewire.leave.leaves', [
             'tableList' => $this->tableList,
             'tableList2' => $this->tableList2,
             'tableList3' => $this->tableList3,
         ]);
+    }
+
+    public function addleavetype2(){
+        $this->isUpdateMode3 = false;
+        $this->resetInputFields3();
+        $this->dispatch('openCreateUpdateLeaveTypeModal');
+    }
+
+    public function updateleavetype2($id){
+        $this->isUpdateMode3 = true;
+        $this->hlcaId = $id;
+        $hlca = HrLeaveCreditsAvailable::find($this->hlcaId);
+        $this->leave_type = $hlca->leave_type_id;
+        $this->available = $hlca->available;
+        $this->used = $hlca->used;
+        $this->balance = $hlca->balance;
+
+        $this->dispatch('openCreateUpdateLeaveTypeModal');
+    }
+
+    public function addLeaveType(){
+        $this->validate([
+            'leave_type' => 'required',
+            'available' => 'required|numeric',
+            'used' => 'required|numeric',
+            'balance' => 'required|numeric',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $table = HrLeaveCreditsAvailable::where([
+                ['user_id', $this->userIdAdvancedSearchField],
+                ['leave_type_id', $this->leave_type],
+            ])->first();
+
+            if ($table){
+                $this->js("showNotification('error', 'Leave Type already exist in user.')");
+                return;
+            }
+
+            $table = new HrLeaveCreditsAvailable();
+            $table->leave_type_id = $this->leave_type;
+            $table->user_id = $this->userIdAdvancedSearchField;
+            $table->available = $this->available;
+            $table->used = $this->used;
+            $table->balance = $this->balance;
+            if ($table->save()) {
+                $this->isUpdateMode3 = false;
+                $this->resetInputFields3();
+                doLog($table, request()->ip(), 'Leaves', 'Created Leave Type');
+                DB::commit();
+                $this->js("showNotification('success', 'Leave Credits data has been saved successfully.')");
+            } else {
+                $this->js("showNotification('error', 'Something went wrong.')");
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->js("showNotification('error', 'Something went wrong.");
+        }
+    }
+
+    public function updateLeaveType(){
+        $this->validate([
+            'leave_type' => 'required',
+            'available' => 'required|numeric',
+            'used' => 'required|numeric',
+            'balance' => 'required|numeric',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $table = HrLeaveCreditsAvailable::find($this->hlcaId);
+            $table->user_id = $this->userIdAdvancedSearchField;
+            $table->available = $this->available;
+            $table->used = $this->used;
+            $table->balance = $this->balance;
+            if ($table->update()) {
+                $this->isUpdateMode3 = false;
+                $this->resetInputFields3();
+                doLog($table, request()->ip(), 'Leaves', 'Updated Leave Type');
+                DB::commit();
+                $this->js("showNotification('success', 'Leave Type data has been updated successfully.')");
+                $this->dispatch('closeModal');
+            } else {
+                $this->js("showNotification('error', 'Something went wrong.')");
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->js("showNotification('error', 'Something went wrong.");
+        }
     }
 }

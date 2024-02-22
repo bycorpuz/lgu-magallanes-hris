@@ -1,4 +1,4 @@
-<div> 
+<div>
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
         <div class="breadcrumb-title pe-3">HUMAN RESOURCE - Leave Management</div>
@@ -10,6 +10,16 @@
                     <li class="breadcrumb-item active" aria-current="page">Leaves</li>
                 </ol>
             </nav>
+        </div>
+        <div class="ms-auto">
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary">Settings</button>
+                <button type="button" class="btn btn-primary split-bg-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">	<span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg-end">
+                    <a class="dropdown-item" href="javascript:;" wire:click="addleavetype2">Add Leave Type</a>
+                </div>
+            </div>
         </div>
     </div>
     <!--end breadcrumb-->
@@ -88,6 +98,9 @@
                                                     <button class="btn btn-success btn-sm" wire:click="addleavecredits('{{ $row->id }}')">
                                                         <i class="bx bx-plus me-0"></i>
                                                     </button>
+                                                    <button class="btn btn-primary btn-sm" wire:click="updateleavetype2('{{ $row->id }}')">
+                                                        <i class="bx bx-edit me-0"></i>
+                                                    </button>
                                                     @if ($row->available == 0 && $row->used == 0 && $row->balance)
                                                         <button class="btn btn-danger btn-sm" wire:click="deleteleavecreditsavailable('{{ $row->id }}')">
                                                             <i class="bx bx-trash me-0"></i>
@@ -117,7 +130,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modelAddLeaveCreditsModalLabel">
-                        {{ $isUpdateMode2 ? 'Edit Leave Credits of': 'Add Leave Credits to'}} {{ $modal_title2 }} 
+                        {{ $isUpdateMode2 ? 'Edit Leave Credits of': 'Add Leave Credits to'}} {{ $modal_title2 }}
                     </h5>
                     <button type="button" class="btn-close" wire:click="closeModal" aria-label="Close"></button>
                 </div>
@@ -179,7 +192,7 @@
                 </form>
 
                 <div class="card m-3">
-                    <div class="card-body"> 
+                    <div class="card-body">
                         <div class="row pb-3">
                             <div class="col-sm-8">
                                 <div class="position-relative search-bar d-lg-block d-none">
@@ -191,7 +204,7 @@
                                 <button wire:click="toggleAdvancedSearch3" class="btn btn-link">Toggle Advanced Search</button>
                             </div>
                         </div>
-    
+
                         <div class="pt-2" {{ !$showAdvancedSearch3 ? 'hidden' : '' }}>
                             <div class="card">
                                 <div class="card-body">
@@ -354,7 +367,7 @@
                                 </div>
                             </div>
                         </div>
-            
+
                         <div class="row">
                             <div class="col-sm-9">
                                 Showing {{ number_format($tableList3->firstItem(), 0) }} to {{ number_format($tableList3->lastItem(), 0) }} of {{ number_format($tableList3->total(), 0) }} entries
@@ -371,10 +384,71 @@
         </div>
     </div>
     <!--end modal(add leave credits)-->
-       
+
+    <!--modal(create and update leave type)-->
+    <div wire:ignore.self class="modal fade" id="modelCreateUpdateLeaveTypeModal" tabindex="-1" role="dialog" aria-labelledby="modelCreateUpdateLeaveTypeModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modelCreateUpdateLeaveTypeModalLabel">
+                        {{ $isUpdateMode3 ? 'Update Leave Type' : 'Add New Leave Type' }}
+                    </h5>
+                    <button type="button" class="btn-close" wire:click="closeModal" aria-label="Close"></button>
+                </div>
+                <form wire:submit.prevent="{{ $isUpdateMode3 ? 'updateLeaveType' : 'addLeaveType' }}">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3" wire:ignore>
+                            <label class="form-label">Leave Type <span style="color: red;">*</span></label>
+                            <select class="form-select" wire:model="leave_type" data-placeholder="Select" id="leave_type" required>
+                                <option value="">Select</option>
+                                @foreach (getLeaveTypes('') as $row)
+                                    <option value="{{ $row->id }}">{{ $row->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('leave_type')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label">Available <span style="color: red;">*</span></label>
+                                <input type="number" step="0.001" class="form-control" placeholder="Available" wire:model="available" required>
+                                @error('available')
+                                    <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Used <span style="color: red;">*</span></label>
+                                <input type="number" step="0.001" class="form-control" placeholder="Used" wire:model="used" required>
+                                @error('used')
+                                    <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Balance <span style="color: red;">*</span></label>
+                                <input type="number" step="0.001" class="form-control" placeholder="Balance" wire:model="balance" required>
+                                @error('balance')
+                                    <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">{{ $isUpdateMode3 ? 'Update' : 'Create' }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--end modal(create and update leave type)-->
+
     <!--table-->
     <div class="card">
-        <div class="card-body"> 
+        <div class="card-body">
             <div class="row pb-3">
                 <div class="col-sm-9">
                     <div class="position-relative search-bar d-lg-block d-none">
@@ -389,7 +463,7 @@
 
             <div class="pt-2" {{ !$showAdvancedSearch ? 'hidden' : '' }}>
                 <div class="card">
-                    <div class="card-body"> 
+                    <div class="card-body">
                         <form class="row" wire:submit.prevent="performAdvancedSearch">
                             @csrf
                             <div class="col-md-3 mb-3">
@@ -760,7 +834,7 @@
                             @enderror
                         </div>
 
-                        
+
                         <div class="col-md-6 mb-3" wire:ignore>
                             <label class="form-label">Commutation Requested?</label>
                             <select class="form-select" wire:model="details_d1" data-placeholder="Select" id="details_d1">
@@ -844,7 +918,7 @@
                     $('#leaveTypeIdAdvancedSearchField3').on('change', function (e) {
                         @this.set('leaveTypeIdAdvancedSearchField3', $(this).val());
                     });
-                    
+
                     $('#monthAdvancedSearchField3').select2( {
                         dropdownParent: $('#modelAddLeaveCreditsModal'),
                         theme: "bootstrap-5",
@@ -861,6 +935,7 @@
             @this.on('closeModal', (data) => {
                 $('#modelCreateUpdateModal').modal('hide');
                 $('#modelAddLeaveCreditsModal').modal('hide');
+                $('#modelCreateUpdateLeaveTypeModal').modal('hide');
             });
 
             @this.on('openDeletionModal', (data) => {
@@ -880,6 +955,27 @@
             });
 
             advanceSearchSelect2();
+
+            @this.on('openCreateUpdateLeaveTypeModal', (data) => {
+                $user = $('#userIdAdvancedSearchField').val();
+                if ($user){
+                    $('#modelCreateUpdateLeaveTypeModal').modal('show');
+                    $('#modelCreateUpdateLeaveTypeModal').on('shown.bs.modal', function (e) {
+                        $('#leave_type').select2( {
+                            dropdownParent: $('#modelCreateUpdateLeaveTypeModal'),
+                            theme: "bootstrap-5",
+                            width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+                            placeholder: $( this ).data( 'placeholder' ),
+                            closeOnSelect: true,
+                        });
+                        $('#leave_type').on('change', function (e) {
+                            @this.set('leave_type', $(this).val());
+                        });
+                    });
+                } else {
+                    showNotification('error', 'Please select user to proceed.');
+                }
+            });
         });
 
         function advanceSearchSelect2(){
@@ -900,7 +996,7 @@
             $('#userIdAdvancedSearchField').on('change', function (e) {
                 @this.set('userIdAdvancedSearchField', $(this).val());
             });
-            
+
             $('#isWithPayAdvancedSearchField').select2( {
                 theme: "bootstrap-5",
                 width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
@@ -909,7 +1005,7 @@
             $('#isWithPayAdvancedSearchField').on('change', function (e) {
                 @this.set('isWithPayAdvancedSearchField', $(this).val());
             });
-            
+
             $('#statusAdvancedSearchField').select2( {
                 theme: "bootstrap-5",
                 width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
