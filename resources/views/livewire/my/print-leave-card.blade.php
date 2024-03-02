@@ -259,9 +259,9 @@
                             <th>1<sup>st</sup> DAY of SERVICE</th>
                         </tr>
                         <tr>
-                            <td><b><span class="basic-info">{{ strtoupper(getUserFullName($user_id)) }}</span></b></td>
+                            <td><b><span class="basic-info">{{ strtoupper(getUserFullName($user_id) ?? '') }}</span></b></td>
                             <td><b><span class="basic-info">{{ strtoupper(getPlantillas($user_id)->division_office ?? '') }}</span></b></td>
-                            <td><b><span class="basic-info">-</span></b></td>
+                            <td><b><span class="basic-info">{{ date_format(date_create(getUsers($user_id)->u_fdos), "F j, Y") ?? '' }}</span></b></td>
                         </tr>
                     </tbody>
                 </table>

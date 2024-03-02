@@ -13,7 +13,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 #[Title('Users')]
-#[Layout('layouts.dashboard-app')] 
+#[Layout('layouts.dashboard-app')]
 class Users extends Component
 {
     use WithPagination;
@@ -28,12 +28,12 @@ class Users extends Component
            $firstNameAdvancedSearchField, $middleNameAdvancedSearchField,
            $lastNameAdvancedSearchField, $extNameAdvancedSearchField, $otherExtAdvancedSearchField,
            $emailAdvancedSearchField, $usernameAdvancedSearchField, $mobileNoAdvancedSearchField,
-           $dateCreatedAdvancedSearchField = '';
+           $dateCreatedAdvancedSearchField, $fdosAdvancedSearchField = '';
 
     public $counter = 0;
     public $totalTableDataCount = 0;
 
-    public $id, $username, $email = '';
+    public $id, $username, $email, $fdos = '';
     public $user_id, $firstname, $middlename, $lastname, $extname, $other_ext,
            $date_of_birth, $place_of_birth, $sex, $civil_status,
            $ra_house_no, $ra_street, $ra_subdivision, $ra_brgy_code, $ra_zip_code,
@@ -49,6 +49,7 @@ class Users extends Component
     private function resetInputFields(){
         $this->username = '';
         $this->email = '';
+        $this->fdos = '';
         $this->user_id = '';
         $this->firstname = '';
         $this->middlename = '';
@@ -77,6 +78,7 @@ class Users extends Component
         $this->extNameAdvancedSearchField = '';
         $this->otherExtAdvancedSearchField = '';
         $this->emailAdvancedSearchField = '';
+        $this->fdosAdvancedSearchField = '';
         $this->usernameAdvancedSearchField = '';
         $this->mobileNoAdvancedSearchField = '';
         $this->dateCreatedAdvancedSearchField = '';
@@ -101,6 +103,7 @@ class Users extends Component
         $this->validate([
             'email' => 'required|email|unique:users,email',
             'username' => 'required|unique:users,username|min:3|max:255',
+            'fdos' => 'required|date',
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'date_of_birth' => 'required|date',
@@ -115,7 +118,8 @@ class Users extends Component
             $table->email = strtolower($this->email);
             $table->username = strtolower($this->username);
             $table->password = Hash::make('password');
-            
+            $table->fdos = $this->fdos;
+
             if ($table->save()) {
                 // user_personal_informations
                 $table2 = new UserPersonalInformation();
@@ -146,7 +150,7 @@ class Users extends Component
                     'e8bfe149-808c-4c72-b52d-1f373bedd548', // VL
                     '2e3fa1d1-aeb5-4693-a097-842b7951281a', // SPL
                 ];
-                
+
                 foreach ($leaveTypeIds as $leaveTypeId) {
                     $table->userHrLeaveCreditsAvailable()
                         ->create(
@@ -164,7 +168,7 @@ class Users extends Component
                     'for' => 'Leave'
                 ]);
 
-                if ($table2->save()) {               
+                if ($table2->save()) {
                     DB::commit();
 
                     $this->resetInputFields();
@@ -193,6 +197,7 @@ class Users extends Component
         $this->id = $table->id;
         $this->email = $table->email;
         $this->username = $table->username;
+        $this->fdos = $table->fdos;
 
         $table2 = UserPersonalInformation::where('user_id', $this->id)->first();
         $this->firstname = $table2->firstname;
@@ -208,7 +213,7 @@ class Users extends Component
         $this->mobile_no = $table2->mobile_no;
     }
 
-    public function update(){        
+    public function update(){
         $this->validate([
             'email' =>  [
                 'required',
@@ -225,6 +230,7 @@ class Users extends Component
                     ->where('username', $this->username)
                     ->ignore($this->id)
             ],
+            'fdos' => 'required|date',
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'date_of_birth' => 'required|date',
@@ -237,7 +243,8 @@ class Users extends Component
             $table = User::find($this->id);
             $table->email = strtolower($this->email);
             $table->username = strtolower($this->username);
-            
+            $table->fdos = strtolower($this->fdos);
+
             if ($table->update()) {
                 $table2 = UserPersonalInformation::where('user_id', $this->id)->first();
                 $table2->firstname = strtoupper($this->firstname);
@@ -254,7 +261,7 @@ class Users extends Component
 
                 if ($table2->update()) {
                     DB::commit();
-                    
+
                     $this->resetInputFields();
                     $this->dispatch('closeModal');
 
@@ -280,6 +287,7 @@ class Users extends Component
         $this->id = $table->id;
         $this->email = $table->email;
         $this->username = $table->username;
+        $this->fdos = $table->fdos;
 
         $table2 = UserPersonalInformation::where('user_id', $this->id)->first();
         $this->firstname = $table2->firstname;
@@ -301,6 +309,7 @@ class Users extends Component
                 'u.id',
                 'u.username',
                 'u.email',
+                'u.fdos',
                 'u.created_at',
                 'upi.*'
             )
@@ -313,7 +322,7 @@ class Users extends Component
             $this->isUpdateMode = false;
             $this->resetInputFields();
             $this->dispatch('closeModal');
-            
+
             doLog($oldTable, request()->ip(), 'Users', 'Deleted');
             $this->js("showNotification('success', 'The selected User has been deleted successfully.')");
         } else {
@@ -326,12 +335,12 @@ class Users extends Component
         $table->password = Hash::make('password');
         if ($table->update()){
             doLog($table, request()->ip(), 'Users', 'Changed Password');
-            $this->js("showNotification('success', 'Password successfully changed.')");        
+            $this->js("showNotification('success', 'Password successfully changed.')");
         } else {
             $this->js("showNotification('error', 'Something went wrong.')");
         }
     }
-    
+
     public function selectedValuePerPage(){
         $this->perPage;
     }
@@ -342,7 +351,7 @@ class Users extends Component
         } else {
             $this->sortDirection = 'asc';
         }
-        
+
         $this->sortField = $field;
     }
 
@@ -358,6 +367,7 @@ class Users extends Component
             'u.id',
             'u.username',
             'u.email',
+            'u.fdos',
             'u.created_at',
             DB::raw("DATE_FORMAT(u.created_at, '%Y-%m-%d %h:%i %p') as formatted_created_at"),
             'upi.firstname',
@@ -369,6 +379,7 @@ class Users extends Component
         )
         ->leftJoin('user_personal_informations as upi', 'u.id', '=', 'upi.user_id')
         ->where('u.username', 'like', '%'.trim($this->search).'%')
+        ->orWhere('u.fdos', 'like', '%'.trim($this->search).'%')
         ->orWhere('upi.firstname', 'like', '%'.trim($this->search).'%')
         ->orWhere('upi.middlename', 'like', '%'.trim($this->search).'%')
         ->orWhere('upi.lastname', 'like', '%'.trim($this->search).'%')
@@ -433,6 +444,7 @@ class Users extends Component
             'u.id',
             'u.username',
             'u.email',
+            'u.fdos',
             'u.created_at',
             DB::raw("DATE_FORMAT(u.created_at, '%Y-%m-%d %h:%i %p') as formatted_created_at"),
             'upi.firstname',
@@ -446,6 +458,7 @@ class Users extends Component
         ->where('u.id', 'like', '%'.trim($this->userIdAdvancedSearchField).'%')
         ->where('u.username', 'like', '%'.trim($this->usernameAdvancedSearchField).'%')
         ->where('u.email', 'like', '%'.trim($this->emailAdvancedSearchField).'%')
+        ->where('u.fdos', 'like', '%'.trim($this->fdosAdvancedSearchField).'%')
         ->where('upi.firstname', 'like', '%'.trim($this->firstNameAdvancedSearchField).'%')
         ->where($middleNameCondition)
         ->where('upi.lastname', 'like', '%'.trim($this->lastNameAdvancedSearchField).'%')
@@ -455,7 +468,7 @@ class Users extends Component
         ->where('u.created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField).'%')
         ->orderBy($this->sortField, $this->sortDirection)
         ->paginate($this->perPage);
-    
+
         $this->resetPage();
     }
 
@@ -469,7 +482,7 @@ class Users extends Component
         } else {
             $this->performAdvancedSearch();
         }
-        
+
         $this->totalTableDataCount();
 
         return view('livewire.user.users', [

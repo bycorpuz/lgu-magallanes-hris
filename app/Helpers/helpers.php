@@ -78,6 +78,7 @@ if ( !function_exists('getUsers') ){
                 ->select(
                     'u.*',
                     'u.email as u_email',
+                    'u.fdos as u_fdos',
                     'upi.firstname as upi_firstname',
                     'upi.lastname as upi_lastname',
                     'upi.picture as upi_picture'

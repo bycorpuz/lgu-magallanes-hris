@@ -1,4 +1,4 @@
-<div> 
+<div>
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
         <div class="breadcrumb-title pe-3">HUMAN RESOURCE - User Management</div>
@@ -13,10 +13,10 @@
         </div>
     </div>
     <!--end breadcrumb-->
-       
+
     <!--table-->
     <div class="card">
-        <div class="card-body"> 
+        <div class="card-body">
             <div class="row pb-3">
                 <div class="col-sm-2 text-center">
                     <button type="button" class="btn btn-primary" wire:click="openCreateUpdateModal">
@@ -36,7 +36,7 @@
 
             <div class="pt-2" {{ !$showAdvancedSearch ? 'hidden' : '' }}>
                 <div class="card">
-                    <div class="card-body"> 
+                    <div class="card-body">
                         <form class="row" wire:submit.prevent="performAdvancedSearch">
                             @csrf
                             <div class="col-md-3 mb-3">
@@ -75,6 +75,9 @@
                             </div>
                             <div class="col-md-3 mb-3">
                                 <input type="search" class="form-control" wire:model="mobileNoAdvancedSearchField" placeholder="Mobile No.">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <input type="search" class="form-control" wire:model="fdosAdvancedSearchField" placeholder="First Day of Service">
                             </div>
                             <div class="col-md-3 mb-3">
                                 <input type="search" class="form-control" wire:model="dateCreatedAdvancedSearchField" placeholder="Date Created">
@@ -149,6 +152,12 @@
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
+                            <th class="cursor-pointer" wire:click="sortBy('u.fdos')">
+                                First Day of Service
+                                @if ($sortField === 'u.fdos')
+                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                @endif
+                            </th>
                             <th class="cursor-pointer" wire:click="sortBy('u.created_at')">
                                 Date Created
                                 @if ($sortField === 'u.created_at')
@@ -171,6 +180,7 @@
                                     <td>{{ $row->email }}</td>
                                     <td>{{ $row->username }}</td>
                                     <td>{{ $row->mobile_no }}</td>
+                                    <td>{{ $row->fdos }}</td>
                                     <td>{{ $row->formatted_created_at }}</td>
                                     <td>
                                         <div class="btn-group" role="group" aria-label="Action Buttons">
@@ -332,17 +342,24 @@
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label">Email <span style="color: red;">*</span></label>
                             <input type="text" class="form-control" placeholder="Email" wire:model="email" required>
                             @error('email')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label">Username <span style="color: red;">*</span></label>
                             <input type="text" class="form-control" placeholder="Username" wire:model="username" required>
                             @error('username')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">First Day of Service <span style="color: red;">*</span></label>
+                            <input type="date" class="form-control" placeholder="First Day of Service" wire:model="fdos" required>
+                            @error('fdos')
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
@@ -381,6 +398,7 @@
                         <hr>
                         <p>Email: <b>{{ $email }}</b> </p>
                         <p>Username: <b>{{ $username }}</b> </p>
+                        <p>First Day of Service: <b>{{ $fdos }}</b> </p>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-danger close-modal" data-dismiss="modal">Yes, Delete it.</button>
@@ -435,7 +453,7 @@
                     });
                 });
             });
-            
+
             @this.on('openDeletionModal', (data) => {
                 $('#modelDeletionModal').modal('show');
             });
