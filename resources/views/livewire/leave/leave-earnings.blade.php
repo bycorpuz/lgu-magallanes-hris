@@ -1,4 +1,4 @@
-<div> 
+<div>
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
         <div class="breadcrumb-title pe-3">HUMAN RESOURCE - Leave Management</div>
@@ -13,10 +13,10 @@
         </div>
     </div>
     <!--end breadcrumb-->
-       
+
     <!--table-->
     <div class="card">
-        <div class="card-body"> 
+        <div class="card-body">
             <div class="row pb-3">
                 <div class="col-sm-2 text-center">
                     <button type="button" class="btn btn-primary" wire:click="openCreateUpdateModal">
@@ -368,7 +368,7 @@
                     });
                 });
             });
-            
+
             @this.on('openDeletionModal', (data) => {
                 $('#modelDeletionModal').modal('show');
             });
@@ -390,7 +390,7 @@
             $('#userIdAdvancedSearchField').on('change', function (e) {
                 @this.set('userIdAdvancedSearchField', $(this).val());
             });
-            
+
             $('#leaveTypeIdAdvancedSearchField').select2( {
                 theme: "bootstrap-5",
                 width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',

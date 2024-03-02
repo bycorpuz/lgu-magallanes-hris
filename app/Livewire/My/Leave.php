@@ -14,7 +14,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 #[Title('My Leave')]
-#[Layout('layouts.dashboard-app')] 
+#[Layout('layouts.dashboard-app')]
 class Leave extends Component
 {
     use WithPagination;
@@ -29,6 +29,7 @@ class Leave extends Component
            $userIdAdvancedSearchField, $daysAdvancedSearchField,
            $dateFromAdvancedSearchField, $dateToAdvancedSearchField,
            $isWithPayAdvancedSearchField, $statusAdvancedSearchField,
+           $periodAdvancedSearchField,
            $remarksAdvancedSearchField, $dateCreatedAdvancedSearchField,
            $dateApprovedAdvancedSearchField, $dateDisapprovedAdvancedSearchField,
            $dateCancelledAdvancedSearchField, $dateProcessingAdvancedSearchField,
@@ -41,7 +42,7 @@ class Leave extends Component
     public $totalTableDataCount = 0;
 
     public $id, $tracking_code, $leave_type_id, $user_id,
-           $days, $date_from, $date_to, $is_with_pay, $remarks,
+           $days, $date_from, $date_to, $is_with_pay, $remarks, $period,
            $date_approved, $date_disapproved, $date_cancelled, $date_processing,
            $details_b1, $details_b1_name, $details_b2, $details_b2_name,
            $details_b3_name, $details_b4, $details_b5, $details_d1 = '';
@@ -81,6 +82,7 @@ class Leave extends Component
         $this->date_to = '';
         $this->is_with_pay = '';
         $this->remarks = '';
+        $this->period = '';
         $this->date_approved = '';
         $this->date_disapproved = '';
         $this->date_cancelled = '';
@@ -106,6 +108,7 @@ class Leave extends Component
         $this->isWithPayAdvancedSearchField = '';
         $this->statusAdvancedSearchField = '';
         $this->remarksAdvancedSearchField = '';
+        $this->periodAdvancedSearchField = '';
         $this->dateCreatedAdvancedSearchField = '';
         $this->dateApprovedAdvancedSearchField = '';
         $this->dateDisapprovedAdvancedSearchField = '';
@@ -167,7 +170,7 @@ class Leave extends Component
         $table->is_with_pay = $this->is_with_pay;
         $table->status = $this->status;
         $table->remarks = $this->remarks;
-        
+
         $table->details_b1 = !empty($this->details_b1) ? $this->details_b1 : 'N/A';
         $table->details_b1_name = $this->details_b1_name;
         $table->details_b2 = !empty($this->details_b2) ? $this->details_b2 : 'N/A';
@@ -176,7 +179,7 @@ class Leave extends Component
         $table->details_b4 = !empty($this->details_b4) ? $this->details_b4 : 'N/A';
         $table->details_b5 = !empty($this->details_b5) ? $this->details_b5 : 'N/A';
         $table->details_d1 = !empty($this->details_d1) ? $this->details_d1 : 'No';
-        
+
         if ($table->save()) {
             $this->resetInputFields();
             $this->dispatch('closeModal');
@@ -227,7 +230,7 @@ class Leave extends Component
         $table->date_to = $this->date_to;
         $table->is_with_pay = $this->is_with_pay;
         $table->remarks = $this->remarks;
-        
+
         $table->details_b1 = !empty($this->details_b1) ? $this->details_b1 : 'N/A';
         $table->details_b1_name = $this->details_b1_name;
         $table->details_b2 = !empty($this->details_b2) ? $this->details_b2 : 'N/A';
@@ -236,7 +239,7 @@ class Leave extends Component
         $table->details_b4 = !empty($this->details_b4) ? $this->details_b4 : 'N/A';
         $table->details_b5 = !empty($this->details_b5) ? $this->details_b5 : 'N/A';
         $table->details_d1 = !empty($this->details_d1) ? $this->details_d1 : 'No';
-        
+
         if ($table->update()) {
             $this->resetInputFields();
             $this->dispatch('closeModal');
@@ -287,7 +290,7 @@ class Leave extends Component
             $this->isUpdateMode = false;
             $this->resetInputFields();
             $this->dispatch('closeModal');
-            
+
             doLog($oldTable, request()->ip(), 'My Leave', 'Deleted');
             $this->js("showNotification('success', 'The selected My Leave has been deleted successfully.')");
         } else {
@@ -311,7 +314,7 @@ class Leave extends Component
             $table->for = 'Leave';
             $table->save();
         }
-        
+
         $this->signatory_id = $table->id;
         $this->param1_signatory = $table->param1_signatory;
         $this->param1_designation = $table->param1_designation;
@@ -334,7 +337,7 @@ class Leave extends Component
         $table->param2_designation = $this->param2_designation;
         $table->param3_signatory = $this->param3_signatory;
         $table->param3_designation = $this->param3_designation;
-        
+
         if ($table->update()) {
             $this->dispatch('closeModal');
 
@@ -371,9 +374,9 @@ class Leave extends Component
 
         return view('livewire.my.print-form-6-r2020', compact(
             'data', 'days', 'inclusive_dates', 'signatories'
-        )); 
+        ));
     }
-    
+
     public function selectedValuePerPage(){
         $this->perPage;
     }
@@ -384,7 +387,7 @@ class Leave extends Component
         } else {
             $this->sortDirection = 'asc';
         }
-        
+
         $this->sortField = $field;
     }
 
@@ -416,6 +419,7 @@ class Leave extends Component
                 ->orWhere('hl.date_to', 'like', '%'.trim($this->search).'%')
                 ->orWhere('hl.is_with_pay', 'like', '%'.trim($this->search).'%')
                 ->orWhere('hl.status', 'like', '%'.trim($this->search).'%')
+                ->orWhere('hl.period', 'like', '%'.trim($this->search).'%')
                 ->orWhere('hl.remarks', 'like', '%'.trim($this->search).'%')
                 ->orWhere('hl.details_b1', 'like', '%'.trim($this->search).'%')
                 ->orWhere('hl.details_b1_name', 'like', '%'.trim($this->search).'%')
@@ -439,6 +443,39 @@ class Leave extends Component
     }
 
     public function performAdvancedSearch(){
+        if ($this->dateFromAdvancedSearchField){
+            $date_from = function ($query) {
+                $query->where('hl.date_from', 'like', '%' . trim($this->dateFromAdvancedSearchField) . '%');
+            };
+        } else {
+            $date_from = function ($query) {
+                $query->where('hl.date_from', 'like', '%' . trim($this->dateFromAdvancedSearchField) . '%')
+                    ->orWhereNull('hl.date_from');
+            };
+        }
+
+        if ($this->dateToAdvancedSearchField){
+            $date_to = function ($query) {
+                $query->where('hl.date_to', 'like', '%' . trim($this->dateToAdvancedSearchField) . '%');
+            };
+        } else {
+            $date_to = function ($query) {
+                $query->where('hl.date_to', 'like', '%' . trim($this->dateToAdvancedSearchField) . '%')
+                    ->orWhereNull('hl.date_to');
+            };
+        }
+
+        if ($this->periodAdvancedSearchField){
+            $period = function ($query) {
+                $query->where('hl.period', 'like', '%' . trim($this->periodAdvancedSearchField) . '%');
+            };
+        } else {
+            $period = function ($query) {
+                $query->where('hl.period', 'like', '%' . trim($this->periodAdvancedSearchField) . '%')
+                    ->orWhereNull('hl.period');
+            };
+        }
+
         if ($this->remarksAdvancedSearchField){
             $remarksCondition = function ($query) {
                 $query->where('hl.remarks', 'like', '%' . trim($this->remarksAdvancedSearchField) . '%');
@@ -465,16 +502,17 @@ class Leave extends Component
         ->where('hl.tracking_code', 'like', '%'.trim($this->trackingCodeAdvancedSearchField).'%')
         ->where('hl.leave_type_id', 'like', '%'.trim($this->leaveTypeIdAdvancedSearchField).'%')
         ->where('hl.days', 'like', '%'.trim($this->daysAdvancedSearchField).'%')
-        ->where('hl.date_from', 'like', '%'.trim($this->dateFromAdvancedSearchField).'%')
-        ->where('hl.date_to', 'like', '%'.trim($this->dateToAdvancedSearchField).'%')
+        ->where($date_from)
+        ->where($date_to)
         ->where('hl.is_with_pay', 'like', '%'.trim($this->isWithPayAdvancedSearchField).'%')
         ->where('hl.status', 'like', '%'.trim($this->statusAdvancedSearchField).'%')
+        ->where($period)
         ->where($remarksCondition)
         ->where('hl.created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField).'%')
         ->where('hl.user_id', '=', Auth::user()->id)
         ->orderBy($this->sortField, $this->sortDirection)
         ->paginate($this->perPage);
-    
+
         $this->resetPage();
 
         $this->totalTableDataCount = $this->tableList->count();

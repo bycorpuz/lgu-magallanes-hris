@@ -12,7 +12,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 #[Title('Leave Earnings')]
-#[Layout('layouts.dashboard-app')] 
+#[Layout('layouts.dashboard-app')]
 class LeaveEarnings extends Component
 {
     use WithPagination;
@@ -98,7 +98,7 @@ class LeaveEarnings extends Component
                         $query->whereNotNull('user_id')
                             ->where('is_plantilla', 'Yes');
                     })->get();
-    
+
                     $this->user_id = $plantillaUsers->pluck('user_id')->toArray();
                 }
             }
@@ -237,18 +237,18 @@ class LeaveEarnings extends Component
         $table = HrLeaveCreditsAvailableList::find($this->deleteId);
         if ($table->delete()){
             $table2->update();
-            
+
             $this->isUpdateMode = false;
             $this->resetInputFields();
             $this->dispatch('closeModal');
-            
+
             doLog($oldTable, request()->ip(), 'Leave Earnings', 'Deleted');
             $this->js("showNotification('success', 'The selected Leave Earning has been deleted successfully.')");
         } else {
             $this->js("showNotification('error', 'Something went wrong.')");
         }
     }
-    
+
     public function selectedValuePerPage(){
         $this->perPage;
     }
@@ -259,7 +259,7 @@ class LeaveEarnings extends Component
         } else {
             $this->sortDirection = 'asc';
         }
-        
+
         $this->sortField = $field;
     }
 
@@ -297,11 +297,55 @@ class LeaveEarnings extends Component
         ->paginate($this->perPage);
 
         $this->resetPage();
-        
+
         $this->totalTableDataCount = $this->tableList->count();
     }
 
     public function performAdvancedSearch(){
+        if ($this->monthAdvancedSearchField){
+            $month = function ($query) {
+                $query->where('hlcal.month', 'like', '%'.trim($this->monthAdvancedSearchField).'%');
+            };
+        } else {
+            $month = function ($query) {
+                $query->where('hlcal.month', 'like', '%'.trim($this->monthAdvancedSearchField).'%')
+                    ->orWhereNull('hlcal.month');
+            };
+        }
+
+        if ($this->yearAdvancedSearchField){
+            $year = function ($query) {
+                $query->where('hlcal.year', 'like', '%'.trim($this->yearAdvancedSearchField).'%');
+            };
+        } else {
+            $year = function ($query) {
+                $query->where('hlcal.year', 'like', '%'.trim($this->yearAdvancedSearchField).'%')
+                    ->orWhereNull('hlcal.year');
+            };
+        }
+
+        if ($this->dateFromAdvancedSearchField){
+            $date_from = function ($query) {
+                $query->where('hlcal.date_from', 'like', '%'.trim($this->dateFromAdvancedSearchField).'%');
+            };
+        } else {
+            $date_from = function ($query) {
+                $query->where('hlcal.date_from', 'like', '%'.trim($this->dateFromAdvancedSearchField).'%')
+                    ->orWhereNull('hlcal.date_from');
+            };
+        }
+
+        if ($this->dateToAdvancedSearchField){
+            $date_to = function ($query) {
+                $query->where('hlcal.date_to', 'like', '%'.trim($this->dateToAdvancedSearchField).'%');
+            };
+        } else {
+            $date_to = function ($query) {
+                $query->where('hlcal.date_to', 'like', '%'.trim($this->dateToAdvancedSearchField).'%')
+                    ->orWhereNull('hlcal.date_to');
+            };
+        }
+
         $this->tableList = HrLeaveCreditsAvailableList::from('hr_leave_credits_available_list as hlcal')
         ->select(
             'hlcal.*',
@@ -315,18 +359,18 @@ class LeaveEarnings extends Component
         ->leftJoin('user_personal_informations as upi', 'hlca.user_id', '=', 'upi.user_id')
         ->where('hlca.user_id', 'like', '%'.trim($this->userIdAdvancedSearchField).'%')
         ->where('llt.id', 'like', '%'.trim($this->leaveTypeIdAdvancedSearchField).'%')
-        ->where('hlcal.month', 'like', '%'.trim($this->monthAdvancedSearchField).'%')
-        ->where('hlcal.year', 'like', '%'.trim($this->yearAdvancedSearchField).'%')
+        ->where($month)
+        ->where($year)
         ->where('hlcal.value', 'like', '%'.trim($this->valueAdvancedSearchField).'%')
-        ->where('hlcal.date_from', 'like', '%'.trim($this->dateFromAdvancedSearchField).'%')
-        ->where('hlcal.date_to', 'like', '%'.trim($this->dateToAdvancedSearchField).'%')
+        ->where($date_from)
+        ->where($date_to)
         ->where('hlcal.remarks', 'like', '%'.trim($this->remarksAdvancedSearchField).'%')
         ->where('hlcal.created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField).'%')
         ->orderBy($this->sortField, $this->sortDirection)
         ->paginate($this->perPage);
-    
+
         $this->resetPage();
-        
+
         $this->totalTableDataCount = $this->tableList->count();
     }
 

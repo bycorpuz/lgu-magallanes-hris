@@ -17,7 +17,7 @@ class HrLeave extends Model
 
     protected $fillable = [
         'tracking_code', 'leave_type_id', 'user_id',
-        'days', 'date_from', 'date_to', 'is_with_pay', 'status', 'remarks',
+        'days', 'date_from', 'date_to', 'is_with_pay', 'status', 'period', 'remarks',
         'date_approved', 'date_disapproved', 'date_cancelled', 'date_processing',
         'details_b1', 'details_b1_name', 'details_b2', 'details_b2_name', 'details_b3_name',
         'details_b4', 'details_b5', 'details_d1'

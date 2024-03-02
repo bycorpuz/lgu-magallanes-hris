@@ -1,4 +1,4 @@
-<div> 
+<div>
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
         <div class="breadcrumb-title pe-3">MAIN NAVIGATION</div>
@@ -23,12 +23,12 @@
         </div>
     </div>
     <!--end breadcrumb-->
-       
+
     <!--table-->
     <div class="row">
         <div class="col-md-9">
             <div class="card">
-                <div class="card-body"> 
+                <div class="card-body">
                     <div class="row pb-3">
                         <div class="col-sm-3 text-center">
                             <button type="button" class="btn btn-primary" wire:click="openCreateUpdateModal">
@@ -45,10 +45,10 @@
                             <button wire:click="toggleAdvancedSearch" class="btn btn-link">Toggle Advanced Search</button>
                         </div>
                     </div>
-        
+
                     <div class="pt-2" {{ !$showAdvancedSearch ? 'hidden' : '' }}>
                         <div class="card">
-                            <div class="card-body"> 
+                            <div class="card-body">
                                 <form class="row" wire:submit.prevent="performAdvancedSearch">
                                     @csrf
                                     <div class="col-md-3 mb-3">
@@ -79,6 +79,12 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                    <div class="col-md-3 mb-3">
+                                        <input type="search" class="form-control" wire:model="periodAdvancedSearchField" placeholder="Period">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <input type="search" class="form-control" wire:model="remarksAdvancedSearchField" placeholder="Particulars">
+                                    </div>
                                     <div class="col-md-3 mb-3" wire:ignore>
                                         <select class="form-select" wire:model="statusAdvancedSearchField" id="statusAdvancedSearchField">
                                             <option value="">Status</option>
@@ -86,9 +92,6 @@
                                                 <option value="{{ $key }}">{{ $value }}</option>
                                             @endforeach
                                         </select>
-                                    </div>
-                                    <div class="col-md-3 mb-3">
-                                        <input type="search" class="form-control" wire:model="remarksAdvancedSearchField" placeholder="Remarks">
                                     </div>
                                     <div class="col-md-3">
                                         <input type="search" class="form-control" wire:model="dateCreatedAdvancedSearchField" placeholder="Date Created">
@@ -100,7 +103,7 @@
                             </div>
                         </div>
                     </div>
-        
+
                     <div class="table-responsive">
                         <table class="table mb-0 table-striped">
                             <thead>
@@ -147,15 +150,21 @@
                                             @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                         @endif
                                     </th>
-                                    <th class="cursor-pointer" wire:click="sortBy('hl.status')">
-                                        Status
-                                        @if ($sortField === 'hl.status')
+                                    <th class="cursor-pointer" wire:click="sortBy('hl.period')">
+                                        Period
+                                        @if ($sortField === 'hl.period')
                                             @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                         @endif
                                     </th>
                                     <th class="cursor-pointer" wire:click="sortBy('hl.remarks')">
-                                        Remarks
+                                        Particulars
                                         @if ($sortField === 'hl.remarks')
+                                            @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                        @endif
+                                    </th>
+                                    <th class="cursor-pointer" wire:click="sortBy('hl.status')">
+                                        Status
+                                        @if ($sortField === 'hl.status')
                                             @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                         @endif
                                     </th>
@@ -179,6 +188,8 @@
                                             <td>{{ $row->date_to }}</td>
                                             <td>{{ $row->days }}</td>
                                             <td>{{ $row->is_with_pay }}</td>
+                                            <td>{{ $row->period }}</td>
+                                            <td>{{ $row->remarks }}</td>
                                             <td>
                                                 @if ($row->status == 'Approved')
                                                     <span class="badge bg-success">{{ $row->status }}</span>
@@ -192,7 +203,6 @@
                                                     <span class="badge bg-secondary">{{ $row->status }}</span>
                                                 @endif
                                             </td>
-                                            <td>{{ $row->remarks }}</td>
                                             <td>{{ $row->formatted_created_at }}</td>
                                             <td>
                                                 @if ($row->status != 'Pending')
@@ -225,7 +235,7 @@
                             </tbody>
                         </table>
                     </div>
-        
+
                     <div class="row pt-3">
                         <div class="col-sm-9">{{ $tableList->links() }}</div>
                         <div class="col-sm-3">
@@ -242,7 +252,7 @@
                             </div>
                         </div>
                     </div>
-        
+
                     <div class="row">
                         <div class="col-sm-9">
                             Showing {{ number_format($tableList->firstItem(), 0) }} to {{ number_format($tableList->lastItem(), 0) }} of {{ number_format($tableList->total(), 0) }} entries
@@ -439,7 +449,7 @@
                             @enderror
                         </div>
 
-                        
+
                         <div class="col-md-6 mb-3" wire:ignore>
                             <label class="form-label">Commutation Requested?</label>
                             <select class="form-select" wire:model="details_d1" data-placeholder="Select" id="details_d1">
@@ -606,7 +616,7 @@
                     });
                 });
             });
-            
+
             @this.on('openDeletionModal', (data) => {
                 $('#modelDeletionModal').modal('show');
             });
@@ -616,7 +626,7 @@
                 $('#modelDeletionModal').modal('hide');
                 $('#modelCreateUpdateSignatoriesModal').modal('hide');
             });
-            
+
             @this.on('openNewWindow', (data) => {
                 var url = data[0].viewFileUrl;
                 var newWindow = window.open(url, "Print Form No. 6", "width="+screen.availWidth+",height="+screen.availHeight)
@@ -638,7 +648,7 @@
                     $('#param1_signatory').on('change', function (e) {
                         @this.set('param1_signatory', $(this).val());
                     });
-                    
+
                     $('#param1_designation').select2( {
                         dropdownParent: $('#modelCreateUpdateSignatoriesModal'),
                         theme: "bootstrap-5",
@@ -649,7 +659,7 @@
                     $('#param1_designation').on('change', function (e) {
                         @this.set('param1_designation', $(this).val());
                     });
-                    
+
                     $('#param2_signatory').select2( {
                         dropdownParent: $('#modelCreateUpdateSignatoriesModal'),
                         theme: "bootstrap-5",
@@ -660,7 +670,7 @@
                     $('#param2_signatory').on('change', function (e) {
                         @this.set('param2_signatory', $(this).val());
                     });
-                    
+
                     $('#param2_designation').select2( {
                         dropdownParent: $('#modelCreateUpdateSignatoriesModal'),
                         theme: "bootstrap-5",
@@ -671,7 +681,7 @@
                     $('#param2_designation').on('change', function (e) {
                         @this.set('param2_designation', $(this).val());
                     });
-                    
+
                     $('#param3_signatory').select2( {
                         dropdownParent: $('#modelCreateUpdateSignatoriesModal'),
                         theme: "bootstrap-5",
@@ -682,7 +692,7 @@
                     $('#param3_signatory').on('change', function (e) {
                         @this.set('param3_signatory', $(this).val());
                     });
-                    
+
                     $('#param3_designation').select2( {
                         dropdownParent: $('#modelCreateUpdateSignatoriesModal'),
                         theme: "bootstrap-5",
@@ -708,7 +718,7 @@
             $('#leaveTypeIdAdvancedSearchField').on('change', function (e) {
                 @this.set('leaveTypeIdAdvancedSearchField', $(this).val());
             });
-            
+
             $('#isWithPayAdvancedSearchField').select2( {
                 theme: "bootstrap-5",
                 width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
@@ -717,7 +727,7 @@
             $('#isWithPayAdvancedSearchField').on('change', function (e) {
                 @this.set('isWithPayAdvancedSearchField', $(this).val());
             });
-            
+
             $('#statusAdvancedSearchField').select2( {
                 theme: "bootstrap-5",
                 width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',

@@ -494,6 +494,12 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="col-md-3 mb-3">
+                                <input type="search" class="form-control" wire:model="periodAdvancedSearchField" placeholder="Period">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <input type="search" class="form-control" wire:model="remarksAdvancedSearchField" placeholder="Remarks">
+                            </div>
                             <div class="col-md-3 mb-3" wire:ignore>
                                 <select class="form-select" wire:model="statusAdvancedSearchField" id="statusAdvancedSearchField">
                                     <option value="">Status</option>
@@ -501,9 +507,6 @@
                                         <option value="{{ $key }}">{{ $value }}</option>
                                     @endforeach
                                 </select>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <input type="search" class="form-control" wire:model="remarksAdvancedSearchField" placeholder="Remarks">
                             </div>
                             <div class="col-md-3">
                                 <input type="search" class="form-control" wire:model="dateCreatedAdvancedSearchField" placeholder="Date Created">
@@ -568,15 +571,21 @@
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
-                            <th class="cursor-pointer" wire:click="sortBy('hl', 'hl.status')">
-                                Status
-                                @if ($sortField === 'hl.status')
+                            <th class="cursor-pointer" wire:click="sortBy('hl', 'hl.period')">
+                                Period
+                                @if ($sortField === 'hl.period')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
                             <th class="cursor-pointer" wire:click="sortBy('hl', 'hl.remarks')">
                                 Remarks
                                 @if ($sortField === 'hl.remarks')
+                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                @endif
+                            </th>
+                            <th class="cursor-pointer" wire:click="sortBy('hl', 'hl.status')">
+                                Status
+                                @if ($sortField === 'hl.status')
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
@@ -601,6 +610,8 @@
                                     <td>{{ $row->date_to }}</td>
                                     <td>{{ $row->days }}</td>
                                     <td>{{ $row->is_with_pay }}</td>
+                                    <td>{{ $row->period }}</td>
+                                    <td>{{ $row->remarks }}</td>
                                     <td>
                                         @if ($row->status == 'Approved')
                                             <span class="badge bg-success">{{ $row->status }}</span>
@@ -614,7 +625,6 @@
                                             <span class="badge bg-secondary">{{ $row->status }}</span>
                                         @endif
                                     </td>
-                                    <td>{{ $row->remarks }}</td>
                                     <td>{{ $row->formatted_created_at }}</td>
                                     <td>
                                         <div class="btn-group" role="group" aria-label="Action Buttons">

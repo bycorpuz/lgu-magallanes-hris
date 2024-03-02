@@ -28,6 +28,7 @@ class Leaves extends Component
            $userIdAdvancedSearchField, $daysAdvancedSearchField,
            $dateFromAdvancedSearchField, $dateToAdvancedSearchField,
            $isWithPayAdvancedSearchField, $statusAdvancedSearchField,
+           $periodAdvancedSearchField,
            $remarksAdvancedSearchField, $dateCreatedAdvancedSearchField,
            $dateApprovedAdvancedSearchField, $dateDisapprovedAdvancedSearchField,
            $dateCancelledAdvancedSearchField, $dateProcessingAdvancedSearchField,
@@ -39,7 +40,7 @@ class Leaves extends Component
     public $totalTableDataCount = 0;
 
     public $hlId, $tracking_code, $leave_type_id, $user_id,
-           $days, $date_from, $date_to, $is_with_pay, $remarks,
+           $days, $date_from, $date_to, $is_with_pay, $remarks, $period,
            $date_approved, $date_disapproved, $date_cancelled, $date_processing,
            $details_b1, $details_b1_name, $details_b2, $details_b2_name,
            $details_b3_name, $details_b4, $details_b5, $details_d1 = '';
@@ -80,6 +81,7 @@ class Leaves extends Component
         $this->dateToAdvancedSearchField = '';
         $this->isWithPayAdvancedSearchField = '';
         $this->statusAdvancedSearchField = '';
+        $this->periodAdvancedSearchField = '';
         $this->remarksAdvancedSearchField = '';
         $this->dateCreatedAdvancedSearchField = '';
         $this->dateApprovedAdvancedSearchField = '';
@@ -131,6 +133,7 @@ class Leaves extends Component
         $this->date_from = '';
         $this->date_to = '';
         $this->is_with_pay = '';
+        $this->period = '';
         $this->remarks = '';
         $this->date_approved = '';
         $this->date_disapproved = '';
@@ -619,6 +622,7 @@ class Leaves extends Component
                 ->orWhere('hl.date_to', 'like', '%'.trim($this->search).'%')
                 ->orWhere('hl.is_with_pay', 'like', '%'.trim($this->search).'%')
                 ->orWhere('hl.status', 'like', '%'.trim($this->search).'%')
+                ->orWhere('hl.period', 'like', '%'.trim($this->search).'%')
                 ->orWhere('hl.remarks', 'like', '%'.trim($this->search).'%')
                 ->orWhere('hl.details_b1', 'like', '%'.trim($this->search).'%')
                 ->orWhere('hl.details_b1_name', 'like', '%'.trim($this->search).'%')
@@ -644,17 +648,6 @@ class Leaves extends Component
     }
 
     public function performAdvancedSearch(){
-        if ($this->remarksAdvancedSearchField){
-            $remarksCondition = function ($query) {
-                $query->where('hl.remarks', 'like', '%'.trim($this->remarksAdvancedSearchField).'%');
-            };
-        } else {
-            $remarksCondition = function ($query) {
-                $query->where('hl.remarks', 'like', '%'.trim($this->remarksAdvancedSearchField).'%')
-                    ->orWhereNull('hl.remarks');
-            };
-        }
-
         if ($this->userIdAdvancedSearchField){
             $userIdCondition = function ($query) {
                 $query->where('hl.user_id', 'like', '%'.$this->userIdAdvancedSearchField.'%');
@@ -675,6 +668,50 @@ class Leaves extends Component
             };
         }
 
+        if ($this->dateFromAdvancedSearchField){
+            $date_from = function ($query) {
+                $query->where('hl.date_from', 'like', '%' . trim($this->dateFromAdvancedSearchField) . '%');
+            };
+        } else {
+            $date_from = function ($query) {
+                $query->where('hl.date_from', 'like', '%' . trim($this->dateFromAdvancedSearchField) . '%')
+                    ->orWhereNull('hl.date_from');
+            };
+        }
+
+        if ($this->dateToAdvancedSearchField){
+            $date_to = function ($query) {
+                $query->where('hl.date_to', 'like', '%' . trim($this->dateToAdvancedSearchField) . '%');
+            };
+        } else {
+            $date_to = function ($query) {
+                $query->where('hl.date_to', 'like', '%' . trim($this->dateToAdvancedSearchField) . '%')
+                    ->orWhereNull('hl.date_to');
+            };
+        }
+
+        if ($this->periodAdvancedSearchField){
+            $period = function ($query) {
+                $query->where('hl.period', 'like', '%' . trim($this->periodAdvancedSearchField) . '%');
+            };
+        } else {
+            $period = function ($query) {
+                $query->where('hl.period', 'like', '%' . trim($this->periodAdvancedSearchField) . '%')
+                    ->orWhereNull('hl.period');
+            };
+        }
+
+        if ($this->remarksAdvancedSearchField){
+            $remarksCondition = function ($query) {
+                $query->where('hl.remarks', 'like', '%'.trim($this->remarksAdvancedSearchField).'%');
+            };
+        } else {
+            $remarksCondition = function ($query) {
+                $query->where('hl.remarks', 'like', '%'.trim($this->remarksAdvancedSearchField).'%')
+                    ->orWhereNull('hl.remarks');
+            };
+        }
+
         $this->tableList = HrLeave::from('hr_leaves as hl')
         ->select(
             'hl.*',
@@ -690,10 +727,11 @@ class Leaves extends Component
         ->where('hl.tracking_code', 'like', '%'.trim($this->trackingCodeAdvancedSearchField).'%')
         ->where('hl.leave_type_id', 'like', '%'.trim($this->leaveTypeIdAdvancedSearchField).'%')
         ->where('hl.days', 'like', '%'.trim($this->daysAdvancedSearchField).'%')
-        ->where('hl.date_from', 'like', '%'.trim($this->dateFromAdvancedSearchField).'%')
-        ->where('hl.date_to', 'like', '%'.trim($this->dateToAdvancedSearchField).'%')
+        ->where($date_from)
+        ->where($date_to)
         ->where('hl.is_with_pay', 'like', '%'.trim($this->isWithPayAdvancedSearchField).'%')
         ->where($statusCondition)
+        ->where($period)
         ->where($remarksCondition)
         ->where('hl.created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField).'%')
         ->where($userIdCondition)
@@ -758,6 +796,50 @@ class Leaves extends Component
     }
 
     public function performAdvancedSearch3(){
+        if ($this->monthAdvancedSearchField3){
+            $month = function ($query) {
+                $query->where('hlcal.month', 'like', '%'.trim($this->monthAdvancedSearchField3).'%');
+            };
+        } else {
+            $month = function ($query) {
+                $query->where('hlcal.month', 'like', '%'.trim($this->monthAdvancedSearchField3).'%')
+                    ->orWhereNull('hlcal.month');
+            };
+        }
+
+        if ($this->yearAdvancedSearchField3){
+            $year = function ($query) {
+                $query->where('hlcal.year', 'like', '%'.trim($this->yearAdvancedSearchField3).'%');
+            };
+        } else {
+            $year = function ($query) {
+                $query->where('hlcal.year', 'like', '%'.trim($this->yearAdvancedSearchField3).'%')
+                    ->orWhereNull('hlcal.year');
+            };
+        }
+
+        if ($this->dateFromAdvancedSearchField3){
+            $date_from = function ($query) {
+                $query->where('hlcal.date_from', 'like', '%'.trim($this->dateFromAdvancedSearchField3).'%');
+            };
+        } else {
+            $date_from = function ($query) {
+                $query->where('hlcal.date_from', 'like', '%'.trim($this->dateFromAdvancedSearchField3).'%')
+                    ->orWhereNull('hlcal.date_from');
+            };
+        }
+
+        if ($this->dateToAdvancedSearchField3){
+            $date_to = function ($query) {
+                $query->where('hlcal.date_to', 'like', '%'.trim($this->dateToAdvancedSearchField3).'%');
+            };
+        } else {
+            $date_to = function ($query) {
+                $query->where('hlcal.date_to', 'like', '%'.trim($this->dateToAdvancedSearchField3).'%')
+                    ->orWhereNull('hlcal.date_to');
+            };
+        }
+
         $this->tableList3 = HrLeaveCreditsAvailableList::from('hr_leave_credits_available_list as hlcal')
         ->select(
             'hlcal.*',
@@ -771,11 +853,11 @@ class Leaves extends Component
         ->leftJoin('user_personal_informations as upi', 'hlca.user_id', '=', 'upi.user_id')
         ->where('hlca.user_id', 'like', '%'.trim($this->userIdAdvancedSearchField3).'%')
         ->where('llt.id', 'like', '%'.trim($this->leaveTypeIdAdvancedSearchField3).'%')
-        ->where('hlcal.month', 'like', '%'.trim($this->monthAdvancedSearchField3).'%')
-        ->where('hlcal.year', 'like', '%'.trim($this->yearAdvancedSearchField3).'%')
+        ->where($month)
+        ->where($year)
         ->where('hlcal.value', 'like', '%'.trim($this->valueAdvancedSearchField3).'%')
-        ->where('hlcal.date_from', 'like', '%'.trim($this->dateFromAdvancedSearchField3).'%')
-        ->where('hlcal.date_to', 'like', '%'.trim($this->dateToAdvancedSearchField3).'%')
+        ->where($date_from)
+        ->where($date_to)
         ->where('hlcal.remarks', 'like', '%'.trim($this->remarksAdvancedSearchField3).'%')
         ->where('hlcal.created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField3).'%')
         ->where('hlca.id', '=', $this->hlcaId)
