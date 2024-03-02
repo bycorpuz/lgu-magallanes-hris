@@ -12,12 +12,12 @@ class HrPlantilla extends Model
 
     public $incrementing = false;
     protected $table = 'hr_plantillas';
-    protected $primaryKey = 'id';   
+    protected $primaryKey = 'id';
     protected $keyType = 'string';
 
     protected $fillable = [
         'item_number', 'user_id', 'position_id', 'salary_id',
-        'status', 'remarks', 'is_plantilla'
+        'status', 'remarks', 'is_plantilla', 'division_office'
     ];
 
     protected static function boot(){

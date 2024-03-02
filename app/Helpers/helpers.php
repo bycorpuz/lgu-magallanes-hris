@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\GeneralSettings;
+use App\Models\HrPlantilla;
 use App\Models\LibDesignation;
 use App\Models\LibLeaveType;
 use App\Models\LibPosition;
@@ -234,19 +235,31 @@ if ( !function_exists('getDesignations') ){
     }
 }
 
+if ( !function_exists('getPlantillas') ){
+    function getPlantillas($param1){
+        if ($param1){
+            $table = HrPlantilla::where('user_id', $param1)->first();
+        } else {
+            $table = HrPlantilla::orderBy('created_at', 'desc')->get();
+        }
+
+        return $table;
+    }
+}
+
 if ( !function_exists('doLog') ){
     function doLog($data, $clientIp, $module, $action){
         if ($data == 'Default'){
             $data = User::find(Auth::user()->id);
         }
-    
+
         $combinedData = [
             'data' => $data,
             'ip' => $clientIp,
             'clientHostname' => gethostbyaddr($clientIp)
         ];
         $jsonData = json_encode($combinedData);
-    
+
         $log = new UserLog();
         $log->user_id = Auth::user()->id;
         $log->module = $module;

@@ -1,4 +1,4 @@
-<div> 
+<div>
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
         <div class="breadcrumb-title pe-3">HUMAN RESOURCE</div>
@@ -13,10 +13,10 @@
         </div>
     </div>
     <!--end breadcrumb-->
-       
+
     <!--table-->
     <div class="card">
-        <div class="card-body"> 
+        <div class="card-body">
             <div class="row pb-3">
                 <div class="col-sm-2 text-center">
                     <button type="button" class="btn btn-primary" wire:click="openCreateUpdateModal">
@@ -36,7 +36,7 @@
 
             <div class="pt-2" {{ !$showAdvancedSearch ? 'hidden' : '' }}>
                 <div class="card">
-                    <div class="card-body"> 
+                    <div class="card-body">
                         <form class="row" wire:submit.prevent="performAdvancedSearch">
                             @csrf
                             <div class="col-md-3 mb-3" wire:ignore>
@@ -77,6 +77,14 @@
                             <div class="col-md-3 mb-3" wire:ignore>
                                 <select class="form-select" wire:model="isPlantillaAdvancedSearchField" id="isPlantillaAdvancedSearchField">
                                     <option value="">Is Plantilla?</option>
+                                    @foreach (yesNo() as $key => $value)
+                                        <option value="{{ $key }}">{{ $value }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3" wire:ignore>
+                                <select class="form-select" wire:model="divisionOfficeAdvancedSearchField" id="divisionOfficeAdvancedSearchField">
+                                    <option value="">Division / Office</option>
                                     @foreach (yesNo() as $key => $value)
                                         <option value="{{ $key }}">{{ $value }}</option>
                                     @endforeach
@@ -142,6 +150,12 @@
                                     @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
                                 @endif
                             </th>
+                            <th class="cursor-pointer" wire:click="sortBy('hp.division_office')">
+                                Division / Office
+                                @if ($sortField === 'hp.division_office')
+                                    @if ($sortDirection === 'asc') <i class="bx bx-sort-up"></i> @else <i class="bx bx-sort-down"></i> @endif
+                                @endif
+                            </th>
                             <th class="cursor-pointer" wire:click="sortBy('hp.remarks')">
                                 Remarks
                                 @if ($sortField === 'hp.remarks')
@@ -168,6 +182,7 @@
                                     <td>{{ $row->ls_tranche }} - {{ $row->ls_grade }} - {{ $row->ls_step }} - {{ number_format($row->ls_basic, 2) }}</td>
                                     <td>{{ $row->status }}</td>
                                     <td>{{ $row->is_plantilla }}</td>
+                                    <td>{{ $row->division_office }}</td>
                                     <td>{{ $row->remarks }}</td>
                                     <td>{{ $row->formatted_created_at }}</td>
                                     <td>
@@ -302,7 +317,15 @@
                                 <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div class="col-md-12 mb-3">
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Division / Office <span style="color: red;">*</span></label>
+                            <input type="text" class="form-control" placeholder="Division / Office" wire:model="division_office" required>
+                            @error('division_office')
+                                <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
                             <label for="remarks" class="form-label">Remarks</label>
                             <textarea class="form-control" wire:model="remarks" id="remarks" placeholder="Remarks" rows="3"></textarea>
                         </div>
@@ -410,7 +433,7 @@
                     });
                 });
             });
-            
+
             @this.on('openDeletionModal', (data) => {
                 $('#modelDeletionModal').modal('show');
             });

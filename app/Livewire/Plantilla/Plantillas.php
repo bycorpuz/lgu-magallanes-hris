@@ -11,7 +11,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 #[Title('Plantillas')]
-#[Layout('layouts.dashboard-app')] 
+#[Layout('layouts.dashboard-app')]
 class Plantillas extends Component
 {
     use WithPagination;
@@ -26,13 +26,14 @@ class Plantillas extends Component
            $userIdAdvancedSearchField, $positionIdAdvancedSearchField,
            $salaryIdAdvancedSearchField, $statusAdvancedSearchField,
            $remarksAdvancedSearchField, $isPlantillaAdvancedSearchField,
+           $divisionOfficeAdvancedSearchField,
            $dateCreatedAdvancedSearchField = '';
 
     public $counter = 0;
     public $totalTableDataCount = 0;
 
     public $id, $item_number, $user_id, $position_id,
-           $salary_id, $status, $remarks, $is_plantilla = '';
+           $salary_id, $status, $remarks, $is_plantilla, $division_office = '';
 
     public $isUpdateMode = false;
     public $deleteId = '';
@@ -49,6 +50,7 @@ class Plantillas extends Component
         $this->status = '';
         $this->remarks = '';
         $this->is_plantilla = '';
+        $this->division_office = '';
         artisanClear();
     }
 
@@ -60,6 +62,7 @@ class Plantillas extends Component
         $this->statusAdvancedSearchField = '';
         $this->remarksAdvancedSearchField = '';
         $this->isPlantillaAdvancedSearchField = '';
+        $this->divisionOfficeAdvancedSearchField = '';
         $this->dateCreatedAdvancedSearchField = '';
     }
 
@@ -75,7 +78,8 @@ class Plantillas extends Component
             'position_id' => 'required',
             'salary_id' => 'required',
             'status' => 'required|string|max:255',
-            'is_plantilla' => 'required|in:Yes,No'
+            'is_plantilla' => 'required|in:Yes,No',
+            'division_office' => 'required',
         ]);
 
         if (!empty($this->user_id)){
@@ -94,7 +98,8 @@ class Plantillas extends Component
         $table->status = $this->status;
         $table->remarks = $this->remarks;
         $table->is_plantilla = $this->is_plantilla;
-        
+        $table->division_office = $this->division_office;
+
         if ($table->save()) {
             $this->resetInputFields();
             $this->dispatch('closeModal');
@@ -120,6 +125,7 @@ class Plantillas extends Component
         $this->status = $table->status;
         $this->remarks = $table->remarks;
         $this->is_plantilla = $table->is_plantilla;
+        $this->division_office = $table->division_office;
     }
 
     public function update(){
@@ -133,7 +139,8 @@ class Plantillas extends Component
             'position_id' => 'required',
             'salary_id' => 'required',
             'status' => 'required|string|max:255',
-            'is_plantilla' => 'required|in:Yes,No'
+            'is_plantilla' => 'required|in:Yes,No',
+            'division_office' => 'required',
         ]);
 
         if (!empty($this->user_id)){
@@ -155,7 +162,8 @@ class Plantillas extends Component
         $table->status = $this->status;
         $table->remarks = $this->remarks;
         $table->is_plantilla = $this->is_plantilla;
-        
+        $table->division_office = $this->division_office;
+
         if ($table->update()) {
             $this->resetInputFields();
             $this->dispatch('closeModal');
@@ -180,6 +188,7 @@ class Plantillas extends Component
         $this->status = $table->status;
         $this->remarks = $table->remarks;
         $this->is_plantilla = $table->is_plantilla;
+        $this->division_office = $table->division_office;
     }
 
     public function delete(){
@@ -197,14 +206,14 @@ class Plantillas extends Component
             $this->isUpdateMode = false;
             $this->resetInputFields();
             $this->dispatch('closeModal');
-            
+
             doLog($oldTable, request()->ip(), 'Plantillas', 'Deleted');
             $this->js("showNotification('success', 'The selected Plantilla has been deleted successfully.')");
         } else {
             $this->js("showNotification('error', 'Something went wrong.')");
         }
     }
-    
+
     public function selectedValuePerPage(){
         $this->perPage;
     }
@@ -215,7 +224,7 @@ class Plantillas extends Component
         } else {
             $this->sortDirection = 'asc';
         }
-        
+
         $this->sortField = $field;
     }
 
@@ -250,6 +259,7 @@ class Plantillas extends Component
         ->orWhere('hp.status', 'like', '%'.trim($this->search).'%')
         ->orWhere('hp.remarks', 'like', '%'.trim($this->search).'%')
         ->orWhere('hp.is_plantilla', 'like', '%'.trim($this->search).'%')
+        ->orWhere('hp.division_office', 'like', '%'.trim($this->search).'%')
         ->orWhere('upi.firstname', 'like', '%'.trim($this->search).'%')
         ->orWhere('upi.middlename', 'like', '%'.trim($this->search).'%')
         ->orWhere('upi.lastname', 'like', '%'.trim($this->search).'%')
@@ -317,10 +327,11 @@ class Plantillas extends Component
         ->where('hp.status', 'like', '%'.trim($this->statusAdvancedSearchField).'%')
         ->where($remarksCondition)
         ->where('hp.is_plantilla', 'like', '%'.trim($this->isPlantillaAdvancedSearchField).'%')
+        ->where('hp.division_office', 'like', '%'.trim($this->divisionOfficeAdvancedSearchField).'%')
         ->where('hp.created_at', 'like', '%'.trim($this->dateCreatedAdvancedSearchField).'%')
         ->orderBy($this->sortField, $this->sortDirection)
         ->paginate($this->perPage);
-    
+
         $this->resetPage();
     }
 
@@ -334,7 +345,7 @@ class Plantillas extends Component
         } else {
             $this->performAdvancedSearch();
         }
-        
+
         $this->totalTableDataCount();
 
         return view('livewire.plantilla.plantillas', [
