@@ -18,6 +18,7 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg-end">
                     <a class="dropdown-item" href="javascript:;" wire:click="addleavetype2">Add Leave Type</a>
+                    <a class="dropdown-item" href="javascript:;" wire:click="printLeaveCard">Generate Leave Card</a>
                 </div>
             </div>
         </div>
@@ -962,6 +963,19 @@
                 newWindow.onload = function() {
                     newWindow.print();
                 };
+            });
+
+            @this.on('openNewWindow2', (data) => {
+                $user = $('#userIdAdvancedSearchField').val();
+                if ($user){
+                    var url = data[0].viewFileUrl + $user;
+                    var newWindow = window.open(url, "Print Leave Card", "width="+screen.availWidth+",height="+screen.availHeight)
+                    newWindow.onload = function() {
+                        newWindow.print();
+                    };
+                } else {
+                    showNotification('error', 'Please select user to proceed.');
+                }
             });
 
             advanceSearchSelect2();

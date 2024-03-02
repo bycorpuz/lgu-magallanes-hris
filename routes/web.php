@@ -52,6 +52,7 @@ Route::group(['middleware' => ['auth', 'preventBackHistory']], function(){
 
     Route::get('/my-leave', Leave::class)->name('my-leave');
     Route::get('/my-leave-print/{id}', [Leave::class, 'printleave']);
+    Route::get('/my-leave-card-print/{user_id}', [Leave::class, 'printleavecard']);
 
     Route::get('/users', Users::class)->middleware('permission:crud-users')->name('users');
 

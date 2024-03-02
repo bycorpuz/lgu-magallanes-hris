@@ -46,6 +46,8 @@ class Leaves extends Component
            $details_b3_name, $details_b4, $details_b5, $details_d1 = '';
     public $isUpdateMode = false;
 
+    public $printLeaveCardUrl;
+
     public $printViewFileUrl2;
     protected $tableList2;
     public $sortField2 = 'created_at';
@@ -362,6 +364,11 @@ class Leaves extends Component
     public function print($id){
         $this->printViewFileUrl2 = 'my-leave-print/'.$id;
         $this->dispatch('openNewWindow', ['viewFileUrl' => $this->printViewFileUrl2]);
+    }
+
+    public function printLeaveCard(){
+        $this->printLeaveCardUrl = 'my-leave-card-print/';
+        $this->dispatch('openNewWindow2', ['viewFileUrl' => $this->printLeaveCardUrl]);
     }
 
     public function changestatus($action, $id){

@@ -377,6 +377,240 @@ class Leave extends Component
         ));
     }
 
+    public function printleavecard($user_id){
+        // VACATION LEAVE - ALL LEAVE EXCEPT SERVICE CREDIT
+        $hasVacationLeave = DB::table('hr_leave_credits_available_list as hlcal')
+            ->leftJoin('hr_leave_credits_available as hlca', 'hlcal.leave_credits_available_id', '=', 'hlca.id')
+            ->where([
+                ['leave_type_id', "e8bfe149-808c-4c72-b52d-1f373bedd548"],
+                ['user_id', $user_id],
+            ])
+            ->count();
+        $hasVacationLeave = ($hasVacationLeave > 0) ? "Yes" : "No";
+
+        $vacationLeave = DB::select('
+            SELECT
+                *
+            FROM
+                (
+                SELECT
+                    *
+                FROM
+                    (
+                    SELECT
+                        hlcal.`year` AS hlcal_year,
+                        hlcal.`month`,
+                        hlcal.`value`,
+                        hlcal.date_from,
+                        hlcal.date_to,
+                        hlcal.remarks AS hlcal_remarks,
+                        hlcal.created_at,
+                        hlca.leave_type_id,
+                        hlca.user_id,
+                        "HLCAL-HLCA" AS identifier,
+                        "" AS hl_remarks,
+                        "" AS hl_is_with_pay,
+                        "" AS hl_status,
+                        "" AS hl_date_processing,
+                        "" AS hl_period
+                    FROM
+                        hr_leave_credits_available_list AS hlcal
+                        LEFT JOIN hr_leave_credits_available AS hlca ON hlcal.leave_credits_available_id = hlca.id
+                    WHERE
+                        hlca.leave_type_id = "e8bfe149-808c-4c72-b52d-1f373bedd548"
+                        AND hlca.user_id = "'.$user_id.'"
+                    ) AS a
+
+                UNION ALL
+
+                SELECT
+                    *
+                FROM
+                    (
+                    SELECT
+                        DATE_FORMAT( hl.date_from, "%Y" ) AS hlcal_year,
+                        "" AS `month`,
+                        hl.days AS `value`,
+                        hl.date_from,
+                        hl.date_to,
+                        llt.name AS hlcal_remarks,
+                        hl.created_at,
+                        hl.leave_type_id,
+                        hl.user_id AS user_id,
+                        "HL" AS identifier,
+                        hl.remarks AS hl_remarks,
+                        hl.is_with_pay AS hl_is_with_pay,
+                        hl.`status` AS hl_status,
+                        hl.date_processing AS hl_date_processing,
+                        hl.period AS hl_period
+                    FROM
+                        hr_leaves AS hl
+                        LEFT JOIN lib_leave_types AS llt ON hl.leave_type_id = llt.id
+                    WHERE
+                        hl.leave_type_id NOT IN (
+                            "1a46126a-e1ec-4597-9a8e-053ef7b748f4",
+                            "16ced40e-2699-4cd2-8d47-1a1a330c63c8"
+                        )
+                        AND hl.STATUS IN ( "Approved", "Disapproved" )
+                        AND user_id = "'.$user_id.'"
+                    ) AS b
+                ) AS scwl
+            ORDER BY
+            hlcal_year ASC,
+            created_at ASC
+        ');
+
+        // SL   = 1a46126a-e1ec-4597-9a8e-053ef7b748f4
+        // CTO  = 16ced40e-2699-4cd2-8d47-1a1a330c63c8
+
+        // SICK LEAVE ALONE
+        $sickLeave = DB::select('
+            SELECT
+                *
+            FROM
+                (
+                SELECT
+                    *
+                FROM
+                    (
+                    SELECT
+                        hlcal.`year` AS hlcal_year,
+                        hlcal.`month`,
+                        hlcal.`value`,
+                        hlcal.date_from,
+                        hlcal.date_to,
+                        hlcal.remarks AS hlcal_remarks,
+                        hlcal.created_at,
+                        hlca.leave_type_id,
+                        hlca.user_id,
+                        "HLCAL-HLCA" AS identifier,
+                        "" AS hl_remarks,
+                        "" AS hl_is_with_pay,
+                        "" AS hl_status,
+                        "" AS hl_date_processing,
+                        "" AS hl_period
+                    FROM
+                        hr_leave_credits_available_list AS hlcal
+                        LEFT JOIN hr_leave_credits_available AS hlca ON hlcal.leave_credits_available_id = hlca.id
+                    WHERE
+                        hlca.leave_type_id = "1a46126a-e1ec-4597-9a8e-053ef7b748f4"
+                        AND hlca.user_id = "'.$user_id.'"
+                    ) AS a
+
+                UNION ALL
+
+                SELECT
+                    *
+                FROM
+                    (
+                    SELECT
+                        DATE_FORMAT( hl.date_from, "%Y" ) AS hlcal_year,
+                        "" AS `month`,
+                        hl.days AS `value`,
+                        hl.date_from,
+                        hl.date_to,
+                        "" AS hlcal_remarks,
+                        hl.created_at,
+                        hl.leave_type_id,
+                        hl.user_id AS user_id,
+                        "HL" AS identifier,
+                        hl.remarks AS hl_remarks,
+                        hl.is_with_pay AS hl_is_with_pay,
+                        hl.`status` AS hl_status,
+                        hl.date_processing AS hl_date_processing,
+                        hl.period AS hl_period
+                    FROM
+                        hr_leaves AS hl
+                    WHERE
+                        hl.leave_type_id = "1a46126a-e1ec-4597-9a8e-053ef7b748f4"
+                        AND hl.STATUS IN ( "Approved", "Disapproved" )
+                        AND user_id = "'.$user_id.'"
+                    ) AS b
+                ) AS scwl
+            ORDER BY
+                hlcal_year ASC,
+                created_at ASC
+        ');
+
+        // CTO ALONE
+        $cto = DB::select('
+            SELECT
+                *
+            FROM
+                (
+                SELECT
+                    *
+                FROM
+                    (
+                    SELECT
+                        hlcal.`year` AS hlcal_year,
+                        hlcal.`month`,
+                        hlcal.`value`,
+                        hlcal.date_from,
+                        hlcal.date_to,
+                        hlcal.remarks AS hlcal_remarks,
+                        hlcal.created_at,
+                        hlca.leave_type_id,
+                        hlca.user_id,
+                        "HLCAL-HLCA" AS identifier,
+                        "" AS hl_remarks,
+                        "" AS hl_is_with_pay,
+                        "" AS hl_status,
+                        "" AS hl_date_processing,
+                        "" AS hl_period
+                    FROM
+                        hr_leave_credits_available_list AS hlcal
+                        LEFT JOIN hr_leave_credits_available AS hlca ON hlcal.leave_credits_available_id = hlca.id
+                    WHERE
+                        hlca.leave_type_id = "16ced40e-2699-4cd2-8d47-1a1a330c63c8"
+                        AND hlca.user_id = "'.$user_id.'"
+                    ) AS a
+
+                UNION ALL
+
+                SELECT
+                    *
+                FROM
+                    (
+                    SELECT
+                        DATE_FORMAT( hl.date_from, "%Y" ) AS hlcal_year,
+                        "" AS `month`,
+                        hl.days AS `value`,
+                        hl.date_from,
+                        hl.date_to,
+                        llt.name AS hlcal_remarks,
+                        hl.created_at,
+                        hl.leave_type_id,
+                        hl.user_id AS user_id,
+                        "HL" AS identifier,
+                        hl.remarks AS hl_remarks,
+                        hl.is_with_pay AS hl_is_with_pay,
+                        hl.`status` AS hl_status,
+                        hl.date_processing AS hl_date_processing,
+                        hl.period AS hl_period
+                    FROM
+                        hr_leaves AS hl
+                        LEFT JOIN lib_leave_types AS llt ON hl.leave_type_id = llt.id
+                    WHERE
+                        hl.leave_type_id = "16ced40e-2699-4cd2-8d47-1a1a330c63c8"
+                        AND hl.STATUS IN ( "Approved", "Disapproved" )
+                        AND user_id = "'.$user_id.'"
+                    ) AS b
+                ) AS scwl
+            ORDER BY
+                hlcal_year ASC,
+                created_at ASC
+        ');
+
+        return view('livewire.my.print-leave-card', compact(
+            'user_id',
+            'hasVacationLeave',
+            'vacationLeave',
+            'sickLeave',
+            'cto'
+        ));
+    }
+
     public function selectedValuePerPage(){
         $this->perPage;
     }
