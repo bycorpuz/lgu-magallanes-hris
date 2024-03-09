@@ -29,28 +29,28 @@
                             <div class="row">
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">First Name <span style="color: red;">*</span></label>
-                                    <input type="text" class="form-control" placeholder="First Name" id="focusMe" wire:model="firstname" required>
+                                    <input type="text" class="form-control" placeholder="First Name" id="focusMe" wire:model="firstname" required disabled>
                                     @error('firstname')
                                         <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">Middle Name</label>
-                                    <input type="text" class="form-control" placeholder="Middle Name" wire:model="middlename">
+                                    <input type="text" class="form-control" placeholder="Middle Name" wire:model="middlename" disabled>
                                     @error('middlename')
                                         <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">Last Name <span style="color: red;">*</span></label>
-                                    <input type="text" class="form-control" placeholder="Last Name" wire:model="lastname" required>
+                                    <input type="text" class="form-control" placeholder="Last Name" wire:model="lastname" required disabled>
                                     @error('lastname')
                                         <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
                                 <div class="col-md-3 mb-3" wire:ignore>
                                     <label class="form-label">Extension Name</label>
-                                    <select class="form-select" wire:model="extname" data-placeholder="Select" id="extname">
+                                    <select class="form-select" wire:model="extname" data-placeholder="Select" id="extname" disabled>
                                         <option value="">Select</option>
                                         @foreach (extName() as $key => $value)
                                             <option value="{{ $key }}">{{ $value }}</option>
@@ -62,14 +62,14 @@
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">Other Extension</label>
-                                    <input type="text" class="form-control" placeholder="Other Extension" wire:model="other_ext">
+                                    <input type="text" class="form-control" placeholder="Other Extension" wire:model="other_ext" disabled>
                                     @error('other_ext')
                                         <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                                     @enderror
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">Date of Birth <span style="color: red;">*</span></label>
-                                    <input type="date" class="form-control" placeholder="Date of Birth" wire:model="date_of_birth" required>
+                                    <input type="date" class="form-control" placeholder="Date of Birth" wire:model="date_of_birth" required disabled>
                                     @error('date_of_birth')
                                         <p class="mt-0 mb-0 font-13 text-danger">{{ $message }}</p>
                                     @enderror
@@ -95,7 +95,7 @@
                                 </div>
                                 <div class="col-md-3 mb-3" wire:ignore>
                                     <label class="form-label">Civil Status <span style="color: red;">*</span></label>
-                                    <select class="form-select" wire:model="civil_status" data-placeholder="Select" id="civil_status" required>
+                                    <select class="form-select" wire:model="civil_status" data-placeholder="Select" id="civil_status" required disabled>
                                         <option value="">Select</option>
                                         @foreach (civilStatus() as $key => $value)
                                             <option value="{{ $key }}">{{ $value }}</option>
@@ -216,7 +216,7 @@
                     $('#show_hide_current_password i').addClass("bx-show");
                 }
             });
-            
+
             $("#show_hide_new_password a").on('click', function (event) {
                 event.preventDefault();
                 if ($('#show_hide_new_password input').attr("type") == "text") {
@@ -229,7 +229,7 @@
                     $('#show_hide_new_password i').addClass("bx-show");
                 }
             });
-            
+
             $("#show_hide_new_password_confirmation a").on('click', function (event) {
                 event.preventDefault();
                 if ($('#show_hide_new_password_confirmation input').attr("type") == "text") {
